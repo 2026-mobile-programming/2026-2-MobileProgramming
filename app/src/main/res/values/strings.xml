@@ -4,4 +4,24 @@
 
     <!-- 공통 -->
     <string name="common_back">뒤로 가기</string>
+    <string name="common_confirm">확인</string>
+    <string name="common_logo">짠챌 로고</string>
+
+    <!-- 로그인 (LOGIN-01) -->
+    <string name="login_tagline">영수증 한 장으로 끝나는 자취생 가계부</string>
+    <string name="login_email">이메일</string>
+    <string name="login_email_hint">example@sungshin.ac.kr</string>
+    <string name="login_password">비밀번호</string>
+    <string name="login_password_hint">비밀번호 입력</string>
+    <string name="login_auto_login">자동 로그인</string>
+    <string name="login_button">로그인</string>
+    <string name="login_no_account">아직 계정이 없나요?</string>
+    <string name="login_go_signup">회원가입</string>
+    <string name="login_fail_title">로그인할 수 없어요</string>
+    <string name="login_fail_message">이메일 또는 비밀번호를 다시 확인해 주세요.</string>
+
+    <!-- 입력 오류 -->
+    <string name="error_email_empty">이메일을 입력해 주세요</string>
+    <string name="error_email_invalid">이메일 형식이 올바르지 않아요</string>
+    <string name="error_password_empty">비밀번호를 입력해 주세요</string>
 </resources>
