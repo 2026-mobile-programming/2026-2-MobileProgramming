@@ -29,6 +29,7 @@
     <string name="signup_password_confirm">비밀번호 확인</string>
     <string name="signup_password_confirm_hint">비밀번호 다시 입력</string>
     <string name="signup_button">가입하고 시작하기</string>
+    <string name="signup_done">%1$s님, 가입을 환영해요!</string>
 
     <!-- 입력 오류 -->
     <string name="error_email_empty">이메일을 입력해 주세요</string>
