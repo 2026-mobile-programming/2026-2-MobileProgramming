@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">짠챌</string>
+
+    <!-- 공통 -->
+    <string name="common_back">뒤로 가기</string>
 </resources>
