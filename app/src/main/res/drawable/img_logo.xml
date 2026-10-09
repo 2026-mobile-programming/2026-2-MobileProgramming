@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 화면 안에서 쓰는 짠챌 로고 (둥근 사각형 + 영수증 심볼) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="72"
+    android:viewportHeight="72">
+    <group
+        android:translateX="-18"
+        android:translateY="-18">
+        <path
+            android:fillColor="@color/green_700"
+            android:pathData="M34,18 H74 A16,16 0 0 1 90,34 V74 A16,16 0 0 1 74,90 H34 A16,16 0 0 1 18,74 V34 A16,16 0 0 1 34,18 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M39 30 H69 Q72 30 72 33 V78 L67.5 74 L63 78 L58.5 74 L54 78 L49.5 74 L45 78 L40.5 74 L36 78 V33 Q36 30 39 30 Z" />
+        <path android:fillColor="#C2E6D9" android:pathData="M43.5 37 H64.5 A1.5 1.5 0 0 1 64.5 40 H43.5 A1.5 1.5 0 0 1 43.5 37 Z" />
+        <path android:fillColor="#C2E6D9" android:pathData="M43.5 43 H56.5 A1.5 1.5 0 0 1 56.5 46 H43.5 A1.5 1.5 0 0 1 43.5 43 Z" />
+        <path
+            android:pathData="M45 58 L51 64 L63 51.5"
+            android:strokeColor="#0B7A5B"
+            android:strokeWidth="4.5"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path android:fillColor="#F5C542" android:pathData="M70 26 Q70.9 31.1 76 32 Q70.9 32.9 70 38 Q69.1 32.9 64 32 Q69.1 31.1 70 26 Z" />
+    </group>
+</vector>
