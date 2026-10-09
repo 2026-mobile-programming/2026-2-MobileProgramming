@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    짠챌 디자인 시스템 글자 스타일
+    피그마 텍스트 스타일과 같은 이름이에요. (피그마 Body2 → @style/TextAppearance.JjanChall.Body2)
+    한국어 기본 글꼴이 Noto Sans KR 계열이라 피그마(Noto Sans KR)와 같은 모양으로 보여요.
+    사용 예: android:textAppearance="@style/TextAppearance.JjanChall.Title"
+-->
+<resources>
+
+    <style name="TextAppearance.JjanChall" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <!-- 28 / Bold — 금액 등 큰 숫자 -->
+    <style name="TextAppearance.JjanChall.Display">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="lineHeight">36sp</item>
+    </style>
+
+    <!-- 20 / Bold — 화면 제목 -->
+    <style name="TextAppearance.JjanChall.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="lineHeight">28sp</item>
+    </style>
+
+    <!-- 16 / Bold — 섹션 제목 -->
+    <style name="TextAppearance.JjanChall.Heading">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="lineHeight">24sp</item>
+    </style>
+
+    <!-- 16 / Regular — 본문, 입력값 -->
+    <style name="TextAppearance.JjanChall.Body">
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">24sp</item>
+    </style>
+
+    <!-- 16 / Medium -->
+    <style name="TextAppearance.JjanChall.BodyStrong">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">24sp</item>
+    </style>
+
+    <!-- 14 / Regular — 보조 글자 -->
+    <style name="TextAppearance.JjanChall.Body2">
+        <item name="android:textSize">14sp</item>
+        <item name="lineHeight">20sp</item>
+    </style>
+
+    <!-- 14 / Medium — 입력칸 라벨 -->
+    <style name="TextAppearance.JjanChall.Label">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="lineHeight">20sp</item>
+    </style>
+
+    <!-- 16 / Bold — 버튼 -->
+    <style name="TextAppearance.JjanChall.Button">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="lineHeight">24sp</item>
+    </style>
+
+    <!-- 12 / Regular — 안내 문구, 탭 이름 -->
+    <style name="TextAppearance.JjanChall.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="lineHeight">16sp</item>
+    </style>
+
+</resources>

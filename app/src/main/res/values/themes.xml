@@ -1,8 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    짠챌 앱 테마
+    - 라이트 모드만 써요. (다크 모드는 values-night를 지워서 끔)
+    - 머티리얼 색 역할(colorPrimary 등)에 디자인 시스템 색을 연결해 두면
+      버튼·체크박스·입력칸 같은 기본 위젯이 자동으로 짠챌 색을 따라가요.
+    - 아래 "기본 스타일"에 연결된 위젯은 레이아웃에서 style을 안 써도 짠챌 스타일이 적용돼요.
+-->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.JjanChall" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <style name="Base.Theme.JjanChall" parent="Theme.Material3.Light.NoActionBar">
+        <!-- 색 역할 -->
+        <item name="colorPrimary">@color/bg_brand</item>
+        <item name="colorOnPrimary">@color/text_on_brand</item>
+        <item name="colorPrimaryContainer">@color/bg_brand_subtle</item>
+        <item name="colorOnPrimaryContainer">@color/green_900</item>
+        <item name="colorSecondary">@color/green_500</item>
+        <item name="colorOnSecondary">@color/text_on_brand</item>
+        <item name="colorTertiary">@color/gold_400</item>
+        <item name="colorError">@color/text_danger</item>
+        <item name="colorErrorContainer">@color/bg_danger_subtle</item>
+        <item name="android:colorBackground">@color/bg_default</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorSurface">@color/bg_default</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/bg_muted</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/border_input</item>
+        <item name="colorOutlineVariant">@color/border_default</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_disabled</item>
+
+        <!-- 상태바·내비게이션바 아이콘을 어둡게 (밝은 배경용) -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+
+        <!-- 위젯 기본 스타일 -->
+        <item name="materialButtonStyle">@style/Widget.JjanChall.Button.Primary</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.JjanChall.Button.Secondary</item>
+        <item name="borderlessButtonStyle">@style/Widget.JjanChall.Button.Text</item>
+        <item name="textInputStyle">@style/Widget.JjanChall.TextInput</item>
+        <item name="checkboxStyle">@style/Widget.JjanChall.CheckBox</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.JjanChall.Dialog</item>
     </style>
 
     <style name="Theme.JjanChall" parent="Base.Theme.JjanChall" />
