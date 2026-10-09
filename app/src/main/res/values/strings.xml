@@ -40,4 +40,9 @@
     <string name="error_password_mismatch">비밀번호가 일치하지 않아요</string>
     <string name="error_nickname_empty">닉네임을 입력해 주세요</string>
     <string name="error_nickname_length">닉네임은 2~10자로 입력해 주세요</string>
+
+    <!-- 메인 (임시) -->
+    <string name="main_welcome">%1$s님, 반가워요!</string>
+    <string name="main_placeholder">홈·기록·챌린지·설정 화면은 여기에 Fragment로 들어갈 예정이에요.</string>
+    <string name="main_logout">로그아웃</string>
 </resources>
