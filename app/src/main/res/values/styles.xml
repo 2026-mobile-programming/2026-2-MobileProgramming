@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    짠챌 디자인 시스템 컴포넌트 스타일
+    피그마 컴포넌트와 1:1로 맞춰 둔 스타일이에요.
+      피그마 Button / Primary   → @style/Widget.JjanChall.Button.Primary (MaterialButton 기본값)
+      피그마 Button / Secondary → @style/Widget.JjanChall.Button.Secondary
+      피그마 Button / Text      → @style/Widget.JjanChall.Button.Text
+      피그마 Input              → @style/Widget.JjanChall.TextInput (TextInputLayout 기본값)
+      피그마 Dialog             → @style/ThemeOverlay.JjanChall.Dialog (MaterialAlertDialog 기본값)
+-->
+<resources>
+
+    <!-- ===== Button ===== -->
+    <style name="Widget.JjanChall.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/size_button</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">@dimen/radius_md</item>
+        <item name="backgroundTint">@color/selector_button_primary_bg</item>
+        <item name="android:textColor">@color/selector_button_primary_text</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Button</item>
+    </style>
+
+    <style name="Widget.JjanChall.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">@dimen/size_button</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">@dimen/radius_md</item>
+        <item name="strokeColor">@color/border_strong</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Button</item>
+    </style>
+
+    <style name="Widget.JjanChall.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:minHeight">@dimen/size_touch_min</item>
+        <item name="android:textColor">@color/text_brand</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Label</item>
+    </style>
+
+    <!-- ===== Input ===== -->
+    <!-- 라벨은 입력칸 위에 TextView(Widget.JjanChall.InputLabel)로 따로 두고, 칸 안에는 placeholder만 보여줘요. -->
+    <style name="Widget.JjanChall.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="hintEnabled">false</item>
+        <item name="boxBackgroundColor">@color/bg_default</item>
+        <item name="boxStrokeColor">@color/selector_input_stroke</item>
+        <item name="boxStrokeErrorColor">@color/border_danger</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_md</item>
+        <item name="errorTextColor">@color/text_danger</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="helperTextTextColor">@color/text_secondary</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.JjanChall.Caption</item>
+        <item name="errorTextAppearance">@style/TextAppearance.JjanChall.Caption</item>
+        <item name="endIconTint">@color/text_secondary</item>
+    </style>
+
+    <!-- 입력칸 안의 글자 (TextInputEditText에 style로 지정) -->
+    <style name="Widget.JjanChall.EditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Body</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_disabled</item>
+        <item name="android:minHeight">@dimen/size_touch_min</item>
+        <item name="android:paddingStart">@dimen/spacing_lg</item>
+        <item name="android:paddingEnd">@dimen/spacing_lg</item>
+        <item name="android:paddingTop">@dimen/spacing_md</item>
+        <item name="android:paddingBottom">@dimen/spacing_md</item>
+    </style>
+
+    <!-- 입력칸 위 라벨 -->
+    <style name="Widget.JjanChall.InputLabel" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_sm</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Label</item>
+    </style>
+
+    <!-- ===== CheckBox ===== -->
+    <style name="Widget.JjanChall.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/bg_brand</item>
+        <item name="android:minHeight">@dimen/size_touch_min</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Body2</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!-- ===== AppBar ===== -->
+    <style name="Widget.JjanChall.AppBarTitle" parent="">
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Title</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- ===== Dialog ===== -->
+    <style name="ThemeOverlay.JjanChall.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.JjanChall.Dialog</item>
+        <item name="colorSurface">@color/bg_default</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.JjanChall.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.JjanChall.Body</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.JjanChall.Button.Text</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.JjanChall.Button.Dialog.Negative</item>
+    </style>
+
+    <style name="ShapeAppearance.JjanChall.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/radius_xl</item>
+    </style>
+
+    <style name="MaterialAlertDialog.JjanChall.Title" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Heading</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="MaterialAlertDialog.JjanChall.Body" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Body2</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="Widget.JjanChall.Button.Dialog.Negative" parent="Widget.JjanChall.Button.Text">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+</resources>
