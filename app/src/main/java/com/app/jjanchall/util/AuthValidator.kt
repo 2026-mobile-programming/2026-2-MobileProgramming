@@ -12,9 +12,6 @@ object AuthValidator {
 
     private val EMAIL_REGEX = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
 
-    /** 앞뒤 공백을 지우고 소문자로 맞춘 이메일. 계정을 찾을 때 이 값을 키로 써요. */
-    fun normalizeEmail(email: String): String = email.trim().lowercase()
-
     fun isValidEmail(email: String): Boolean = EMAIL_REGEX.matches(email.trim())
 
     fun isValidPassword(password: String): Boolean = password.length >= PASSWORD_MIN_LENGTH

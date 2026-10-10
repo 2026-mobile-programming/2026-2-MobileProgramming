@@ -1,6 +1,5 @@
 package com.app.jjanchall.util
 
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,11 +14,6 @@ class AuthValidatorTest {
         assertFalse(AuthValidator.isValidEmail("example"))
         assertFalse(AuthValidator.isValidEmail("example@"))
         assertFalse(AuthValidator.isValidEmail("example@sungshin"))
-    }
-
-    @Test
-    fun normalizeEmail() {
-        assertEquals("abc@test.com", AuthValidator.normalizeEmail("  ABC@Test.com "))
     }
 
     @Test
