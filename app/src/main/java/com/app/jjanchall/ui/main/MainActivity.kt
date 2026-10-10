@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.app.jjanchall.R
-import com.app.jjanchall.data.local.AuthPreferences
+import com.app.jjanchall.data.auth.AuthRepository
 import com.app.jjanchall.databinding.ActivityMainBinding
 import com.app.jjanchall.ui.login.LoginActivity
 import com.app.jjanchall.util.applySystemBarsPadding
@@ -17,15 +17,14 @@ import com.app.jjanchall.util.applySystemBarsPadding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var authPrefs: AuthPreferences
+    private lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        authPrefs = AuthPreferences(this)
+        authRepository = AuthRepository(this)
 
         // 로그인 정보가 없으면 로그인 화면으로
-        val nickname = authPrefs.currentNickname()
-        if (nickname == null) {
+        if (!authRepository.isLoggedIn()) {
             goToLogin()
             return
         }
@@ -35,9 +34,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.root.applySystemBarsPadding()
 
+        val nickname = authRepository.currentNickname.orEmpty()
         binding.tvWelcome.text = getString(R.string.main_welcome, nickname)
         binding.btnLogout.setOnClickListener {
-            authPrefs.logout()
+            authRepository.logout()
             goToLogin()
         }
     }
