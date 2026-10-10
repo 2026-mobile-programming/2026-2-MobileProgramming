@@ -6,7 +6,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.app.jjanchall.R
-import com.app.jjanchall.data.local.AuthPreferences
+import com.app.jjanchall.data.auth.AuthError
+import com.app.jjanchall.data.auth.AuthRepository
 import com.app.jjanchall.databinding.ActivityLoginBinding
 import com.app.jjanchall.ui.main.MainActivity
 import com.app.jjanchall.util.AuthValidator
@@ -17,17 +18,19 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var authPrefs: AuthPreferences
+    private lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        authPrefs = AuthPreferences(this)
+        authRepository = AuthRepository(this)
 
         // 자동 로그인: 로그인 화면을 보여주지 않고 바로 메인으로
-        if (authPrefs.shouldAutoLogin()) {
+        if (authRepository.shouldAutoLogin()) {
             goToMain()
             return
         }
+        // 자동 로그인을 끈 채 남아 있던 로그인 상태는 정리
+        if (authRepository.isLoggedIn()) authRepository.logout()
 
         enableEdgeToEdge()
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -65,17 +68,27 @@ class LoginActivity : AppCompatActivity() {
         }
         if (!valid) return
 
-        if (authPrefs.login(email, password, binding.cbAutoLogin.isChecked)) {
-            goToMain()
-        } else {
-            showLoginFailDialog()
+        // 응답이 올 때까지 버튼을 막아 두 번 눌리지 않게
+        binding.btnLogin.isEnabled = false
+        authRepository.login(email, password, binding.cbAutoLogin.isChecked) { result ->
+            if (isFinishing || isDestroyed) return@login
+            binding.btnLogin.isEnabled = true
+            when (result) {
+                AuthRepository.Result.Success -> goToMain()
+                is AuthRepository.Result.Failure -> showLoginFailDialog(result.error)
+            }
         }
     }
 
-    private fun showLoginFailDialog() {
+    private fun showLoginFailDialog(error: AuthError) {
+        val title = if (error == AuthError.INVALID_CREDENTIALS) {
+            R.string.login_fail_title
+        } else {
+            R.string.error_dialog_title
+        }
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.login_fail_title)
-            .setMessage(R.string.login_fail_message)
+            .setTitle(title)
+            .setMessage(error.messageRes)
             .setPositiveButton(R.string.common_confirm, null)
             .show()
     }
