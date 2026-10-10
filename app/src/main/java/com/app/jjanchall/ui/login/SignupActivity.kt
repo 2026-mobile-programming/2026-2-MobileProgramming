@@ -7,17 +7,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.app.jjanchall.R
-import com.app.jjanchall.data.local.AuthPreferences
+import com.app.jjanchall.data.auth.AuthError
+import com.app.jjanchall.data.auth.AuthRepository
 import com.app.jjanchall.databinding.ActivitySignupBinding
 import com.app.jjanchall.ui.main.MainActivity
 import com.app.jjanchall.util.AuthValidator
 import com.app.jjanchall.util.applySystemBarsPadding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /** LOGIN-02 회원가입 */
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignupBinding
-    private lateinit var authPrefs: AuthPreferences
+    private lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +27,7 @@ class SignupActivity : AppCompatActivity() {
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarsPadding()
-        authPrefs = AuthPreferences(this)
+        authRepository = AuthRepository(this)
 
         // <include>로 가져온 공통 상단 바
         binding.appBar.tvAppBarTitle.setText(R.string.signup_title)
@@ -67,10 +69,6 @@ class SignupActivity : AppCompatActivity() {
                 binding.tilEmail.error = getString(R.string.error_email_invalid)
                 valid = false
             }
-            authPrefs.isRegistered(email) -> {
-                binding.tilEmail.error = getString(R.string.error_email_duplicate)
-                valid = false
-            }
         }
 
         when {
@@ -91,17 +89,36 @@ class SignupActivity : AppCompatActivity() {
 
         if (!valid) return
 
-        if (authPrefs.signUp(nickname, email, password) == AuthPreferences.SignUpResult.DUPLICATE_EMAIL) {
-            binding.tilEmail.error = getString(R.string.error_email_duplicate)
-            return
+        // 응답이 올 때까지 버튼을 막아 두 번 눌리지 않게
+        binding.btnSignup.isEnabled = false
+        authRepository.signUp(nickname, email, password) { result ->
+            if (isFinishing || isDestroyed) return@signUp
+            binding.btnSignup.isEnabled = true
+            when (result) {
+                AuthRepository.Result.Success -> onSignupSuccess(nickname)
+                is AuthRepository.Result.Failure -> showSignupError(result.error)
+            }
         }
+    }
 
-        // 가입하면 바로 로그인한 상태로 메인으로 이동 (자동 로그인은 끔)
-        authPrefs.login(email, password, autoLogin = false)
+    private fun onSignupSuccess(nickname: String) {
+        // 가입하면 Firebase에 바로 로그인된 상태라 메인으로 이동 (자동 로그인은 꺼진 상태)
         Toast.makeText(this, getString(R.string.signup_done, nickname), Toast.LENGTH_SHORT).show()
-
         val intent = Intent(this, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
+    }
+
+    private fun showSignupError(error: AuthError) {
+        when (error) {
+            AuthError.EMAIL_DUPLICATE -> binding.tilEmail.error = getString(error.messageRes)
+            AuthError.INVALID_CREDENTIALS -> binding.tilEmail.error = getString(R.string.error_email_invalid)
+            AuthError.WEAK_PASSWORD -> binding.tilPassword.error = getString(error.messageRes)
+            else -> MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.error_dialog_title)
+                .setMessage(error.messageRes)
+                .setPositiveButton(R.string.common_confirm, null)
+                .show()
+        }
     }
 }
