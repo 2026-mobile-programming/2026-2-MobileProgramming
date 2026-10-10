@@ -40,6 +40,10 @@
     <string name="error_password_mismatch">비밀번호가 일치하지 않아요</string>
     <string name="error_nickname_empty">닉네임을 입력해 주세요</string>
     <string name="error_nickname_length">닉네임은 2~10자로 입력해 주세요</string>
+    <string name="error_network">인터넷 연결을 확인하고 다시 시도해 주세요.</string>
+    <string name="error_too_many_requests">시도가 너무 많아요. 잠시 후 다시 시도해 주세요.</string>
+    <string name="error_unknown">문제가 생겼어요. 잠시 후 다시 시도해 주세요.</string>
+    <string name="error_dialog_title">요청을 처리하지 못했어요</string>
 
     <!-- 메인 (임시) -->
     <string name="main_welcome">%1$s님, 반가워요!</string>
