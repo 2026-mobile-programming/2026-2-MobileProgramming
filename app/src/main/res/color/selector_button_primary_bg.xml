@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Primary 버튼 배경: 비활성 → 회색, 누름 → 진한 그린, 기본 → 브랜드 그린 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/bg_disabled" android:state_enabled="false" />
+    <item android:color="@color/bg_brand_pressed" android:state_pressed="true" />
+    <item android:color="@color/bg_brand" />
+</selector>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    짠챌 디자인 시스템 간격·모서리·크기
+    피그마 Spacing / Radius / Size 변수와 같은 이름이에요. (spacing/lg → @dimen/spacing_lg)
+-->
+<resources>
+
+    <!-- Spacing -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">20dp</dimen>
+    <dimen name="spacing_2xl">24dp</dimen>
+    <dimen name="spacing_3xl">32dp</dimen>
+
+    <!-- Radius -->
+    <dimen name="radius_sm">8dp</dimen>
+    <dimen name="radius_md">10dp</dimen>
+    <dimen name="radius_lg">14dp</dimen>
+    <dimen name="radius_xl">16dp</dimen>
+    <dimen name="radius_full">999dp</dimen>
+
+    <!-- Size -->
+    <dimen name="size_touch_min">48dp</dimen>
+    <dimen name="size_button">52dp</dimen>
+    <dimen name="size_app_bar">56dp</dimen>
+    <dimen name="size_tab_bar">64dp</dimen>
+    <dimen name="size_fab">56dp</dimen>
+    <dimen name="size_icon">24dp</dimen>
+    <dimen name="size_logo">80dp</dimen>
+
+    <!-- 화면 좌우 여백 (피그마 그리드 margin 20) -->
+    <dimen name="screen_padding">@dimen/spacing_xl</dimen>
+
+</resources>

@@ -1,3 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">JjanChall</string>
+    <string name="app_name">짠챌</string>
+
+    <!-- 공통 -->
+    <string name="common_back">뒤로 가기</string>
+    <string name="common_confirm">확인</string>
+    <string name="common_logo">짠챌 로고</string>
+
+    <!-- 로그인 (LOGIN-01) -->
+    <string name="login_tagline">영수증 한 장으로 끝나는 자취생 가계부</string>
+    <string name="login_email">이메일</string>
+    <string name="login_email_hint">example@sungshin.ac.kr</string>
+    <string name="login_password">비밀번호</string>
+    <string name="login_password_hint">비밀번호 입력</string>
+    <string name="login_auto_login">자동 로그인</string>
+    <string name="login_button">로그인</string>
+    <string name="login_no_account">아직 계정이 없나요?</string>
+    <string name="login_go_signup">회원가입</string>
+    <string name="login_fail_title">로그인할 수 없어요</string>
+    <string name="login_fail_message">이메일 또는 비밀번호를 다시 확인해 주세요.</string>
+
+    <!-- 회원가입 (LOGIN-02) -->
+    <string name="signup_title">회원가입</string>
+    <string name="signup_nickname">닉네임</string>
+    <string name="signup_nickname_hint">닉네임 입력</string>
+    <string name="signup_nickname_helper">챌린지에서 친구에게 보이는 이름</string>
+    <string name="signup_password_helper">6자 이상 입력해 주세요</string>
+    <string name="signup_password_confirm">비밀번호 확인</string>
+    <string name="signup_password_confirm_hint">비밀번호 다시 입력</string>
+    <string name="signup_button">가입하고 시작하기</string>
+    <string name="signup_done">%1$s님, 가입을 환영해요!</string>
+
+    <!-- 입력 오류 -->
+    <string name="error_email_empty">이메일을 입력해 주세요</string>
+    <string name="error_email_invalid">이메일 형식이 올바르지 않아요</string>
+    <string name="error_email_duplicate">이미 가입된 이메일이에요</string>
+    <string name="error_password_empty">비밀번호를 입력해 주세요</string>
+    <string name="error_password_short">비밀번호는 6자 이상이어야 해요</string>
+    <string name="error_password_mismatch">비밀번호가 일치하지 않아요</string>
+    <string name="error_nickname_empty">닉네임을 입력해 주세요</string>
+    <string name="error_nickname_length">닉네임은 2~10자로 입력해 주세요</string>
+    <string name="error_network">인터넷 연결을 확인하고 다시 시도해 주세요.</string>
+    <string name="error_too_many_requests">시도가 너무 많아요. 잠시 후 다시 시도해 주세요.</string>
+    <string name="error_unknown">문제가 생겼어요. 잠시 후 다시 시도해 주세요.</string>
+    <string name="error_dialog_title">요청을 처리하지 못했어요</string>
+
+    <!-- 메인 (임시) -->
+    <string name="main_welcome">%1$s님, 반가워요!</string>
+    <string name="main_placeholder">홈·기록·챌린지·설정 화면은 여기에 Fragment로 들어갈 예정이에요.</string>
+    <string name="main_logout">로그아웃</string>
 </resources>
