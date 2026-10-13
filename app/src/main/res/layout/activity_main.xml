@@ -1,38 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 메인 (임시): 로그인 확인용. 나중에 하단 탭 + Fragment 컨테이너로 바뀌어요. -->
+<!-- 메인: 위에는 탭별 Fragment, 아래에는 하단 탭 (피그마 TabBar) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_default"
-    android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/screen_padding"
     tools:context=".ui.main.MainActivity">
 
-    <TextView
-        android:id="@+id/tv_welcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.JjanChall.Title"
-        tools:text="짠순이님, 반가워요!" />
+    <!-- 탭을 누르면 여기에 HomeFragment / RecordFragment / ChallengeFragment / SettingFragment가 보여요 -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_sm"
-        android:gravity="center"
-        android:text="@string/main_placeholder"
-        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
-        android:textColor="@color/text_secondary" />
+    <View style="@style/Widget.JjanChall.Divider" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_logout"
-        style="@style/Widget.JjanChall.Button.Secondary"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        style="@style/Widget.JjanChall.BottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_2xl"
-        android:text="@string/main_logout" />
+        app:menu="@menu/menu_bottom_nav" />
 
 </LinearLayout>

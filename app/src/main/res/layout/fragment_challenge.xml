@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CHALLENGE-01 무지출 챌린지 (한지수) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_default"
+    android:orientation="vertical"
+    tools:context=".ui.challenge.ChallengeFragment">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_tab_header" />
+
+    <!-- TODO: 화면 내용 채우기 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/common_coming_soon"
+        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+        android:textColor="@color/text_secondary" />
+
+</LinearLayout>

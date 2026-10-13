@@ -6,6 +6,40 @@
     <string name="common_back">뒤로 가기</string>
     <string name="common_confirm">확인</string>
     <string name="common_logo">짠챌 로고</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_coming_soon">준비 중인 화면이에요</string>
+
+    <!-- 하단 탭 -->
+    <string name="tab_home">홈</string>
+    <string name="tab_record">기록</string>
+    <string name="tab_challenge">챌린지</string>
+    <string name="tab_setting">설정</string>
+
+    <!-- 홈 (HOME-01) -->
+    <string name="home_summary_label">%1$s님이 이번 달 쓴 돈</string>
+    <string name="home_amount_empty">0원</string>
+
+    <!-- 기록 (RECORD-01) -->
+    <string name="record_title">지출 기록</string>
+
+    <!-- 챌린지 (CHALLENGE-01) -->
+    <string name="challenge_title">무지출 챌린지</string>
+
+    <!-- 설정 (SETTING-01) -->
+    <string name="setting_title">설정</string>
+    <string name="setting_section_budget">가계부</string>
+    <string name="setting_monthly_budget">월 예산 설정</string>
+    <string name="setting_ai_report">AI 소비 리포트</string>
+    <string name="setting_category">카테고리 관리</string>
+    <string name="setting_optional_tag">선택 기능</string>
+    <string name="setting_section_app">앱 설정</string>
+    <string name="setting_budget_alert">예산 초과 알림</string>
+    <string name="setting_daily_reminder">매일 기록 리마인더</string>
+    <string name="setting_auto_login">자동 로그인</string>
+    <string name="setting_logout">로그아웃</string>
+    <string name="setting_logout_title">로그아웃할까요?</string>
+    <string name="setting_logout_message">다음에 다시 로그인해야 해요.</string>
+    <string name="setting_coming_soon">준비 중인 기능이에요</string>
 
     <!-- 로그인 (LOGIN-01) -->
     <string name="login_tagline">영수증 한 장으로 끝나는 자취생 가계부</string>
@@ -44,9 +78,4 @@
     <string name="error_too_many_requests">시도가 너무 많아요. 잠시 후 다시 시도해 주세요.</string>
     <string name="error_unknown">문제가 생겼어요. 잠시 후 다시 시도해 주세요.</string>
     <string name="error_dialog_title">요청을 처리하지 못했어요</string>
-
-    <!-- 메인 (임시) -->
-    <string name="main_welcome">%1$s님, 반가워요!</string>
-    <string name="main_placeholder">홈·기록·챌린지·설정 화면은 여기에 Fragment로 들어갈 예정이에요.</string>
-    <string name="main_logout">로그아웃</string>
 </resources>

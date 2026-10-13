@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SETTING-01 설정 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_default"
+    android:orientation="vertical"
+    tools:context=".ui.setting.SettingFragment">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_tab_header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 프로필 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/screen_padding">
+
+                <TextView
+                    android:id="@+id/tv_avatar"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_avatar"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Title"
+                    android:textColor="@color/text_brand"
+                    tools:text="짠" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_lg"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_nickname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                        tools:text="짠순이" />
+
+                    <TextView
+                        android:id="@+id/tv_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                        android:textColor="@color/text_secondary"
+                        tools:text="yubin@sungshin.ac.kr" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View style="@style/Widget.JjanChall.SectionGap" />
+
+            <!-- 가계부 (선택 기능은 담당이 정해지면 연결) -->
+            <TextView
+                style="@style/Widget.JjanChall.SectionLabel"
+                android:text="@string/setting_section_budget" />
+
+            <LinearLayout
+                android:id="@+id/row_monthly_budget"
+                style="@style/Widget.JjanChall.ListRow">
+
+                <TextView
+                    style="@style/Widget.JjanChall.ListRowTitle"
+                    android:text="@string/setting_monthly_budget" />
+
+                <TextView
+                    style="@style/Widget.JjanChall.Tag"
+                    android:text="@string/setting_optional_tag" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right" />
+            </LinearLayout>
+
+            <View
+                style="@style/Widget.JjanChall.Divider"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding" />
+
+            <LinearLayout
+                android:id="@+id/row_ai_report"
+                style="@style/Widget.JjanChall.ListRow">
+
+                <TextView
+                    style="@style/Widget.JjanChall.ListRowTitle"
+                    android:text="@string/setting_ai_report" />
+
+                <TextView
+                    style="@style/Widget.JjanChall.Tag"
+                    android:text="@string/setting_optional_tag" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right" />
+            </LinearLayout>
+
+            <View
+                style="@style/Widget.JjanChall.Divider"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding" />
+
+            <LinearLayout
+                android:id="@+id/row_category"
+                style="@style/Widget.JjanChall.ListRow">
+
+                <TextView
+                    style="@style/Widget.JjanChall.ListRowTitle"
+                    android:text="@string/setting_category" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right" />
+            </LinearLayout>
+
+            <View
+                style="@style/Widget.JjanChall.Divider"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding" />
+
+            <!-- 앱 설정 -->
+            <TextView
+                style="@style/Widget.JjanChall.SectionLabel"
+                android:text="@string/setting_section_app" />
+
+            <LinearLayout style="@style/Widget.JjanChall.ListRow">
+
+                <TextView
+                    style="@style/Widget.JjanChall.ListRowTitle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:labelFor="@id/switch_budget_alert"
+                    android:text="@string/setting_budget_alert" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_budget_alert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                style="@style/Widget.JjanChall.Divider"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding" />
+
+            <LinearLayout style="@style/Widget.JjanChall.ListRow">
+
+                <TextView
+                    style="@style/Widget.JjanChall.ListRowTitle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:labelFor="@id/switch_daily_reminder"
+                    android:text="@string/setting_daily_reminder" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_daily_reminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                style="@style/Widget.JjanChall.Divider"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding" />
+
+            <LinearLayout style="@style/Widget.JjanChall.ListRow">
+
+                <TextView
+                    style="@style/Widget.JjanChall.ListRowTitle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:labelFor="@id/switch_auto_login"
+                    android:text="@string/setting_auto_login" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_auto_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                style="@style/Widget.JjanChall.Divider"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_logout"
+        style="@style/Widget.JjanChall.Button.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/screen_padding"
+        android:text="@string/setting_logout" />
+
+</LinearLayout>

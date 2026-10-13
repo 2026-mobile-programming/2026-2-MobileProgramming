@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 홈 이번 달 요약 카드 배경 (피그마 SummaryCard) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/bg_brand_subtle" />
+    <corners android:radius="@dimen/radius_xl" />
+</shape>
