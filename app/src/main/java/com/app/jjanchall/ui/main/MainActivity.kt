@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 로그인 정보가 없으면 로그인 화면으로
         if (!AuthRepository(this).isLoggedIn()) {
             goToLogin()
             return
@@ -56,7 +55,6 @@ class MainActivity : AppCompatActivity() {
             showTab(item.itemId)
             true
         }
-        // 지금 보고 있는 탭을 다시 누르면 아무것도 안 해요
         binding.bottomNav.setOnItemReselectedListener { }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -70,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    /** 4개 탭 Fragment를 모두 붙이고 홈만 보이게 해요. */
+    /** 4개 탭 Fragment를 모두 붙이고 홈만 보이게 */
     private fun addAllTabs() {
         val transaction = supportFragmentManager.beginTransaction()
         tabs.forEach { (tabId, create) ->
