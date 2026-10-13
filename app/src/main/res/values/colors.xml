@@ -45,6 +45,8 @@
     <color name="bg_danger_subtle">@color/red_50</color>
     <color name="bg_disabled">@color/gray_200</color>
     <color name="bg_dim">#73000000</color>
+    <!-- 하단 탭 + 그 아래 시스템 내비게이션 바 영역 -->
+    <color name="bg_tab_bar">@color/bg_brand_subtle</color>
 
     <!-- ===== Semantic: 글자 ===== -->
     <color name="text_primary">@color/gray_900</color>

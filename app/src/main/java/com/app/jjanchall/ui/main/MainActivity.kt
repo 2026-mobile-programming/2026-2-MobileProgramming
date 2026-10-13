@@ -1,8 +1,10 @@
 package com.app.jjanchall.ui.main
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -42,10 +44,14 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        enableEdgeToEdge()
+        // 내비게이션 바 투명 → 하단 탭 색이 이어지게
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.root.applySystemBarsPadding(includeIme = false)
+        // 아래 여백은 하단 탭이 처리
+        binding.root.applySystemBarsPadding(includeBottom = false)
 
         if (savedInstanceState == null) {
             addAllTabs()

@@ -97,7 +97,11 @@
     <!-- ===== TabBar (하단 탭) ===== -->
     <style name="Widget.JjanChall.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
         <item name="android:minHeight">@dimen/size_tab_bar</item>
-        <item name="backgroundTint">@color/bg_default</item>
+        <item name="backgroundTint">@color/bg_tab_bar</item>
+        <!-- 그림자 색 덧칠(elevation overlay)을 꺼서 bg_tab_bar 색이 그대로 보이게 -->
+        <item name="elevation">0dp</item>
+        <!-- 시스템 내비게이션 바 높이만큼 아래 여백을 넣고, 그 영역까지 같은 색으로 칠해요 -->
+        <item name="paddingBottomSystemWindowInsets">true</item>
         <item name="labelVisibilityMode">labeled</item>
         <item name="itemIconSize">@dimen/size_icon</item>
         <item name="itemIconTint">@color/selector_tab_item</item>
