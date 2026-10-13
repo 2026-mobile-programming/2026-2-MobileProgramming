@@ -32,6 +32,15 @@ class AuthRepository(context: Context) {
 
     val currentNickname: String? get() = auth.currentUser?.displayName
 
+    val currentEmail: String? get() = auth.currentUser?.email
+
+    /** 설정 화면의 자동 로그인 스위치 */
+    var autoLogin: Boolean
+        get() = prefs.autoLogin
+        set(value) {
+            prefs.autoLogin = value
+        }
+
     fun isLoggedIn(): Boolean = auth.currentUser != null
 
     /** 앱을 다시 켰을 때 로그인 화면을 건너뛸지 */
