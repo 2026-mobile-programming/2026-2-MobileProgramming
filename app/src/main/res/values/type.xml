@@ -77,4 +77,9 @@
         <item name="lineHeight">16sp</item>
     </style>
 
+    <!-- 12 / Bold — 선택된 탭 이름 -->
+    <style name="TextAppearance.JjanChall.Caption.Strong">
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

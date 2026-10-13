@@ -6,6 +6,14 @@
     <string name="common_back">뒤로 가기</string>
     <string name="common_confirm">확인</string>
     <string name="common_logo">짠챌 로고</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_coming_soon">준비 중인 화면이에요</string>
+
+    <!-- 하단 탭 -->
+    <string name="tab_home">홈</string>
+    <string name="tab_record">기록</string>
+    <string name="tab_challenge">챌린지</string>
+    <string name="tab_setting">설정</string>
 
     <!-- 로그인 (LOGIN-01) -->
     <string name="login_tagline">영수증 한 장으로 끝나는 자취생 가계부</string>

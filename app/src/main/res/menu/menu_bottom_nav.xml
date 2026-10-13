@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 하단 탭 (피그마 TabBar). 순서를 바꾸면 MainActivity의 탭 목록도 같이 바꿔 주세요. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_home"
+        android:icon="@drawable/ic_tab_home"
+        android:title="@string/tab_home" />
+    <item
+        android:id="@+id/tab_record"
+        android:icon="@drawable/ic_tab_record"
+        android:title="@string/tab_record" />
+    <item
+        android:id="@+id/tab_challenge"
+        android:icon="@drawable/ic_tab_challenge"
+        android:title="@string/tab_challenge" />
+    <item
+        android:id="@+id/tab_setting"
+        android:icon="@drawable/ic_tab_setting"
+        android:title="@string/tab_setting" />
+</menu>

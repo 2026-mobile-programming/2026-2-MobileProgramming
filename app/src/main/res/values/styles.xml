@@ -94,6 +94,40 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <!-- ===== TabBar (하단 탭) ===== -->
+    <style name="Widget.JjanChall.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:minHeight">@dimen/size_tab_bar</item>
+        <item name="backgroundTint">@color/bg_default</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemIconSize">@dimen/size_icon</item>
+        <item name="itemIconTint">@color/selector_tab_item</item>
+        <item name="itemTextColor">@color/selector_tab_item</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.JjanChall.Caption</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.JjanChall.Caption.Strong</item>
+        <!-- 피그마처럼 선택된 아이콘 뒤 배경(pill) 없이 색만 바뀌게 -->
+        <item name="itemActiveIndicatorStyle">@null</item>
+        <item name="itemRippleColor">@color/bg_muted</item>
+    </style>
+
+    <!-- 탭 화면 상단 제목 (뒤로가기 없는 AppBar) -->
+    <style name="Widget.JjanChall.TabHeaderTitle" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_app_bar</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/screen_padding</item>
+        <item name="android:paddingEnd">@dimen/screen_padding</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Title</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- 구분선 -->
+    <style name="Widget.JjanChall.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/border_default</item>
+    </style>
+
     <!-- ===== Dialog ===== -->
     <style name="ThemeOverlay.JjanChall.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.JjanChall.Dialog</item>
