@@ -15,6 +15,16 @@
     <string name="tab_challenge">챌린지</string>
     <string name="tab_setting">설정</string>
 
+    <!-- 홈 (HOME-01) -->
+    <string name="home_summary_label">%1$s님이 이번 달 쓴 돈</string>
+    <string name="home_amount_empty">0원</string>
+
+    <!-- 기록 (RECORD-01) -->
+    <string name="record_title">지출 기록</string>
+
+    <!-- 챌린지 (CHALLENGE-01) -->
+    <string name="challenge_title">무지출 챌린지</string>
+
     <!-- 로그인 (LOGIN-01) -->
     <string name="login_tagline">영수증 한 장으로 끝나는 자취생 가계부</string>
     <string name="login_email">이메일</string>

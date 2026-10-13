@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HOME-01 홈. 요약 카드 금액·지출 목록은 SQLite 연결 후 채워요. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_default"
+    android:orientation="vertical"
+    tools:context=".ui.home.HomeFragment">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_tab_header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/screen_padding">
+
+            <!-- 이번 달 요약 카드 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_summary_card"
+                android:orientation="vertical"
+                android:padding="@dimen/screen_padding">
+
+                <TextView
+                    android:id="@+id/tv_summary_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                    android:textColor="@color/text_secondary"
+                    tools:text="짠순이님이 이번 달 쓴 돈" />
+
+                <TextView
+                    android:id="@+id/tv_summary_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/home_amount_empty"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Display" />
+            </LinearLayout>
+
+            <!-- TODO: 영수증 찍기 / 직접 입력 버튼, 카테고리 TOP 3, 챌린지, 최근 지출 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_3xl"
+                android:gravity="center"
+                android:text="@string/common_coming_soon"
+                android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
