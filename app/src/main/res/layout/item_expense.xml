@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:minHeight="64dp"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    android:paddingTop="@dimen/spacing_md"
+    android:paddingBottom="@dimen/spacing_md">
+
+    <!-- Category -->
+    <TextView
+        android:id="@+id/tvExpenseCategory"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:background="@drawable/bg_expense_category"
+        android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+        android:textColor="@color/text_brand"
+        tools:text="식비" />
+
+
+    <!-- 가게 이름 / 메모 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/spacing_md">
+
+        <TextView
+            android:id="@+id/tvExpenseStore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.JjanChall.Label"
+            android:textColor="@color/text_primary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="GS25 성신여대점" />
+
+        <TextView
+            android:id="@+id/tvExpenseMemo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+            android:textColor="@color/text_secondary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="영수증 · 삼각김밥, 음료" />
+
+    </LinearLayout>
+
+    <!-- 지출액 -->
+    <TextView
+        android:id="@+id/tvExpenseAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+        android:textColor="@color/text_primary"
+        tools:text="-4,800원" />
+
+</LinearLayout>
