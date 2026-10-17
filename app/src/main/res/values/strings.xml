@@ -21,6 +21,9 @@
 
     <!-- 기록 (RECORD-01) -->
     <string name="record_title">지출 기록</string>
+    <string name="record_filter_all">전체 카테고리</string>
+    <string name="record_month_format">%1$d년 %2$d월</string>
+    <string name="record_total_format">%1$d월 %2$s합계</string>
 
     <!-- 챌린지 (CHALLENGE-01) -->
     <string name="challenge_title">무지출 챌린지</string>
