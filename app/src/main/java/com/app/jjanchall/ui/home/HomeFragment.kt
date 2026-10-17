@@ -1,3 +1,4 @@
+
 package com.app.jjanchall.ui.home
 
 import android.os.Bundle
@@ -20,8 +21,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    // SQLite 연동 전 홈 화면 테스트용 지출 데이터
-    // 추후 DB 담당 팀원의 실제 조회 결과로 교체 예정
+    // TODO: SQLite 연동 후 실제 지출 데이터로 교체
     private val sampleExpenses = listOf(
         ExpenseItem(
             category = "식비",
@@ -65,36 +65,28 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 기존 팀원 코드: 홈 화면 제목 표시
         binding.header.tvHeaderTitle.setText(R.string.app_name)
 
-        // 기존 팀원 코드: 로그인한 사용자의 닉네임 표시
         val nickname = AuthRepository(requireContext()).currentNickname.orEmpty()
         binding.tvSummaryLabel.text = getString(R.string.home_summary_label, nickname)
 
-        // 현재 연도와 월
+        // 이번 달 지출 합계
         val currentMonth = YearMonth.now()
 
-        // TODO: SQLite 연동 후 실제 지출 데이터로 교체
-        // 현재 월에 해당하는 지출만 선택
         val monthlyExpenses = sampleExpenses.filter { expense ->
             expense.date.startsWith(currentMonth.toString())
         }
 
-        // 이번 달 총 지출 금액 계산
         val monthlyTotal = monthlyExpenses.sumOf { it.amount }
-
-        // 천 단위 쉼표를 적용하여 표시
         val numberFormat = NumberFormat.getNumberInstance(Locale.KOREA)
+
         binding.tvSummaryAmount.text = "${numberFormat.format(monthlyTotal)}원"
 
-        // 날짜가 최신인 지출 2건 선택
-        // 날짜가 같으면 sampleExpenses에 먼저 있는 항목을 우선 표시
+        // 최근 지출 2건
         val recentExpenses = sampleExpenses
             .sortedByDescending { it.date }
             .take(2)
 
-        // 첫 번째 최근 지출 표시
         if (recentExpenses.isNotEmpty()) {
             val first = recentExpenses[0]
 
@@ -108,7 +100,6 @@ class HomeFragment : Fragment() {
             binding.tvRecentAmount1.text = ""
         }
 
-        // 두 번째 최근 지출 표시
         if (recentExpenses.size >= 2) {
             val second = recentExpenses[1]
 
