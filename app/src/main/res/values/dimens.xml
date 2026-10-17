@@ -29,6 +29,9 @@
     <dimen name="size_fab">56dp</dimen>
     <dimen name="size_icon">24dp</dimen>
     <dimen name="size_logo">80dp</dimen>
+    <!-- 지출 목록 전용 크기 -->
+    <dimen name="size_expense_category">40dp</dimen>
+    <dimen name="size_expense_row">64dp</dimen>
 
     <!-- 화면 좌우 여백 (피그마 그리드 margin 20) -->
     <dimen name="screen_padding">@dimen/spacing_xl</dimen>
