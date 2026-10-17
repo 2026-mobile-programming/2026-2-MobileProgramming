@@ -31,6 +31,17 @@ class HomeFragment : Fragment() {
 
         val nickname = AuthRepository(requireContext()).currentNickname.orEmpty()
         binding.tvSummaryLabel.text = getString(R.string.home_summary_label, nickname)
+
+        // TODO - SQLite 연동 후 실제 이번 달 지출 합계로 교체
+        binding.tvSummaryAmount.text = "27,900원"
+        // TODO: SQLite 연동 후 최근 지출 데이터로 교체
+        binding.tvRecentStore1.text = "GS25 성신여대점"
+        binding.tvRecentCategory1.text = "식비"
+        binding.tvRecentAmount1.text = "-4,800원"
+
+        binding.tvRecentStore2.text = "버스"
+        binding.tvRecentCategory2.text = "교통"
+        binding.tvRecentAmount2.text = "-1,500원"
     }
 
     override fun onDestroyView() {
