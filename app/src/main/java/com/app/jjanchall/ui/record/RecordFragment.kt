@@ -1,13 +1,16 @@
 package com.app.jjanchall.ui.record
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.jjanchall.R
+import com.app.jjanchall.data.local.ExpenseDbHelper
 import com.app.jjanchall.databinding.FragmentRecordBinding
 import java.text.NumberFormat
 import java.time.YearMonth
@@ -25,61 +28,6 @@ class RecordFragment : Fragment() {
 
     // 현재 선택된 카테고리를 저장
     private var selectedCategory = "전체 카테고리"
-
-    // RecyclerView에 표시할 임시 데이터
-    // 추후 DB 담당 팀원이 구현한 ExpenseDao의 getMonthly()로 교체할 예정
-    private val expenses = listOf(
-        ExpenseItem(
-            category = "식비",
-            store = "GS25 성신여대점",
-            memo = "영수증 · 삼각김밥, 음료",
-            amount = 4800,
-            date = "2026-10-08"
-        ),
-        ExpenseItem(
-            category = "교통",
-            store = "버스",
-            memo = "직접 입력",
-            amount = 1500,
-            date = "2026-10-08"
-        ),
-        ExpenseItem(
-            category = "카페",
-            store = "학교 앞 카페",
-            memo = "아이스 아메리카노",
-            amount = 3000,
-            date = "2026-10-07"
-        ),
-        ExpenseItem(
-            category = "식비",
-            store = "이마트24",
-            memo = "영수증 · 장보기",
-            amount = 18600,
-            date = "2026-10-07"
-        ),
-        // 다른 월 조회 기능을 테스트하기 위한 샘플 데이터
-        ExpenseItem(
-            category = "식비",
-            store = "편의점",
-            memo = "간식",
-            amount = 6500,
-            date = "2026-09-19"
-        ),
-        ExpenseItem(
-            category = "교통",
-            store = "지하철",
-            memo = "직접 입력",
-            amount = 1550,
-            date = "2026-09-10"
-        ),
-        ExpenseItem(
-            category = "식비",
-            store = "마트",
-            memo = "장보기",
-            amount = 24000,
-            date = "2026-08-21"
-        )
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -109,8 +57,12 @@ class RecordFragment : Fragment() {
         binding.tvCategoryFilter.setOnClickListener { anchor ->
             showCategoryMenu(anchor)
         }
+    }
 
-        // 최초 화면 표시
+    override fun onResume() {
+        super.onResume()
+
+        // 화면으로 돌아올 때 SQLite 지출 내역 다시 조회
         updateExpenseList()
     }
 
@@ -171,24 +123,8 @@ class RecordFragment : Fragment() {
     // 선택한 월과 카테고리를 모두 적용하여 화면 갱신
     private fun updateExpenseList() {
 
-        // 선택 월에 해당하는 지출 데이터만 가져오기
-        val monthlyExpenses = expenses.filter { expense ->
-            expense.date.startsWith(selectedMonth.toString())
-        }
-
-        // 월별 데이터에 카테고리 조건 추가
-        val filteredExpenses =
-            if (selectedCategory == "전체 카테고리") {
-                monthlyExpenses
-            } else {
-                monthlyExpenses.filter { expense ->
-                    expense.category == selectedCategory
-                }
-            }
-
-        // ExpenseAdapter의 날짜별 그룹화 기능 재사용
-        binding.recyclerViewExpenses.adapter =
-            ExpenseAdapter(filteredExpenses)
+        val requestMonth = selectedMonth
+        val appContext = context?.applicationContext ?: return
 
         // 현재 선택한 연도 및 월 표시
         binding.tvMonthSelect.text = getString(
@@ -200,28 +136,84 @@ class RecordFragment : Fragment() {
         // 현재 선택한 카테고리 표시
         binding.tvCategoryFilter.text = selectedCategory
 
-        // 현재 선택한 조건의 총 지출 금액 계산
-        val total = filteredExpenses.sumOf { it.amount }
+        // SQLite 조회는 메인 스레드 외부에서 실행
+        Thread {
+            try {
+                val monthlyExpenses = ExpenseDbHelper(appContext).use { db ->
+                    db.getExpensesForMonth(requestMonth.toString())
+                }
 
-        val formattedTotal =
-            NumberFormat.getNumberInstance(Locale.KOREA)
-                .format(total)
+                // 기존 RecyclerView 데이터 모델로 변환
+                val expenseItems = monthlyExpenses.map { expense ->
+                    ExpenseItem(
+                        category = expense.category,
+                        store = expense.store,
+                        memo = expense.memo,
+                        amount = expense.amount,
+                        date = expense.date
+                    )
+                }
 
-        binding.tvMonthlyTotal.text = "${formattedTotal}원"
+                activity?.runOnUiThread {
+                    val currentBinding = _binding ?: return@runOnUiThread
 
-        // 월 합계 제목도 선택 조건에 맞게 변경
-        val categoryLabel =
-            if (selectedCategory == "전체 카테고리") {
-                ""
-            } else {
-                "$selectedCategory "
+                    // 조회 도중 다른 월을 선택했다면 이전 결과는 무시
+                    if (selectedMonth != requestMonth) {
+                        return@runOnUiThread
+                    }
+
+                    // 월별 데이터에 카테고리 조건 추가
+                    val filteredExpenses =
+                        if (selectedCategory == "전체 카테고리") {
+                            expenseItems
+                        } else {
+                            expenseItems.filter { expense ->
+                                expense.category == selectedCategory
+                            }
+                        }
+
+                    // ExpenseAdapter의 날짜별 그룹화 기능 재사용
+                    currentBinding.recyclerViewExpenses.adapter =
+                        ExpenseAdapter(filteredExpenses)
+
+                    // 현재 선택한 조건의 총 지출 금액 계산
+                    val total = filteredExpenses.sumOf { it.amount }
+
+                    val formattedTotal =
+                        NumberFormat.getNumberInstance(Locale.KOREA)
+                            .format(total)
+
+                    currentBinding.tvMonthlyTotal.text = "${formattedTotal}원"
+
+                    // 월 합계 제목도 선택 조건에 맞게 변경
+                    val categoryLabel =
+                        if (selectedCategory == "전체 카테고리") {
+                            ""
+                        } else {
+                            "$selectedCategory "
+                        }
+
+                    currentBinding.tvMonthLabel.text = getString(
+                        R.string.record_total_format,
+                        selectedMonth.monthValue,
+                        categoryLabel
+                    )
+                }
+
+            } catch (e: Exception) {
+                Log.e("RecordFragment", "지출 내역 조회 실패", e)
+
+                activity?.runOnUiThread {
+                    if (_binding != null) {
+                        Toast.makeText(
+                            requireContext(),
+                            "지출 내역을 불러오지 못했습니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
-
-        binding.tvMonthLabel.text = getString(
-            R.string.record_total_format,
-            selectedMonth.monthValue,
-            categoryLabel
-        )
+        }.start()
     }
 
     override fun onDestroyView() {
