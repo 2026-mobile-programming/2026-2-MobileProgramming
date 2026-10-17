@@ -57,6 +57,111 @@
                 android:text="@string/common_coming_soon"
                 android:textAppearance="@style/TextAppearance.JjanChall.Body2"
                 android:textColor="@color/text_secondary" />
+
+            <!-- HOME-01 최근 지출: 월별 합계/지출 목록 담당 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="최근 지출"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                    android:textColor="@color/text_primary" />
+
+                <!-- 최근 지출 첫 번째 항목 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvRecentStore1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                            android:textColor="@color/text_primary"
+                            tools:text="GS25 성신여대점" />
+
+                        <TextView
+                            android:id="@+id/tvRecentCategory1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                            android:textColor="@color/text_secondary"
+                            tools:text="식비" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvRecentAmount1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_primary"
+                        tools:text="-4,800원" />
+                </LinearLayout>
+                <View
+                    style="@style/Widget.JjanChall.Divider"
+                    android:layout_marginTop="@dimen/spacing_md" />
+                <!-- 최근 지출 두 번째 항목 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvRecentStore2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                            android:textColor="@color/text_primary"
+                            tools:text="버스" />
+
+                        <TextView
+                            android:id="@+id/tvRecentCategory2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                            android:textColor="@color/text_secondary"
+                            tools:text="교통" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvRecentAmount2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_primary"
+                        tools:text="-1,500원" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
