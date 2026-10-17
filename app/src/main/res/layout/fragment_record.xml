@@ -8,18 +8,111 @@
     android:orientation="vertical"
     tools:context=".ui.record.RecordFragment">
 
-    <include
-        android:id="@+id/header"
-        layout="@layout/view_tab_header" />
 
-    <!-- TODO: 화면 내용 채우기 -->
+    <!-- RECORD-01 기록 탭 전용 상단 헤더 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_app_bar"
+        android:background="@color/bg_default"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingEnd="@dimen/screen_padding">
+
+        <!-- 화면 제목: 팀 공통 텍스트 스타일 사용 -->
+        <TextView
+            android:id="@+id/tvRecordTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/record_title"
+            android:textAppearance="@style/TextAppearance.JjanChall.Title"
+            android:textColor="@color/text_primary" />
+
+        <!-- 전체 카테고리 필터 -->
+        <TextView
+            android:id="@+id/tvCategoryFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/size_touch_min"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_expense_filter"
+            android:paddingStart="@dimen/spacing_md"
+            android:paddingEnd="@dimen/spacing_md"
+            android:drawableEnd="@drawable/ic_chevron_down"
+            android:drawablePadding="@dimen/spacing_sm"
+            android:text="@string/record_filter_all"
+            android:textAppearance="@style/TextAppearance.JjanChall.Label"
+            android:textColor="@color/text_primary"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+    <!-- 헤더 하단 구분선: 기존 팀 스타일 재사용 -->
+    <View style="@style/Widget.JjanChall.Divider" />
+
+
+    <!-- RECORD-01 조회할 연도와 월 선택 -->
     <TextView
+        android:id="@+id/tvMonthSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/size_touch_min"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingEnd="@dimen/screen_padding"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_sm"
+        android:drawableEnd="@drawable/ic_chevron_down"
+        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+        android:textColor="@color/text_primary"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="조회할 월 선택" />
+
+
+    <!-- 월별 지출 합계 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/bg_muted"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingEnd="@dimen/screen_padding"
+        android:paddingTop="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_md">
+
+        <TextView
+            android:id="@+id/tvMonthLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="10월 합계"
+            android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:id="@+id/tvMonthlyTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0원"
+            android:textAppearance="@style/TextAppearance.JjanChall.Label"
+            android:textColor="@color/text_primary" />
+
+    </LinearLayout>
+
+    <!-- 지출 목록 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewExpenses"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/common_coming_soon"
-        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
-        android:textColor="@color/text_secondary" />
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_lg"
+        tools:listitem="@layout/item_expense" />
 
 </LinearLayout>

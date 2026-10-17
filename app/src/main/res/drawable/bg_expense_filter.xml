@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RECORD-01 지출 목록 카테고리 필터 배경 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- 팀 공통 배경 색상 -->
+    <solid android:color="@color/bg_default" />
+
+    <!-- 팀 공통 테두리 색상 -->
+    <stroke
+        android:width="1dp"
+        android:color="@color/border_default" />
+
+    <!-- 팀 공통 모서리 크기 -->
+    <corners android:radius="@dimen/radius_md" />
+
+</shape>
