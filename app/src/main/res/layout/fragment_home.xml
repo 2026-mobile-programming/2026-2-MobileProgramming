@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- HOME-01 홈. 요약 카드 금액·지출 목록은 SQLite 연결 후 채워요. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- HOME-01 홈 -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,7 +16,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,6 +48,7 @@
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:text="@string/home_amount_empty"
                     android:textAppearance="@style/TextAppearance.JjanChall.Display" />
+
             </LinearLayout>
 
             <!-- 영수증 찍기 / 직접 입력 -->
@@ -70,9 +73,200 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/home_manual" />
+
             </LinearLayout>
 
-            <!-- TODO: 카테고리 TOP 3, 챌린지 -->
+
+            <!-- 카테고리 TOP 3 -->
+            <LinearLayout
+                android:id="@+id/cardCategoryTop3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:background="@drawable/bg_home_top3_card"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/spacing_xl"
+                android:paddingTop="@dimen/spacing_lg"
+                android:paddingEnd="@dimen/spacing_xl"
+                android:paddingBottom="@dimen/spacing_lg">
+
+                <!-- 제목 / 통계 보기 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="카테고리 TOP 3"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:id="@+id/tvViewStatistics"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/spacing_sm"
+                        android:text="통계 보기"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_brand" />
+                </LinearLayout>
+
+                <!-- 지출이 없을 때 -->
+                <TextView
+                    android:id="@+id/tvTop3Empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/spacing_lg"
+                    android:paddingBottom="@dimen/spacing_lg"
+                    android:text="이번 달 지출 내역이 없습니다."
+                    android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                    android:textColor="@color/text_secondary" />
+
+                <!-- TOP 1 -->
+                <LinearLayout
+                    android:id="@+id/layoutTopCategory1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvTopCategory1"
+                        android:layout_width="@dimen/size_logo"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                        android:textColor="@color/text_primary"
+                        tools:text="식비" />
+
+                    <ProgressBar
+                        android:id="@+id/progressTopCategory1"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/spacing_sm"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:layout_marginEnd="@dimen/spacing_md"
+                        android:layout_weight="1"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/bg_home_top3_progress"
+                        android:progressTint="@color/chart_food" />
+
+                    <TextView
+                        android:id="@+id/tvTopAmount1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="@dimen/size_logo"
+                        android:gravity="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_primary"
+                        tools:text="142,000원" />
+                </LinearLayout>
+
+                <!-- TOP 2 -->
+                <LinearLayout
+                    android:id="@+id/layoutTopCategory2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvTopCategory2"
+                        android:layout_width="@dimen/size_logo"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                        android:textColor="@color/text_primary"
+                        tools:text="카페·간식" />
+
+                    <ProgressBar
+                        android:id="@+id/progressTopCategory2"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/spacing_sm"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:layout_marginEnd="@dimen/spacing_md"
+                        android:layout_weight="1"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/bg_home_top3_progress"
+                        android:progressTint="@color/chart_cafe" />
+
+                    <TextView
+                        android:id="@+id/tvTopAmount2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="@dimen/size_logo"
+                        android:gravity="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_primary"
+                        tools:text="71,500원" />
+                </LinearLayout>
+
+                <!-- TOP 3 -->
+                <LinearLayout
+                    android:id="@+id/layoutTopCategory3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvTopCategory3"
+                        android:layout_width="@dimen/size_logo"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                        android:textColor="@color/text_primary"
+                        tools:text="교통" />
+
+                    <ProgressBar
+                        android:id="@+id/progressTopCategory3"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/spacing_sm"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:layout_marginEnd="@dimen/spacing_md"
+                        android:layout_weight="1"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/bg_home_top3_progress"
+                        android:progressTint="@color/chart_transport" />
+
+                    <TextView
+                        android:id="@+id/tvTopAmount3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="@dimen/size_logo"
+                        android:gravity="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_primary"
+                        tools:text="38,900원" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- TODO: 챌린지 -->
 
             <!-- HOME-01 최근 지출: 월별 합계/지출 목록 담당 -->
             <LinearLayout
@@ -81,12 +275,32 @@
                 android:layout_marginTop="@dimen/spacing_2xl"
                 android:orientation="vertical">
 
-                <TextView
+                <!-- 최근 지출 제목 / 전체 보기 -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="최근 지출"
-                    android:textAppearance="@style/TextAppearance.JjanChall.Heading"
-                    android:textColor="@color/text_primary" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="최근 지출"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:id="@+id/tvViewAllExpenses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/size_touch_min"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/spacing_sm"
+                        android:text="전체 보기"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_brand" />
+
+                </LinearLayout>
 
                 <!-- 최근 지출 첫 번째 항목 -->
                 <LinearLayout
@@ -118,6 +332,7 @@
                             android:textAppearance="@style/TextAppearance.JjanChall.Caption"
                             android:textColor="@color/text_secondary"
                             tools:text="식비" />
+
                     </LinearLayout>
 
                     <TextView
@@ -128,10 +343,13 @@
                         android:textAppearance="@style/TextAppearance.JjanChall.Label"
                         android:textColor="@color/text_primary"
                         tools:text="-4,800원" />
+
                 </LinearLayout>
+
                 <View
                     style="@style/Widget.JjanChall.Divider"
                     android:layout_marginTop="@dimen/spacing_md" />
+
                 <!-- 최근 지출 두 번째 항목 -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -162,6 +380,7 @@
                             android:textAppearance="@style/TextAppearance.JjanChall.Caption"
                             android:textColor="@color/text_secondary"
                             tools:text="교통" />
+
                     </LinearLayout>
 
                     <TextView
@@ -175,10 +394,10 @@
 
                 </LinearLayout>
 
-
             </LinearLayout>
 
         </LinearLayout>
+
     </ScrollView>
 
 </LinearLayout>
