@@ -12,6 +12,7 @@ import com.app.jjanchall.data.auth.AuthRepository
 import com.app.jjanchall.data.local.Expense
 import com.app.jjanchall.data.local.ExpenseDbHelper
 import com.app.jjanchall.databinding.FragmentHomeBinding
+import com.app.jjanchall.ui.record.ExpenseEditActivity
 import java.text.NumberFormat
 import java.time.YearMonth
 import java.util.Locale
@@ -40,6 +41,20 @@ class HomeFragment : Fragment() {
         val nickname = AuthRepository(requireContext()).currentNickname.orEmpty()
         binding.tvSummaryLabel.text =
             getString(R.string.home_summary_label, nickname)
+
+        binding.btnManual.setOnClickListener {
+            startActivity(ExpenseEditActivity.newIntent(requireContext()))
+        }
+        // 영수증 화면(#7) 머지 후 연결
+        binding.btnReceipt.setOnClickListener {
+            Toast.makeText(requireContext(), R.string.setting_coming_soon, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // 하단 탭은 Fragment를 숨겼다 보여주는 방식이라 onResume이 다시 불리지 않음 → 탭이 보일 때도 갱신
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden && _binding != null) updateHomeExpenses()
     }
 
     override fun onResume() {

@@ -107,6 +107,14 @@ class ExpenseDbHelper(context: Context) :
         )
     }
 
+    // 지출 한 건 조회 (수정 화면용)
+    fun getExpenseById(id: Long): Expense? {
+        return readExpenses(
+            "$COL_ID = ?",
+            arrayOf(id.toString())
+        ).firstOrNull()
+    }
+
     // 데이터베이스에서 지출 목록 읽기
     private fun readExpenses(
         selection: String?,

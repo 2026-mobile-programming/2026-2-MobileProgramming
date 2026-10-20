@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.jjanchall.R
 import com.app.jjanchall.data.local.ExpenseDbHelper
 import com.app.jjanchall.databinding.FragmentRecordBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.NumberFormat
 import java.time.YearMonth
 import java.util.Locale
@@ -57,6 +58,17 @@ class RecordFragment : Fragment() {
         binding.tvCategoryFilter.setOnClickListener { anchor ->
             showCategoryMenu(anchor)
         }
+
+        // 지출 추가 화면으로 이동
+        binding.fabAddExpense.setOnClickListener {
+            startActivity(ExpenseEditActivity.newIntent(requireContext()))
+        }
+    }
+
+    // 하단 탭은 Fragment를 숨겼다 보여주는 방식이라 onResume이 다시 불리지 않음 → 탭이 보일 때도 갱신
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden && _binding != null) updateExpenseList()
     }
 
     override fun onResume() {
@@ -146,6 +158,7 @@ class RecordFragment : Fragment() {
                 // 기존 RecyclerView 데이터 모델로 변환
                 val expenseItems = monthlyExpenses.map { expense ->
                     ExpenseItem(
+                        id = expense.id,
                         category = expense.category,
                         store = expense.store,
                         memo = expense.memo,
@@ -174,7 +187,15 @@ class RecordFragment : Fragment() {
 
                     // ExpenseAdapter의 날짜별 그룹화 기능 재사용
                     currentBinding.recyclerViewExpenses.adapter =
-                        ExpenseAdapter(filteredExpenses)
+                        ExpenseAdapter(
+                            filteredExpenses,
+                            onEdit = { expense ->
+                                startActivity(
+                                    ExpenseEditActivity.editIntent(requireContext(), expense.id)
+                                )
+                            },
+                            onDelete = { expense -> showDeleteDialog(expense) }
+                        )
 
                     // 현재 선택한 조건의 총 지출 금액 계산
                     val total = filteredExpenses.sumOf { it.amount }
@@ -211,6 +232,35 @@ class RecordFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                }
+            }
+        }.start()
+    }
+
+    private fun showDeleteDialog(expense: ExpenseItem) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.expense_delete_title)
+            .setMessage(R.string.expense_delete_message)
+            .setNegativeButton(R.string.common_cancel, null)
+            .setPositiveButton(R.string.expense_menu_delete) { _, _ -> deleteExpense(expense) }
+            .show()
+    }
+
+    private fun deleteExpense(expense: ExpenseItem) {
+        val appContext = context?.applicationContext ?: return
+
+        Thread {
+            val success = runCatching {
+                ExpenseDbHelper(appContext).use { it.deleteExpense(expense.id) > 0 }
+            }.getOrDefault(false)
+
+            activity?.runOnUiThread {
+                if (_binding == null) return@runOnUiThread
+                if (success) {
+                    Toast.makeText(appContext, R.string.expense_deleted, Toast.LENGTH_SHORT).show()
+                    updateExpenseList()
+                } else {
+                    Toast.makeText(appContext, R.string.expense_delete_failed, Toast.LENGTH_SHORT).show()
                 }
             }
         }.start()
