@@ -54,6 +54,7 @@
     <string name="expense_delete_title">이 지출을 삭제할까요?</string>
     <string name="expense_delete_message">삭제하면 되돌릴 수 없어요.</string>
     <string name="expense_deleted">삭제했어요</string>
+    <string name="expense_delete_failed">삭제하지 못했어요. 다시 시도해 주세요.</string>
 
     <!-- 챌린지 (CHALLENGE-01) -->
     <string name="challenge_title">무지출 챌린지</string>

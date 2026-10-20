@@ -14,6 +14,7 @@ import java.util.Locale
 // ExpenseItem: RecyclerView에 사용할 임시 지출 데이터입니다 추후 DB
 // 담당 팀원의 데이터 모델로 변경 예정입니다
 data class ExpenseItem(
+    val id: Long = 0L,
     val category: String,
     val store: String,
     val memo: String,
@@ -22,7 +23,10 @@ data class ExpenseItem(
 )
 
 class ExpenseAdapter(
-    private val expenses: List<ExpenseItem>
+    private val expenses: List<ExpenseItem>,
+    // 항목 길게 누르기 → 컨텍스트 메뉴 (수정 / 삭제)
+    private val onEdit: (ExpenseItem) -> Unit = {},
+    private val onDelete: (ExpenseItem) -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -150,6 +154,18 @@ class ExpenseAdapter(
                         .format(expense.amount)
 
                 expenseHolder.amount.text = "-${formattedAmount}원"
+
+                expenseHolder.itemView.setOnCreateContextMenuListener { menu, _, _ ->
+                    menu.setHeaderTitle(expense.store)
+                    menu.add(R.string.expense_menu_edit).setOnMenuItemClickListener {
+                        onEdit(expense)
+                        true
+                    }
+                    menu.add(R.string.expense_menu_delete).setOnMenuItemClickListener {
+                        onDelete(expense)
+                        true
+                    }
+                }
             }
         }
     }
