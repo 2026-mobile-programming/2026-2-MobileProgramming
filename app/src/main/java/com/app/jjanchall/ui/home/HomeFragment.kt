@@ -42,6 +42,12 @@ class HomeFragment : Fragment() {
             getString(R.string.home_summary_label, nickname)
     }
 
+    // 하단 탭은 Fragment를 숨겼다 보여주는 방식이라 onResume이 다시 불리지 않음 → 탭이 보일 때도 갱신
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden && _binding != null) updateHomeExpenses()
+    }
+
     override fun onResume() {
         super.onResume()
 
