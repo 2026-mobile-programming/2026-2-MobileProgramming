@@ -57,6 +57,11 @@ class RecordFragment : Fragment() {
         binding.tvCategoryFilter.setOnClickListener { anchor ->
             showCategoryMenu(anchor)
         }
+
+        // 지출 추가 화면으로 이동
+        binding.fabAddExpense.setOnClickListener {
+            startActivity(ExpenseEditActivity.newIntent(requireContext()))
+        }
     }
 
     // 하단 탭은 Fragment를 숨겼다 보여주는 방식이라 onResume이 다시 불리지 않음 → 탭이 보일 때도 갱신

@@ -104,15 +104,31 @@
 
     </LinearLayout>
 
-    <!-- 지출 목록 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewExpenses"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingTop="@dimen/spacing_sm"
-        android:paddingBottom="@dimen/spacing_lg"
-        tools:listitem="@layout/item_expense" />
+        android:layout_weight="1">
+
+        <!-- 지출 목록 (FAB에 마지막 항목이 가리지 않게 아래 여백) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewExpenses"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/spacing_sm"
+            android:paddingBottom="88dp"
+            tools:listitem="@layout/item_expense" />
+
+        <!-- 지출 추가 -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_expense"
+            style="@style/Widget.JjanChall.Fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/screen_padding"
+            android:contentDescription="@string/record_add"
+            android:src="@drawable/ic_add" />
+    </FrameLayout>
 
 </LinearLayout>

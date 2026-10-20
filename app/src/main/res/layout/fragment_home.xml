@@ -48,15 +48,31 @@
                     android:textAppearance="@style/TextAppearance.JjanChall.Display" />
             </LinearLayout>
 
-            <!-- TODO: 영수증 찍기 / 직접 입력 버튼, 카테고리 TOP 3, 챌린지, 최근 지출 -->
-            <TextView
+            <!-- 영수증 찍기 / 직접 입력 -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_3xl"
-                android:gravity="center"
-                android:text="@string/common_coming_soon"
-                android:textAppearance="@style/TextAppearance.JjanChall.Body2"
-                android:textColor="@color/text_secondary" />
+                android:layout_marginTop="@dimen/spacing_md"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_receipt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_md"
+                    android:layout_weight="1"
+                    android:text="@string/home_receipt" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_manual"
+                    style="@style/Widget.JjanChall.Button.Secondary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/home_manual" />
+            </LinearLayout>
+
+            <!-- TODO: 카테고리 TOP 3, 챌린지 -->
 
             <!-- HOME-01 최근 지출: 월별 합계/지출 목록 담당 -->
             <LinearLayout
