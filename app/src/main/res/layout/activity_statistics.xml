@@ -16,7 +16,6 @@
         android:paddingStart="@dimen/spacing_xs"
         android:paddingEnd="@dimen/screen_padding">
 
-        <!-- 뒤로 가기 -->
         <TextView
             android:id="@+id/btnBack"
             android:layout_width="@dimen/size_touch_min"
@@ -27,7 +26,6 @@
             android:textAppearance="@style/TextAppearance.JjanChall.Heading"
             android:textColor="@color/text_primary" />
 
-        <!-- 통계 제목 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -38,7 +36,6 @@
 
     </LinearLayout>
 
-    <!-- 헤더 아래 구분선 -->
     <View style="@style/Widget.JjanChall.Divider" />
 
     <ScrollView
@@ -47,7 +44,7 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
-        <!-- 실제 Android TabHost 사용 -->
+        <!-- Android TabHost -->
         <TabHost
             android:id="@android:id/tabhost"
             android:layout_width="match_parent"
@@ -59,10 +56,10 @@
                 android:orientation="vertical"
                 android:paddingStart="@dimen/screen_padding"
                 android:paddingTop="@dimen/spacing_xl"
-                android:paddingEnd="@dimen/screen_padding"
+                android:paddingEnd="@dimen/spacing_sm"
                 android:paddingBottom="@dimen/spacing_xl">
 
-                <!-- 월 선택 / 카테고리별·월별 탭 -->
+                <!-- 월 선택 / 통계 탭 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -85,7 +82,7 @@
                             android:paddingEnd="36dp"
                             android:spinnerMode="dropdown" />
 
-                        <!-- 기존 짠챌 공통 화살표 아이콘 -->
+                        <!-- 짠챌 공통 화살표 아이콘 -->
                         <ImageView
                             android:layout_width="@dimen/spacing_lg"
                             android:layout_height="@dimen/spacing_lg"
@@ -99,29 +96,30 @@
 
                     </FrameLayout>
 
-                    <!-- Spinner와 TabHost 사이 간격 -->
+                    <!-- 남는 공간을 사용하여 TabWidget을 오른쪽으로 정렬 -->
                     <View
                         android:layout_width="0dp"
                         android:layout_height="1dp"
                         android:layout_weight="1" />
 
-                    <!-- 카테고리별 / 월별 탭 -->
+                    <!-- 93dp + 54dp = 147dp -->
                     <TabWidget
                         android:id="@android:id/tabs"
-                        android:layout_width="wrap_content"
+                        android:layout_width="147dp"
                         android:layout_height="@dimen/statistics_tab_height"
                         android:orientation="horizontal"
-                        android:showDividers="none"
-                        android:translationX="@dimen/spacing_sm" />
+                        android:padding="0dp"
+                        android:showDividers="none" />
 
                 </LinearLayout>
 
-                <!-- 선택한 탭에 따라 내용 변경 -->
+                <!-- 통계 내용은 기존 좌우 20dp 여백 유지 -->
                 <FrameLayout
                     android:id="@android:id/tabcontent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_2xl">
+                    android:layout_marginTop="@dimen/spacing_2xl"
+                    android:layout_marginEnd="@dimen/spacing_md">
 
                     <!-- 카테고리별 통계 -->
                     <LinearLayout
@@ -130,24 +128,21 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- 다음 단계에서 Canvas 도넛 차트 추가 -->
+                        <!-- Custom View Canvas 도넛 차트 -->
                         <FrameLayout
                             android:id="@+id/chartContainer"
                             android:layout_width="match_parent"
-                            android:layout_height="220dp"
-                            android:foregroundGravity="center">
+                            android:layout_height="220dp">
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="원형 차트 구현 예정"
-                                android:textAppearance="@style/TextAppearance.JjanChall.Body2"
-                                android:textColor="@color/text_secondary" />
+                            <com.app.jjanchall.ui.statistics.ExpenseDonutChartView
+                                android:id="@+id/donutChart"
+                                android:layout_width="220dp"
+                                android:layout_height="220dp"
+                                android:layout_gravity="center" />
 
                         </FrameLayout>
 
-                        <!-- 카테고리별 지출 목록 -->
+                        <!-- 카테고리별 금액 및 비율 목록 -->
                         <LinearLayout
                             android:id="@+id/layoutCategoryStats"
                             android:layout_width="match_parent"
