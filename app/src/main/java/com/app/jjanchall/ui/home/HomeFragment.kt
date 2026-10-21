@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.app.jjanchall.R
@@ -14,6 +15,7 @@ import com.app.jjanchall.data.local.Expense
 import com.app.jjanchall.data.local.ExpenseDbHelper
 import com.app.jjanchall.databinding.FragmentHomeBinding
 import com.app.jjanchall.ui.record.ExpenseEditActivity
+import com.app.jjanchall.ui.statistics.StatisticsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.NumberFormat
 import java.time.YearMonth
@@ -58,6 +60,13 @@ class HomeFragment : Fragment() {
                 R.string.setting_coming_soon,
                 Toast.LENGTH_SHORT
             ).show()
+        }
+
+        // 통계 보기 → 통계 화면 이동
+        binding.tvViewStatistics.setOnClickListener {
+            startActivity(
+                Intent(requireContext(), StatisticsActivity::class.java)
+            )
         }
 
         // 최근 지출 전체 보기 → 지출 기록 탭 이동

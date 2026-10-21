@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_default"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/appBar"
+        layout="@layout/view_app_bar" />
+
+    <View style="@style/Widget.JjanChall.Divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <TabHost
+            android:id="@android:id/tabhost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingTop="@dimen/spacing_xl"
+                android:paddingEnd="@dimen/spacing_sm"
+                android:paddingBottom="@dimen/spacing_xl">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/statistics_spinner_height"
+                        android:minWidth="@dimen/statistics_spinner_min_width"
+                        android:background="@drawable/bg_statistics_spinner">
+
+                        <Spinner
+                            android:id="@+id/spinnerMonth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/transparent"
+                            android:paddingStart="@dimen/spacing_md"
+                            android:paddingEnd="@dimen/statistics_spinner_padding_end"
+                            android:spinnerMode="dropdown" />
+
+                        <ImageView
+                            android:layout_width="@dimen/spacing_lg"
+                            android:layout_height="@dimen/spacing_lg"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:src="@drawable/ic_chevron_down"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
+                            android:clickable="false"
+                            android:focusable="false" />
+
+                    </FrameLayout>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/statistics_divider_height"
+                        android:layout_weight="1" />
+
+                    <TabWidget
+                        android:id="@android:id/tabs"
+                        android:layout_width="@dimen/statistics_tabs_width"
+                        android:layout_height="@dimen/statistics_tab_height"
+                        android:orientation="horizontal"
+                        android:showDividers="none" />
+
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_2xl"
+                    android:layout_marginEnd="@dimen/spacing_md">
+
+                    <LinearLayout
+                        android:id="@+id/tabCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:id="@+id/chartContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/statistics_donut_size">
+
+                            <com.app.jjanchall.ui.statistics.ExpenseDonutChartView
+                                android:id="@+id/donutChart"
+                                android:layout_width="@dimen/statistics_donut_size"
+                                android:layout_height="@dimen/statistics_donut_size"
+                                android:layout_gravity="center" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:id="@+id/layoutCategoryStats"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_2xl"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tabMonthly"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="월별 지출 비교"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                            android:textColor="@color/text_primary" />
+
+                        <com.app.jjanchall.ui.statistics.MonthlyBarChartView
+                            android:id="@+id/monthlyBarChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/statistics_bar_chart_height"
+                            android:layout_marginTop="@dimen/spacing_xl" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_2xl"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="6개월 총 지출"
+                                android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                                android:textColor="@color/text_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvMonthlyTotal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0원"
+                                android:textAppearance="@style/TextAppearance.JjanChall.BodyStrong"
+                                android:textColor="@color/text_primary" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_2xl"
+                            android:background="@drawable/bg_statistics_monthly_card"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_lg">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="월별 지출 내역"
+                                android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                                android:textColor="@color/text_primary" />
+
+                            <LinearLayout
+                                android:id="@+id/layoutMonthlyExpenses"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_md"
+                                android:orientation="vertical" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </TabHost>
+
+    </ScrollView>
+
+</LinearLayout>
