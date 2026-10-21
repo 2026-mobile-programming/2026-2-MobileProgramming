@@ -37,7 +37,6 @@ class StatisticsActivity : AppCompatActivity() {
 
         setupSystemBars()
 
-        // 뒤로 가기 → 홈 화면 복귀
         binding.btnBack.setOnClickListener {
             finish()
         }
@@ -45,7 +44,6 @@ class StatisticsActivity : AppCompatActivity() {
         setupMonthSpinner()
         setupTabHost()
     }
-
     private fun setupSystemBars() {
         val initialLeft = binding.root.paddingLeft
         val initialTop = binding.root.paddingTop
@@ -70,7 +68,6 @@ class StatisticsActivity : AppCompatActivity() {
         ViewCompat.requestApplyInsets(binding.root)
     }
 
-    // 최근 12개월 선택 Spinner
     private fun setupMonthSpinner() {
         val months = (0 until 12).map {
             YearMonth.now().minusMonths(it.toLong())
@@ -103,8 +100,8 @@ class StatisticsActivity : AppCompatActivity() {
                 ) {
                     selectedMonth = months[position]
 
-                    // 선택한 월의 차트와 목록을 함께 갱신
-                    loadCategoryStatistics()
+                    // 월 선택 시 카테고리별 + 월별 통계 함께 갱신
+                    loadStatistics()
                 }
 
                 override fun onNothingSelected(
@@ -114,7 +111,6 @@ class StatisticsActivity : AppCompatActivity() {
             }
     }
 
-    // 실제 Android TabHost 구성
     private fun setupTabHost() {
         val tabHost = findViewById<TabHost>(android.R.id.tabhost)
 
@@ -131,7 +127,6 @@ class StatisticsActivity : AppCompatActivity() {
         tabHost.addTab(categoryTab)
         tabHost.addTab(monthlyTab)
 
-        // Figma 기준 탭 너비 고정
         val tabWidget = tabHost.tabWidget
 
         val tabHeight = resources.getDimensionPixelSize(
@@ -160,7 +155,6 @@ class StatisticsActivity : AppCompatActivity() {
         updateTabAppearance(tabHost)
     }
 
-    // 탭 제목 생성
     private fun createTabIndicator(title: String): TextView {
         return TextView(this).apply {
             text = title
@@ -170,7 +164,6 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
-    // 선택된 탭의 색상 변경
     private fun updateTabAppearance(tabHost: TabHost) {
         val selectedIndex = tabHost.currentTab
         val tabWidget = tabHost.tabWidget
@@ -237,24 +230,49 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
-    // SQLite에서 선택한 월의 카테고리별 지출 조회
-    private fun loadCategoryStatistics() {
+    // SQLite에서 카테고리별 통계와 최근 6개월 지출 조회
+    private fun loadStatistics() {
         val currentRequest = ++requestId
-        val month = selectedMonth.toString()
+        val month = selectedMonth
         val appContext = applicationContext
 
         Thread {
             try {
-                val categoryAmounts = ExpenseDbHelper(appContext).use { db ->
-                    db.getExpensesForMonth(month)
-                        .groupBy { it.category }
-                        .map { (category, expenses) ->
-                            category to expenses.sumOf { it.amount }
-                        }
-                        .filter { it.second > 0 }
-                        .sortedByDescending { it.second }
+                // 선택한 월을 포함한 6개월 목록 (오래된 월부터)
+                val sixMonths = (5 downTo 0).map {
+                    month.minusMonths(it.toLong())
                 }
 
+                val (categoryAmounts, monthlyItems) =
+                    ExpenseDbHelper(appContext).use { db ->
+
+                        // 선택한 월의 카테고리별 합계
+                        val categories = db.getExpensesForMonth(
+                            month.toString()
+                        )
+                            .groupBy { it.category }
+                            .map { (category, expenses) ->
+                                category to expenses.sumOf { it.amount }
+                            }
+                            .filter { it.second > 0 }
+                            .sortedByDescending { it.second }
+
+                        // 6개월의 월별 합계
+                        val monthly = sixMonths.map { yearMonth ->
+                            val total = db.getExpensesForMonth(
+                                yearMonth.toString()
+                            ).sumOf { it.amount.toLong() }
+
+                            MonthlyBarChartView.MonthlyItem(
+                                month = "${yearMonth.monthValue}월",
+                                amount = total
+                            )
+                        }
+
+                        categories to monthly
+                    }
+
+                // 도넛 차트 데이터
                 val chartData = categoryAmounts.map { (category, amount) ->
                     ExpenseDonutChartView.ChartItem(
                         amount = amount,
@@ -265,45 +283,55 @@ class StatisticsActivity : AppCompatActivity() {
                     )
                 }
 
+                // 6개월 전체 지출
+                val monthlyTotal = monthlyItems.sumOf { it.amount }
+
                 runOnUiThread {
-                    // 이전 월의 조회 결과가 늦게 도착하면 무시
-                    if (isFinishing || isDestroyed ||
+                    // 이전 조회 결과가 늦게 도착하면 무시
+                    if (
+                        isFinishing ||
+                        isDestroyed ||
                         currentRequest != requestId
                     ) {
                         return@runOnUiThread
                     }
 
-                    // Canvas 도넛 차트 갱신
+                    // 카테고리별 갱신
                     binding.donutChart.setChartData(chartData)
-
-                    // 카테고리별 금액·비율 목록 갱신
                     showCategoryStatistics(categoryAmounts)
+
+                    // 월별 갱신
+                    binding.monthlyBarChart.setChartData(monthlyItems)
+
+                    // 6개월 총 지출 금액 표시
+                    val numberFormat =
+                        NumberFormat.getNumberInstance(Locale.KOREA)
+
+                    binding.tvMonthlyTotal.text =
+                        "${numberFormat.format(monthlyTotal)}원"
                 }
 
             } catch (e: Exception) {
                 Log.e(
                     "StatisticsActivity",
-                    "카테고리별 통계 조회 실패",
+                    "통계 데이터 조회 실패",
                     e
                 )
             }
         }.start()
     }
 
-    // Canvas 아래에 카테고리별 지출 목록 표시
+    // Canvas 아래 카테고리별 지출 목록
     private fun showCategoryStatistics(
         categoryAmounts: List<Pair<String, Int>>
     ) {
         val container = binding.layoutCategoryStats
-
-        // 이전에 표시한 월의 목록 제거
         container.removeAllViews()
 
         val totalAmount = categoryAmounts.sumOf {
             it.second.toLong()
         }
 
-        // 지출 내역이 없는 경우
         if (totalAmount == 0L) {
             val emptyText = TextView(this).apply {
                 text = "선택한 월의 지출 내역이 없습니다."
@@ -333,7 +361,7 @@ class StatisticsActivity : AppCompatActivity() {
 
         categoryAmounts.forEachIndexed { index, (category, amount) ->
 
-            // 목록 한 줄
+            // 카테고리 목록 한 줄
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
@@ -363,16 +391,17 @@ class StatisticsActivity : AppCompatActivity() {
                 R.dimen.spacing_md
             )
 
-            val dotParams = LinearLayout.LayoutParams(
-                dotSize,
-                dotSize
-            ).apply {
-                marginEnd = resources.getDimensionPixelSize(
-                    R.dimen.spacing_md
-                )
-            }
-
-            row.addView(categoryDot, dotParams)
+            row.addView(
+                categoryDot,
+                LinearLayout.LayoutParams(
+                    dotSize,
+                    dotSize
+                ).apply {
+                    marginEnd = resources.getDimensionPixelSize(
+                        R.dimen.spacing_md
+                    )
+                }
+            )
 
             // 카테고리 이름
             val nameText = TextView(this).apply {
@@ -399,7 +428,7 @@ class StatisticsActivity : AppCompatActivity() {
                 )
             )
 
-            // 해당 카테고리의 지출 비율
+            // 카테고리별 지출 비율
             val percentage = amount.toDouble() / totalAmount * 100.0
 
             val percentageText = TextView(this).apply {
@@ -432,7 +461,7 @@ class StatisticsActivity : AppCompatActivity() {
                 }
             )
 
-            // 카테고리별 실제 지출 금액
+            // 실제 지출 금액
             val amountText = TextView(this).apply {
                 text = "${numberFormat.format(amount)}원"
                 gravity = Gravity.END
@@ -457,7 +486,7 @@ class StatisticsActivity : AppCompatActivity() {
 
             container.addView(row)
 
-            // 마지막 항목을 제외하고 구분선 표시
+            // 항목 사이 구분선
             if (index < categoryAmounts.lastIndex) {
                 val divider = View(this).apply {
                     setBackgroundColor(
@@ -478,8 +507,6 @@ class StatisticsActivity : AppCompatActivity() {
             }
         }
     }
-
-    // 짠챌 공통 카테고리 색상
     private fun getCategoryColor(category: String): Int {
         return when (category) {
             "식비" -> R.color.chart_food

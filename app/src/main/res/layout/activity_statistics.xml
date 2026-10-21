@@ -152,6 +152,7 @@
 
                     </LinearLayout>
 
+
                     <!-- 월별 통계 -->
                     <LinearLayout
                         android:id="@+id/tabMonthly"
@@ -159,15 +160,46 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
+                        <!-- 월별 지출 그래프 제목 -->
                         <TextView
-                            android:id="@+id/tvMonthlyPlaceholder"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:padding="@dimen/spacing_2xl"
-                            android:text="월별 통계 구현 예정"
-                            android:textAppearance="@style/TextAppearance.JjanChall.Body2"
-                            android:textColor="@color/text_secondary" />
+                            android:text="월별 지출 비교"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                            android:textColor="@color/text_primary" />
+
+                        <!-- Canvas 막대그래프 -->
+                        <com.app.jjanchall.ui.statistics.MonthlyBarChartView
+                            android:id="@+id/monthlyBarChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="260dp"
+                            android:layout_marginTop="@dimen/spacing_xl" />
+
+                        <!-- 6개월 합계 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_2xl"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="6개월 총 지출"
+                                android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                                android:textColor="@color/text_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvMonthlyTotal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0원"
+                                android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+                                android:textColor="@color/text_primary" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
