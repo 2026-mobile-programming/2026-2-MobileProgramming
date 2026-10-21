@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- HOME-02 통계 화면 탭 크기 -->
+    <dimen name="statistics_tab_category_width">93dp</dimen>
+    <dimen name="statistics_tab_monthly_width">54dp</dimen>
+    <dimen name="statistics_tab_height">42dp</dimen>
+</resources>

@@ -2,7 +2,6 @@
 <!-- HOME-02 통계 화면 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_default"
@@ -17,26 +16,29 @@
         android:paddingStart="@dimen/spacing_xs"
         android:paddingEnd="@dimen/screen_padding">
 
+        <!-- 뒤로 가기 -->
         <TextView
             android:id="@+id/btnBack"
             android:layout_width="@dimen/size_touch_min"
             android:layout_height="@dimen/size_touch_min"
+            android:contentDescription="뒤로 가기"
             android:gravity="center"
             android:text="‹"
-            android:textAppearance="@style/TextAppearance.JjanChall.Title"
-            android:textColor="@color/text_primary"
-            android:contentDescription="뒤로 가기" />
+            android:textAppearance="@style/TextAppearance.JjanChall.Heading"
+            android:textColor="@color/text_primary" />
 
+        <!-- 통계 제목 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_xs"
             android:text="통계"
-            android:textAppearance="@style/TextAppearance.JjanChall.Title"
+            android:textAppearance="@style/TextAppearance.JjanChall.Heading"
             android:textColor="@color/text_primary" />
 
     </LinearLayout>
 
+    <!-- 헤더 아래 구분선 -->
     <View style="@style/Widget.JjanChall.Divider" />
 
     <ScrollView
@@ -45,7 +47,7 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
-        <!-- Android TabHost -->
+        <!-- 실제 Android TabHost 사용 -->
         <TabHost
             android:id="@android:id/tabhost"
             android:layout_width="match_parent"
@@ -68,15 +70,36 @@
                     android:orientation="horizontal">
 
                     <!-- 월 선택 Spinner -->
-                    <Spinner
-                        android:id="@+id/spinnerMonth"
-                        android:layout_width="127dp"
+                    <FrameLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="44dp"
-                        android:background="@drawable/bg_input_box"
-                        android:paddingStart="@dimen/spacing_md"
-                        android:paddingEnd="@dimen/spacing_sm"
-                        android:spinnerMode="dropdown" />
+                        android:minWidth="127dp"
+                        android:background="@drawable/bg_statistics_spinner">
 
+                        <Spinner
+                            android:id="@+id/spinnerMonth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/transparent"
+                            android:paddingStart="@dimen/spacing_md"
+                            android:paddingEnd="36dp"
+                            android:spinnerMode="dropdown" />
+
+                        <!-- 기존 짠챌 공통 화살표 아이콘 -->
+                        <ImageView
+                            android:layout_width="@dimen/spacing_lg"
+                            android:layout_height="@dimen/spacing_lg"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:src="@drawable/ic_chevron_down"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
+                            android:clickable="false"
+                            android:focusable="false" />
+
+                    </FrameLayout>
+
+                    <!-- Spinner와 TabHost 사이 간격 -->
                     <View
                         android:layout_width="0dp"
                         android:layout_height="1dp"
@@ -86,13 +109,14 @@
                     <TabWidget
                         android:id="@android:id/tabs"
                         android:layout_width="wrap_content"
-                        android:layout_height="42dp"
+                        android:layout_height="@dimen/statistics_tab_height"
                         android:orientation="horizontal"
-                        android:showDividers="none" />
+                        android:showDividers="none"
+                        android:translationX="@dimen/spacing_sm" />
 
                 </LinearLayout>
 
-                <!-- 탭에 따라 변경되는 내용 -->
+                <!-- 선택한 탭에 따라 내용 변경 -->
                 <FrameLayout
                     android:id="@android:id/tabcontent"
                     android:layout_width="match_parent"
@@ -123,7 +147,7 @@
 
                         </FrameLayout>
 
-                        <!-- 카테고리별 금액·비율 목록 -->
+                        <!-- 카테고리별 지출 목록 -->
                         <LinearLayout
                             android:id="@+id/layoutCategoryStats"
                             android:layout_width="match_parent"
