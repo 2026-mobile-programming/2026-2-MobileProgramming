@@ -17,7 +17,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.app.jjanchall.R
 import com.app.jjanchall.data.local.ExpenseDbHelper
 import com.app.jjanchall.databinding.ActivityStatisticsBinding
+import java.text.NumberFormat
 import java.time.YearMonth
+import java.util.Locale
 
 /** HOME-02 통계 화면 */
 class StatisticsActivity : AppCompatActivity() {
@@ -44,7 +46,6 @@ class StatisticsActivity : AppCompatActivity() {
         setupTabHost()
     }
 
-    // 시스템 상태바 및 내비게이션 바와 겹치지 않도록 처리
     private fun setupSystemBars() {
         val initialLeft = binding.root.paddingLeft
         val initialTop = binding.root.paddingTop
@@ -102,7 +103,7 @@ class StatisticsActivity : AppCompatActivity() {
                 ) {
                     selectedMonth = months[position]
 
-                    // 선택한 월의 실제 SQLite 통계 갱신
+                    // 선택한 월의 차트와 목록을 함께 갱신
                     loadCategoryStatistics()
                 }
 
@@ -113,28 +114,24 @@ class StatisticsActivity : AppCompatActivity() {
             }
     }
 
-    // Android TabHost 구성
+    // 실제 Android TabHost 구성
     private fun setupTabHost() {
         val tabHost = findViewById<TabHost>(android.R.id.tabhost)
 
         tabHost.setup()
 
         val categoryTab = tabHost.newTabSpec("category")
-            .setIndicator(
-                createTabIndicator("카테고리별")
-            )
+            .setIndicator(createTabIndicator("카테고리별"))
             .setContent(binding.tabCategory.id)
 
         val monthlyTab = tabHost.newTabSpec("monthly")
-            .setIndicator(
-                createTabIndicator("월별")
-            )
+            .setIndicator(createTabIndicator("월별"))
             .setContent(binding.tabMonthly.id)
 
         tabHost.addTab(categoryTab)
         tabHost.addTab(monthlyTab)
 
-        // Android 기본 탭 너비가 늘어나지 않도록 고정
+        // Figma 기준 탭 너비 고정
         val tabWidget = tabHost.tabWidget
 
         val tabHeight = resources.getDimensionPixelSize(
@@ -150,18 +147,11 @@ class StatisticsActivity : AppCompatActivity() {
         )
 
         tabWidget.getChildAt(0).layoutParams =
-            LinearLayout.LayoutParams(
-                categoryWidth,
-                tabHeight
-            )
+            LinearLayout.LayoutParams(categoryWidth, tabHeight)
 
         tabWidget.getChildAt(1).layoutParams =
-            LinearLayout.LayoutParams(
-                monthlyWidth,
-                tabHeight
-            )
+            LinearLayout.LayoutParams(monthlyWidth, tabHeight)
 
-        // 탭 선택에 따라 디자인 변경
         tabHost.setOnTabChangedListener {
             updateTabAppearance(tabHost)
         }
@@ -170,7 +160,7 @@ class StatisticsActivity : AppCompatActivity() {
         updateTabAppearance(tabHost)
     }
 
-    // TabHost에 표시할 탭 제목 생성
+    // 탭 제목 생성
     private fun createTabIndicator(title: String): TextView {
         return TextView(this).apply {
             text = title
@@ -180,7 +170,7 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
-    // 선택 탭의 색상 변경
+    // 선택된 탭의 색상 변경
     private fun updateTabAppearance(tabHost: TabHost) {
         val selectedIndex = tabHost.currentTab
         val tabWidget = tabHost.tabWidget
@@ -199,14 +189,10 @@ class StatisticsActivity : AppCompatActivity() {
                 )
             )
 
-            tabView.background = createTabBackground(
-                isSelected,
-                index
-            )
+            tabView.background = createTabBackground(isSelected, index)
         }
     }
 
-    // Figma처럼 좌우 끝이 둥근 탭 배경
     private fun createTabBackground(
         isSelected: Boolean,
         index: Int
@@ -280,7 +266,7 @@ class StatisticsActivity : AppCompatActivity() {
                 }
 
                 runOnUiThread {
-                    // 이전 조회 결과가 늦게 도착하면 무시
+                    // 이전 월의 조회 결과가 늦게 도착하면 무시
                     if (isFinishing || isDestroyed ||
                         currentRequest != requestId
                     ) {
@@ -289,6 +275,9 @@ class StatisticsActivity : AppCompatActivity() {
 
                     // Canvas 도넛 차트 갱신
                     binding.donutChart.setChartData(chartData)
+
+                    // 카테고리별 금액·비율 목록 갱신
+                    showCategoryStatistics(categoryAmounts)
                 }
 
             } catch (e: Exception) {
@@ -301,7 +290,196 @@ class StatisticsActivity : AppCompatActivity() {
         }.start()
     }
 
-    // 기존 짠챌 카테고리 색상 사용
+    // Canvas 아래에 카테고리별 지출 목록 표시
+    private fun showCategoryStatistics(
+        categoryAmounts: List<Pair<String, Int>>
+    ) {
+        val container = binding.layoutCategoryStats
+
+        // 이전에 표시한 월의 목록 제거
+        container.removeAllViews()
+
+        val totalAmount = categoryAmounts.sumOf {
+            it.second.toLong()
+        }
+
+        // 지출 내역이 없는 경우
+        if (totalAmount == 0L) {
+            val emptyText = TextView(this).apply {
+                text = "선택한 월의 지출 내역이 없습니다."
+                gravity = Gravity.CENTER
+                setTextAppearance(
+                    R.style.TextAppearance_JjanChall_Body2
+                )
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@StatisticsActivity,
+                        R.color.text_secondary
+                    )
+                )
+                setPadding(
+                    0,
+                    resources.getDimensionPixelSize(R.dimen.spacing_2xl),
+                    0,
+                    resources.getDimensionPixelSize(R.dimen.spacing_2xl)
+                )
+            }
+
+            container.addView(emptyText)
+            return
+        }
+
+        val numberFormat = NumberFormat.getNumberInstance(Locale.KOREA)
+
+        categoryAmounts.forEachIndexed { index, (category, amount) ->
+
+            // 목록 한 줄
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+
+                setPadding(
+                    0,
+                    resources.getDimensionPixelSize(R.dimen.spacing_lg),
+                    0,
+                    resources.getDimensionPixelSize(R.dimen.spacing_lg)
+                )
+            }
+
+            // 카테고리 색상 점
+            val categoryDot = View(this).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(
+                        ContextCompat.getColor(
+                            this@StatisticsActivity,
+                            getCategoryColor(category)
+                        )
+                    )
+                }
+            }
+
+            val dotSize = resources.getDimensionPixelSize(
+                R.dimen.spacing_md
+            )
+
+            val dotParams = LinearLayout.LayoutParams(
+                dotSize,
+                dotSize
+            ).apply {
+                marginEnd = resources.getDimensionPixelSize(
+                    R.dimen.spacing_md
+                )
+            }
+
+            row.addView(categoryDot, dotParams)
+
+            // 카테고리 이름
+            val nameText = TextView(this).apply {
+                text = category
+                setTextAppearance(
+                    R.style.TextAppearance_JjanChall_Body2
+                )
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@StatisticsActivity,
+                        R.color.text_primary
+                    )
+                )
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
+            }
+
+            row.addView(
+                nameText,
+                LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            )
+
+            // 해당 카테고리의 지출 비율
+            val percentage = amount.toDouble() / totalAmount * 100.0
+
+            val percentageText = TextView(this).apply {
+                text = String.format(
+                    Locale.KOREA,
+                    "%.0f%%",
+                    percentage
+                )
+                gravity = Gravity.END
+                setTextAppearance(
+                    R.style.TextAppearance_JjanChall_Caption
+                )
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@StatisticsActivity,
+                        R.color.text_secondary
+                    )
+                )
+            }
+
+            row.addView(
+                percentageText,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginEnd = resources.getDimensionPixelSize(
+                        R.dimen.spacing_lg
+                    )
+                }
+            )
+
+            // 카테고리별 실제 지출 금액
+            val amountText = TextView(this).apply {
+                text = "${numberFormat.format(amount)}원"
+                gravity = Gravity.END
+                setTextAppearance(
+                    R.style.TextAppearance_JjanChall_Label
+                )
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@StatisticsActivity,
+                        R.color.text_primary
+                    )
+                )
+            }
+
+            row.addView(
+                amountText,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+            container.addView(row)
+
+            // 마지막 항목을 제외하고 구분선 표시
+            if (index < categoryAmounts.lastIndex) {
+                val divider = View(this).apply {
+                    setBackgroundColor(
+                        ContextCompat.getColor(
+                            this@StatisticsActivity,
+                            R.color.border_default
+                        )
+                    )
+                }
+
+                container.addView(
+                    divider,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        (resources.displayMetrics.density + 0.5f).toInt()
+                    )
+                )
+            }
+        }
+    }
+
+    // 짠챌 공통 카테고리 색상
     private fun getCategoryColor(category: String): Int {
         return when (category) {
             "식비" -> R.color.chart_food
