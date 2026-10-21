@@ -21,7 +21,6 @@ import java.text.NumberFormat
 import java.time.YearMonth
 import java.util.Locale
 
-/** HOME-02 통계 화면 */
 class StatisticsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityStatisticsBinding
@@ -37,13 +36,15 @@ class StatisticsActivity : AppCompatActivity() {
 
         setupSystemBars()
 
-        binding.btnBack.setOnClickListener {
+        binding.appBar.tvAppBarTitle.text = "통계"
+        binding.appBar.btnBack.setOnClickListener {
             finish()
         }
 
         setupMonthSpinner()
         setupTabHost()
     }
+
     private fun setupSystemBars() {
         val initialLeft = binding.root.paddingLeft
         val initialTop = binding.root.paddingTop
@@ -99,15 +100,12 @@ class StatisticsActivity : AppCompatActivity() {
                     id: Long
                 ) {
                     selectedMonth = months[position]
-
-                    // 월 선택 시 카테고리별 + 월별 통계 함께 갱신
                     loadStatistics()
                 }
 
                 override fun onNothingSelected(
                     parent: AdapterView<*>?
-                ) {
-                }
+                ) = Unit
             }
     }
 
@@ -132,11 +130,9 @@ class StatisticsActivity : AppCompatActivity() {
         val tabHeight = resources.getDimensionPixelSize(
             R.dimen.statistics_tab_height
         )
-
         val categoryWidth = resources.getDimensionPixelSize(
             R.dimen.statistics_tab_category_width
         )
-
         val monthlyWidth = resources.getDimensionPixelSize(
             R.dimen.statistics_tab_monthly_width
         )
@@ -159,8 +155,11 @@ class StatisticsActivity : AppCompatActivity() {
         return TextView(this).apply {
             text = title
             gravity = Gravity.CENTER
-            textSize = 14f
             includeFontPadding = false
+
+            setTextAppearance(
+                R.style.TextAppearance_JjanChall_Body2
+            )
         }
     }
 
@@ -177,12 +176,15 @@ class StatisticsActivity : AppCompatActivity() {
             tabView.setTextColor(
                 ContextCompat.getColor(
                     this,
-                    if (isSelected) R.color.bg_default
+                    if (isSelected) R.color.text_on_brand
                     else R.color.text_primary
                 )
             )
 
-            tabView.background = createTabBackground(isSelected, index)
+            tabView.background = createTabBackground(
+                isSelected,
+                index
+            )
         }
     }
 
@@ -190,8 +192,10 @@ class StatisticsActivity : AppCompatActivity() {
         isSelected: Boolean,
         index: Int
     ): GradientDrawable {
-
         val radius = resources.getDimension(R.dimen.radius_md)
+        val strokeWidth = resources.getDimensionPixelSize(
+            R.dimen.statistics_divider_height
+        )
 
         return GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
@@ -205,7 +209,7 @@ class StatisticsActivity : AppCompatActivity() {
             )
 
             setStroke(
-                (resources.displayMetrics.density + 0.5f).toInt(),
+                strokeWidth,
                 ContextCompat.getColor(
                     this@StatisticsActivity,
                     R.color.bg_brand
@@ -230,7 +234,6 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
-    // SQLite에서 카테고리별 통계와 최근 6개월 지출 조회
     private fun loadStatistics() {
         val currentRequest = ++requestId
         val month = selectedMonth
@@ -238,7 +241,6 @@ class StatisticsActivity : AppCompatActivity() {
 
         Thread {
             try {
-                // 선택한 월을 포함한 6개월 목록 (오래된 월부터)
                 val sixMonths = (5 downTo 0).map {
                     month.minusMonths(it.toLong())
                 }
@@ -246,7 +248,6 @@ class StatisticsActivity : AppCompatActivity() {
                 val (categoryAmounts, monthlyItems) =
                     ExpenseDbHelper(appContext).use { db ->
 
-                        // 선택한 월의 카테고리별 합계
                         val categories = db.getExpensesForMonth(
                             month.toString()
                         )
@@ -257,7 +258,6 @@ class StatisticsActivity : AppCompatActivity() {
                             .filter { it.second > 0 }
                             .sortedByDescending { it.second }
 
-                        // 6개월의 월별 합계
                         val monthly = sixMonths.map { yearMonth ->
                             val total = db.getExpensesForMonth(
                                 yearMonth.toString()
@@ -272,7 +272,6 @@ class StatisticsActivity : AppCompatActivity() {
                         categories to monthly
                     }
 
-                // 도넛 차트 데이터
                 val chartData = categoryAmounts.map { (category, amount) ->
                     ExpenseDonutChartView.ChartItem(
                         amount = amount,
@@ -283,11 +282,9 @@ class StatisticsActivity : AppCompatActivity() {
                     )
                 }
 
-                // 6개월 전체 지출
                 val monthlyTotal = monthlyItems.sumOf { it.amount }
 
                 runOnUiThread {
-                    // 이전 조회 결과가 늦게 도착하면 무시
                     if (
                         isFinishing ||
                         isDestroyed ||
@@ -296,19 +293,15 @@ class StatisticsActivity : AppCompatActivity() {
                         return@runOnUiThread
                     }
 
-                    // 카테고리별 갱신
                     binding.donutChart.setChartData(chartData)
                     showCategoryStatistics(categoryAmounts)
 
-                    // 월별 갱신
                     binding.monthlyBarChart.setChartData(monthlyItems)
 
-                    // 6개월 총 지출 금액 표시
-                    val numberFormat =
-                        NumberFormat.getNumberInstance(Locale.KOREA)
-
                     binding.tvMonthlyTotal.text =
-                        "${numberFormat.format(monthlyTotal)}원"
+                        "${formatAmount(monthlyTotal)}원"
+
+                    showMonthlyExpenses(sixMonths, monthlyItems)
                 }
 
             } catch (e: Exception) {
@@ -321,7 +314,6 @@ class StatisticsActivity : AppCompatActivity() {
         }.start()
     }
 
-    // Canvas 아래 카테고리별 지출 목록
     private fun showCategoryStatistics(
         categoryAmounts: List<Pair<String, Int>>
     ) {
@@ -336,48 +328,46 @@ class StatisticsActivity : AppCompatActivity() {
             val emptyText = TextView(this).apply {
                 text = "선택한 월의 지출 내역이 없습니다."
                 gravity = Gravity.CENTER
+
                 setTextAppearance(
                     R.style.TextAppearance_JjanChall_Body2
                 )
+
                 setTextColor(
                     ContextCompat.getColor(
                         this@StatisticsActivity,
                         R.color.text_secondary
                     )
                 )
-                setPadding(
-                    0,
-                    resources.getDimensionPixelSize(R.dimen.spacing_2xl),
-                    0,
-                    resources.getDimensionPixelSize(R.dimen.spacing_2xl)
+
+                val padding = resources.getDimensionPixelSize(
+                    R.dimen.spacing_2xl
                 )
+
+                setPadding(0, padding, 0, padding)
             }
 
             container.addView(emptyText)
             return
         }
 
-        val numberFormat = NumberFormat.getNumberInstance(Locale.KOREA)
-
         categoryAmounts.forEachIndexed { index, (category, amount) ->
 
-            // 카테고리 목록 한 줄
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
 
-                setPadding(
-                    0,
-                    resources.getDimensionPixelSize(R.dimen.spacing_lg),
-                    0,
-                    resources.getDimensionPixelSize(R.dimen.spacing_lg)
+                val padding = resources.getDimensionPixelSize(
+                    R.dimen.spacing_lg
                 )
+
+                setPadding(0, padding, 0, padding)
             }
 
-            // 카테고리 색상 점
             val categoryDot = View(this).apply {
                 background = GradientDrawable().apply {
                     shape = GradientDrawable.OVAL
+
                     setColor(
                         ContextCompat.getColor(
                             this@StatisticsActivity,
@@ -397,26 +387,25 @@ class StatisticsActivity : AppCompatActivity() {
                     dotSize,
                     dotSize
                 ).apply {
-                    marginEnd = resources.getDimensionPixelSize(
-                        R.dimen.spacing_md
-                    )
+                    marginEnd = dotSize
                 }
             )
 
-            // 카테고리 이름
             val nameText = TextView(this).apply {
                 text = category
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
+
                 setTextAppearance(
                     R.style.TextAppearance_JjanChall_Body2
                 )
+
                 setTextColor(
                     ContextCompat.getColor(
                         this@StatisticsActivity,
                         R.color.text_primary
                     )
                 )
-                maxLines = 1
-                ellipsize = android.text.TextUtils.TruncateAt.END
             }
 
             row.addView(
@@ -428,7 +417,6 @@ class StatisticsActivity : AppCompatActivity() {
                 )
             )
 
-            // 카테고리별 지출 비율
             val percentage = amount.toDouble() / totalAmount * 100.0
 
             val percentageText = TextView(this).apply {
@@ -438,9 +426,11 @@ class StatisticsActivity : AppCompatActivity() {
                     percentage
                 )
                 gravity = Gravity.END
+
                 setTextAppearance(
                     R.style.TextAppearance_JjanChall_Caption
                 )
+
                 setTextColor(
                     ContextCompat.getColor(
                         this@StatisticsActivity,
@@ -461,13 +451,14 @@ class StatisticsActivity : AppCompatActivity() {
                 }
             )
 
-            // 실제 지출 금액
             val amountText = TextView(this).apply {
-                text = "${numberFormat.format(amount)}원"
+                text = "${formatAmount(amount.toLong())}원"
                 gravity = Gravity.END
+
                 setTextAppearance(
-                    R.style.TextAppearance_JjanChall_Label
+                    R.style.TextAppearance_JjanChall_BodyStrong
                 )
+
                 setTextColor(
                     ContextCompat.getColor(
                         this@StatisticsActivity,
@@ -486,27 +477,121 @@ class StatisticsActivity : AppCompatActivity() {
 
             container.addView(row)
 
-            // 항목 사이 구분선
             if (index < categoryAmounts.lastIndex) {
-                val divider = View(this).apply {
-                    setBackgroundColor(
-                        ContextCompat.getColor(
-                            this@StatisticsActivity,
-                            R.color.border_default
-                        )
-                    )
-                }
-
-                container.addView(
-                    divider,
-                    LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        (resources.displayMetrics.density + 0.5f).toInt()
-                    )
-                )
+                addStatisticsDivider(container)
             }
         }
     }
+
+    private fun showMonthlyExpenses(
+        months: List<YearMonth>,
+        monthlyItems: List<MonthlyBarChartView.MonthlyItem>
+    ) {
+        val container = binding.layoutMonthlyExpenses
+        container.removeAllViews()
+
+        val monthlyData = months.zip(monthlyItems).asReversed()
+
+        monthlyData.forEachIndexed { index, (yearMonth, item) ->
+
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+
+                val padding = resources.getDimensionPixelSize(
+                    R.dimen.spacing_lg
+                )
+
+                setPadding(0, padding, 0, padding)
+            }
+
+            val monthText = TextView(this).apply {
+                text = "${yearMonth.year}년 ${yearMonth.monthValue}월"
+
+                setTextAppearance(
+                    R.style.TextAppearance_JjanChall_Body2
+                )
+
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@StatisticsActivity,
+                        if (yearMonth == selectedMonth) {
+                            R.color.text_brand
+                        } else {
+                            R.color.text_primary
+                        }
+                    )
+                )
+            }
+
+            row.addView(
+                monthText,
+                LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            )
+
+            val amountText = TextView(this).apply {
+                text = "${formatAmount(item.amount)}원"
+                gravity = Gravity.END
+
+                setTextAppearance(
+                    R.style.TextAppearance_JjanChall_BodyStrong
+                )
+
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@StatisticsActivity,
+                        R.color.text_primary
+                    )
+                )
+            }
+
+            row.addView(
+                amountText,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+            container.addView(row)
+
+            if (index < monthlyData.lastIndex) {
+                addStatisticsDivider(container)
+            }
+        }
+    }
+
+    private fun addStatisticsDivider(container: LinearLayout) {
+        val divider = View(this).apply {
+            setBackgroundColor(
+                ContextCompat.getColor(
+                    this@StatisticsActivity,
+                    R.color.border_default
+                )
+            )
+        }
+
+        container.addView(
+            divider,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                resources.getDimensionPixelSize(
+                    R.dimen.statistics_divider_height
+                )
+            )
+        )
+    }
+
+    private fun formatAmount(amount: Long): String {
+        return NumberFormat.getNumberInstance(
+            Locale.KOREA
+        ).format(amount)
+    }
+
     private fun getCategoryColor(category: String): Int {
         return when (category) {
             "식비" -> R.color.chart_food

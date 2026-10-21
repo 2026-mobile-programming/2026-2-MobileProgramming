@@ -12,41 +12,47 @@ import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.min
 
-/** HOME-02 Canvas 도넛 차트 */
 class ExpenseDonutChartView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    // 카테고리별 금액과 색상
     data class ChartItem(
         val amount: Int,
         val color: Int
     )
 
-    private var chartItems: List<ChartItem> = emptyList()
+    private var items: List<ChartItem> = emptyList()
 
-    private val chartPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeCap = Paint.Cap.BUTT
-    }
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textAlign = Paint.Align.CENTER
-    }
+    private val strokeWidth = resources.getDimension(
+        R.dimen.statistics_chart_stroke_width
+    )
 
-    private val chartBounds = RectF()
+    private val labelTextSize = resources.getDimension(
+        R.dimen.statistics_chart_center_label_size
+    )
 
-    private val numberFormat =
-        NumberFormat.getNumberInstance(Locale.KOREA)
+    private val amountTextSize = resources.getDimension(
+        R.dimen.statistics_chart_center_amount_size
+    )
 
-    private val density = resources.displayMetrics.density
-    private val scaledDensity = resources.displayMetrics.scaledDensity
+    private val labelColor = ContextCompat.getColor(
+        context, R.color.text_secondary
+    )
 
-    // 차트에 표시할 지출 데이터 설정
-    fun setChartData(items: List<ChartItem>) {
-        chartItems = items.filter { it.amount > 0 }
+    private val amountColor = ContextCompat.getColor(
+        context, R.color.text_primary
+    )
+
+    private val emptyColor = ContextCompat.getColor(
+        context, R.color.bg_muted
+    )
+
+    fun setChartData(data: List<ChartItem>) {
+        items = data.filter { it.amount > 0 }
         invalidate()
     }
 
@@ -55,114 +61,95 @@ class ExpenseDonutChartView @JvmOverloads constructor(
 
         val centerX = width / 2f
         val centerY = height / 2f
+        val radius = min(width, height) / 2f - strokeWidth / 2f
 
-        val chartSize = min(width, height).toFloat()
-        val strokeWidth = chartSize * 0.19f
-        val radius = (chartSize - strokeWidth) / 2f
+        if (radius <= 0f) return
 
-        chartBounds.set(
+        val bounds = RectF(
             centerX - radius,
             centerY - radius,
             centerX + radius,
             centerY + radius
         )
 
-        chartPaint.strokeWidth = strokeWidth
-
-        val totalAmount = chartItems.sumOf {
-            it.amount.toLong()
+        paint.apply {
+            style = Paint.Style.STROKE
+            strokeWidth = this@ExpenseDonutChartView.strokeWidth
+            strokeCap = Paint.Cap.BUTT
         }
 
-        if (totalAmount > 0L) {
-            drawCategoryArcs(canvas, totalAmount)
-        } else {
-            // 지출이 없을 때 회색 원 표시
-            chartPaint.color = ContextCompat.getColor(
-                context,
-                R.color.bg_muted
-            )
+        val total = items.sumOf { it.amount.toLong() }
+
+        if (total == 0L) {
+            paint.color = emptyColor
 
             canvas.drawArc(
-                chartBounds,
+                bounds,
                 0f,
                 360f,
                 false,
-                chartPaint
+                paint
             )
-        }
+        } else {
+            var startAngle = -90f
 
-        drawCenterText(canvas, centerX, centerY, totalAmount)
-    }
+            items.forEachIndexed { index, item ->
+                val sweepAngle = if (index == items.lastIndex) {
+                    270f - startAngle
+                } else {
+                    item.amount.toFloat() / total.toFloat() * 360f
+                }
 
-    // 카테고리별 비율만큼 원호 그리기
-    private fun drawCategoryArcs(
-        canvas: Canvas,
-        totalAmount: Long
-    ) {
-        var startAngle = -90f
+                paint.color = item.color
 
-        chartItems.forEachIndexed { index, item ->
+                canvas.drawArc(
+                    bounds,
+                    startAngle,
+                    sweepAngle,
+                    false,
+                    paint
+                )
 
-            val sweepAngle = if (index == chartItems.lastIndex) {
-                270f - startAngle
-            } else {
-                item.amount.toFloat() / totalAmount * 360f
+                startAngle += sweepAngle
             }
-
-            chartPaint.color = item.color
-
-            // 교수님 평가 항목: Canvas.drawArc() 사용
-            canvas.drawArc(
-                chartBounds,
-                startAngle,
-                sweepAngle,
-                false,
-                chartPaint
-            )
-
-            startAngle += sweepAngle
         }
-    }
 
-    // 원형 차트 중앙: 총 지출 + 금액
-    private fun drawCenterText(
-        canvas: Canvas,
-        centerX: Float,
-        centerY: Float,
-        totalAmount: Long
-    ) {
-        textPaint.color = ContextCompat.getColor(
-            context,
-            R.color.text_secondary
-        )
+        paint.apply {
+            style = Paint.Style.FILL
+            textAlign = Paint.Align.CENTER
+            typeface = android.graphics.Typeface.DEFAULT
+            color = labelColor
+            textSize = labelTextSize
+        }
 
-        textPaint.textSize = 12f * scaledDensity
-        textPaint.typeface = android.graphics.Typeface.DEFAULT
+        val labelBaseline = centerY -
+                resources.getDimension(R.dimen.spacing_sm)
 
         canvas.drawText(
             "총 지출",
             centerX,
-            centerY - 8f * density,
-            textPaint
+            labelBaseline,
+            paint
         )
 
-        textPaint.color = ContextCompat.getColor(
-            context,
-            R.color.text_primary
-        )
+        paint.apply {
+            color = amountColor
+            textSize = amountTextSize
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+        }
 
-        textPaint.textSize = 18f * scaledDensity
-        textPaint.typeface =
-            android.graphics.Typeface.DEFAULT_BOLD
+        val amountBaseline = centerY +
+                resources.getDimension(R.dimen.spacing_xl)
 
-        val formattedAmount =
-            "${numberFormat.format(totalAmount)}원"
+        val formattedAmount = NumberFormat.getNumberInstance(
+            Locale.KOREA
+        ).format(total)
 
         canvas.drawText(
-            formattedAmount,
+            "${formattedAmount}원",
             centerX,
-            centerY + 19f * density,
-            textPaint
+            amountBaseline,
+            paint
         )
     }
 }

@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- HOME-02 통계 화면 탭 크기 -->
+
+    <dimen name="statistics_spinner_height">44dp</dimen>
+    <dimen name="statistics_spinner_min_width">127dp</dimen>
+    <dimen name="statistics_spinner_padding_end">36dp</dimen>
+
     <dimen name="statistics_tab_category_width">93dp</dimen>
     <dimen name="statistics_tab_monthly_width">54dp</dimen>
+    <dimen name="statistics_tabs_width">147dp</dimen>
     <dimen name="statistics_tab_height">42dp</dimen>
+
+    <dimen name="statistics_donut_size">220dp</dimen>
+    <dimen name="statistics_bar_chart_height">260dp</dimen>
+
+    <dimen name="statistics_divider_height">1dp</dimen>
+
+    <dimen name="statistics_chart_stroke_width">47dp</dimen>
+    <dimen name="statistics_chart_inner_padding">8dp</dimen>
+    <dimen name="statistics_chart_vertical_padding">34dp</dimen>
+    <dimen name="statistics_chart_bar_radius">8dp</dimen>
+    <dimen name="statistics_chart_empty_text_padding">16dp</dimen>
+
+    <dimen name="statistics_chart_label_text_size">12sp</dimen>
+    <dimen name="statistics_chart_value_text_size">12sp</dimen>
+    <dimen name="statistics_chart_center_label_size">14sp</dimen>
+    <dimen name="statistics_chart_center_amount_size">20sp</dimen>
+
 </resources>

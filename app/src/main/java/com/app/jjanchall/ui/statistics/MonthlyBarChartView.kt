@@ -8,11 +8,9 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.app.jjanchall.R
-import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.max
 
-/** HOME-02 월별 지출 Canvas 막대그래프 */
 class MonthlyBarChartView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -26,19 +24,51 @@ class MonthlyBarChartView @JvmOverloads constructor(
 
     private var items: List<MonthlyItem> = emptyList()
 
-    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textAlign = Paint.Align.CENTER
-    }
-    private val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        strokeWidth = resources.displayMetrics.density
-    }
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    private val barRect = RectF()
-    private val numberFormat = NumberFormat.getNumberInstance(Locale.KOREA)
+    private val textColor = ContextCompat.getColor(
+        context, R.color.text_primary
+    )
 
-    private val density = resources.displayMetrics.density
-    private val scaledDensity = resources.displayMetrics.scaledDensity
+    private val secondaryTextColor = ContextCompat.getColor(
+        context, R.color.text_secondary
+    )
+
+    private val lineColor = ContextCompat.getColor(
+        context, R.color.border_default
+    )
+
+    private val selectedBarColor = ContextCompat.getColor(
+        context, R.color.bg_brand
+    )
+
+    private val normalBarColor = ContextCompat.getColor(
+        context, R.color.bg_brand_subtle
+    )
+
+    private val horizontalPadding = resources.getDimension(
+        R.dimen.statistics_chart_inner_padding
+    )
+
+    private val verticalPadding = resources.getDimension(
+        R.dimen.statistics_chart_vertical_padding
+    )
+
+    private val barRadius = resources.getDimension(
+        R.dimen.statistics_chart_bar_radius
+    )
+
+    private val labelTextSize = resources.getDimension(
+        R.dimen.statistics_chart_label_text_size
+    )
+
+    private val valueTextSize = resources.getDimension(
+        R.dimen.statistics_chart_value_text_size
+    )
+
+    private val lineWidth = resources.getDimension(
+        R.dimen.statistics_divider_height
+    )
 
     fun setChartData(data: List<MonthlyItem>) {
         items = data
@@ -53,124 +83,145 @@ class MonthlyBarChartView @JvmOverloads constructor(
             return
         }
 
-        val chartLeft = 8f * density
-        val chartRight = width - 8f * density
-        val chartTop = 34f * density
-        val chartBottom = height - 34f * density
+        val chartLeft = horizontalPadding
+        val chartRight = width.toFloat() - horizontalPadding
+        val chartTop = verticalPadding
+        val chartBottom = height.toFloat() - verticalPadding
 
+        val chartWidth = chartRight - chartLeft
         val chartHeight = chartBottom - chartTop
 
-        val maxAmount = max(
-            1L,
-            items.maxOf { it.amount }
-        )
+        if (chartWidth <= 0f || chartHeight <= 0f) return
 
-        linePaint.color = ContextCompat.getColor(
-            context,
-            R.color.border_default
-        )
+        paint.apply {
+            color = lineColor
+            style = Paint.Style.STROKE
+            strokeWidth = lineWidth
+        }
 
         canvas.drawLine(
             chartLeft,
             chartBottom,
             chartRight,
             chartBottom,
-            linePaint
+            paint
         )
 
-        val slotWidth = (chartRight - chartLeft) / items.size
+        val maxAmount = max(1L, items.maxOf { it.amount })
+        val slotWidth = chartWidth / items.size
         val barWidth = slotWidth * 0.48f
 
         items.forEachIndexed { index, item ->
+            val centerX = chartLeft + slotWidth * (index + 0.5f)
 
-            val centerX =
-                chartLeft + slotWidth * (index + 0.5f)
+            val barHeight = chartHeight *
+                    (item.amount.toFloat() / maxAmount.toFloat())
 
-            val amount = item.amount.coerceAtLeast(0L)
+            if (item.amount > 0L) {
+                val barTop = chartBottom - barHeight
 
-            val barHeight =
-                amount.toFloat() / maxAmount * chartHeight
-
-            val barTop = chartBottom - barHeight
-
-            // 선택한 월(마지막 막대)은 진한 초록색
-            barPaint.color = ContextCompat.getColor(
-                context,
-                if (index == items.lastIndex) {
-                    R.color.bg_brand
-                } else {
-                    R.color.bg_brand_subtle
+                paint.apply {
+                    style = Paint.Style.FILL
+                    color = if (index == items.lastIndex) {
+                        selectedBarColor
+                    } else {
+                        normalBarColor
+                    }
                 }
-            )
 
-            barRect.set(
-                centerX - barWidth / 2f,
-                barTop,
-                centerX + barWidth / 2f,
-                chartBottom
-            )
+                canvas.drawRoundRect(
+                    RectF(
+                        centerX - barWidth / 2f,
+                        barTop,
+                        centerX + barWidth / 2f,
+                        chartBottom
+                    ),
+                    barRadius,
+                    barRadius,
+                    paint
+                )
+            }
 
-            val cornerRadius = 6f * density
+            paint.apply {
+                style = Paint.Style.FILL
+                color = textColor
+                textSize = valueTextSize
+                textAlign = Paint.Align.CENTER
+                typeface = android.graphics.Typeface.DEFAULT
+            }
 
-            canvas.drawRoundRect(
-                barRect,
-                cornerRadius,
-                cornerRadius,
-                barPaint
-            )
+            val amountLabel = formatShortAmount(item.amount)
 
-            textPaint.color = ContextCompat.getColor(
-                context,
-                R.color.text_primary
-            )
-            textPaint.textSize = 10f * scaledDensity
+            val amountY = if (item.amount > 0L) {
+                chartBottom - barHeight -
+                        resources.getDimension(R.dimen.spacing_sm)
+            } else {
+                chartBottom -
+                        resources.getDimension(R.dimen.spacing_md)
+            }
 
             canvas.drawText(
-                formatCompactAmount(amount),
+                amountLabel,
                 centerX,
-                (barTop - 8f * density).coerceAtLeast(16f * density),
-                textPaint
+                amountY,
+                paint
             )
 
-            // 막대 아래 월 표시
-            textPaint.color = ContextCompat.getColor(
-                context,
-                R.color.text_secondary
-            )
-            textPaint.textSize = 12f * scaledDensity
+            paint.apply {
+                color = secondaryTextColor
+                textSize = labelTextSize
+                textAlign = Paint.Align.CENTER
+            }
+
+            val monthY = chartBottom +
+                    resources.getDimension(R.dimen.spacing_xl)
 
             canvas.drawText(
                 item.month,
                 centerX,
-                chartBottom + 22f * density,
-                textPaint
+                monthY,
+                paint
             )
-        }
-    }
-    private fun formatCompactAmount(amount: Long): String {
-        return if (amount >= 10000L) {
-            String.format(
-                Locale.KOREA,
-                "%.1f만",
-                amount / 10000.0
-            )
-        } else {
-            numberFormat.format(amount)
         }
     }
 
     private fun drawEmptyMessage(canvas: Canvas) {
-        textPaint.color = ContextCompat.getColor(
-            context,
-            R.color.text_secondary
-        )
-        textPaint.textSize = 14f * scaledDensity
+        paint.apply {
+            style = Paint.Style.FILL
+            color = secondaryTextColor
+            textSize = labelTextSize
+            textAlign = Paint.Align.CENTER
+        }
 
         canvas.drawText(
             "월별 지출 데이터가 없습니다.",
             width / 2f,
             height / 2f,
-            textPaint
+            paint
         )
+    }
+
+    private fun formatShortAmount(amount: Long): String {
+        if (amount == 0L) return "0"
+
+        return if (amount >= 10000L) {
+            val man = amount / 10000.0
+
+            if (amount % 10000L == 0L) {
+                "${amount / 10000L}만"
+            } else {
+                String.format(Locale.KOREA, "%.1f만", man)
+            }
+        } else {
+            NumberFormatHelper.format(amount)
+        }
+    }
+
+    private object NumberFormatHelper {
+        fun format(amount: Long): String {
+            return java.text.NumberFormat.getNumberInstance(
+                Locale.KOREA
+            ).format(amount)
+        }
     }
 }

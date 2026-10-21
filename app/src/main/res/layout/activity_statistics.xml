@@ -1,40 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- HOME-02 통계 화면 -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_default"
     android:orientation="vertical">
 
-    <!-- 상단 헤더 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/size_app_bar"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/spacing_xs"
-        android:paddingEnd="@dimen/screen_padding">
-
-        <TextView
-            android:id="@+id/btnBack"
-            android:layout_width="@dimen/size_touch_min"
-            android:layout_height="@dimen/size_touch_min"
-            android:contentDescription="뒤로 가기"
-            android:gravity="center"
-            android:text="‹"
-            android:textAppearance="@style/TextAppearance.JjanChall.Heading"
-            android:textColor="@color/text_primary" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_xs"
-            android:text="통계"
-            android:textAppearance="@style/TextAppearance.JjanChall.Heading"
-            android:textColor="@color/text_primary" />
-
-    </LinearLayout>
+    <include
+        android:id="@+id/appBar"
+        layout="@layout/view_app_bar" />
 
     <View style="@style/Widget.JjanChall.Divider" />
 
@@ -44,7 +17,6 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
-        <!-- Android TabHost -->
         <TabHost
             android:id="@android:id/tabhost"
             android:layout_width="match_parent"
@@ -59,18 +31,16 @@
                 android:paddingEnd="@dimen/spacing_sm"
                 android:paddingBottom="@dimen/spacing_xl">
 
-                <!-- 월 선택 / 통계 탭 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <!-- 월 선택 Spinner -->
                     <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="44dp"
-                        android:minWidth="127dp"
+                        android:layout_height="@dimen/statistics_spinner_height"
+                        android:minWidth="@dimen/statistics_spinner_min_width"
                         android:background="@drawable/bg_statistics_spinner">
 
                         <Spinner
@@ -79,10 +49,9 @@
                             android:layout_height="match_parent"
                             android:background="@android:color/transparent"
                             android:paddingStart="@dimen/spacing_md"
-                            android:paddingEnd="36dp"
+                            android:paddingEnd="@dimen/statistics_spinner_padding_end"
                             android:spinnerMode="dropdown" />
 
-                        <!-- 짠챌 공통 화살표 아이콘 -->
                         <ImageView
                             android:layout_width="@dimen/spacing_lg"
                             android:layout_height="@dimen/spacing_lg"
@@ -96,24 +65,20 @@
 
                     </FrameLayout>
 
-                    <!-- 남는 공간을 사용하여 TabWidget을 오른쪽으로 정렬 -->
                     <View
                         android:layout_width="0dp"
-                        android:layout_height="1dp"
+                        android:layout_height="@dimen/statistics_divider_height"
                         android:layout_weight="1" />
 
-                    <!-- 93dp + 54dp = 147dp -->
                     <TabWidget
                         android:id="@android:id/tabs"
-                        android:layout_width="147dp"
+                        android:layout_width="@dimen/statistics_tabs_width"
                         android:layout_height="@dimen/statistics_tab_height"
                         android:orientation="horizontal"
-                        android:padding="0dp"
                         android:showDividers="none" />
 
                 </LinearLayout>
 
-                <!-- 통계 내용은 기존 좌우 20dp 여백 유지 -->
                 <FrameLayout
                     android:id="@android:id/tabcontent"
                     android:layout_width="match_parent"
@@ -121,28 +86,25 @@
                     android:layout_marginTop="@dimen/spacing_2xl"
                     android:layout_marginEnd="@dimen/spacing_md">
 
-                    <!-- 카테고리별 통계 -->
                     <LinearLayout
                         android:id="@+id/tabCategory"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- Custom View Canvas 도넛 차트 -->
                         <FrameLayout
                             android:id="@+id/chartContainer"
                             android:layout_width="match_parent"
-                            android:layout_height="220dp">
+                            android:layout_height="@dimen/statistics_donut_size">
 
                             <com.app.jjanchall.ui.statistics.ExpenseDonutChartView
                                 android:id="@+id/donutChart"
-                                android:layout_width="220dp"
-                                android:layout_height="220dp"
+                                android:layout_width="@dimen/statistics_donut_size"
+                                android:layout_height="@dimen/statistics_donut_size"
                                 android:layout_gravity="center" />
 
                         </FrameLayout>
 
-                        <!-- 카테고리별 금액 및 비율 목록 -->
                         <LinearLayout
                             android:id="@+id/layoutCategoryStats"
                             android:layout_width="match_parent"
@@ -152,15 +114,12 @@
 
                     </LinearLayout>
 
-
-                    <!-- 월별 통계 -->
                     <LinearLayout
                         android:id="@+id/tabMonthly"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- 월별 지출 그래프 제목 -->
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -168,14 +127,12 @@
                             android:textAppearance="@style/TextAppearance.JjanChall.Heading"
                             android:textColor="@color/text_primary" />
 
-                        <!-- Canvas 막대그래프 -->
                         <com.app.jjanchall.ui.statistics.MonthlyBarChartView
                             android:id="@+id/monthlyBarChart"
                             android:layout_width="match_parent"
-                            android:layout_height="260dp"
+                            android:layout_height="@dimen/statistics_bar_chart_height"
                             android:layout_marginTop="@dimen/spacing_xl" />
 
-                        <!-- 6개월 합계 -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -196,8 +153,32 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0원"
+                                android:textAppearance="@style/TextAppearance.JjanChall.BodyStrong"
+                                android:textColor="@color/text_primary" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_2xl"
+                            android:background="@drawable/bg_statistics_monthly_card"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_lg">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="월별 지출 내역"
                                 android:textAppearance="@style/TextAppearance.JjanChall.Heading"
                                 android:textColor="@color/text_primary" />
+
+                            <LinearLayout
+                                android:id="@+id/layoutMonthlyExpenses"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_md"
+                                android:orientation="vertical" />
 
                         </LinearLayout>
 
