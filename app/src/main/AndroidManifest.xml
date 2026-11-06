@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -14,14 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JjanChall">
 
-        <!-- 앱 시작 화면: 로그인 (자동 로그인이면 바로 메인으로 넘어가요) -->
+        <!-- 앱 시작 화면: 로그인 -->
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -35,12 +35,19 @@
             android:name=".ui.main.MainActivity"
             android:exported="false" />
 
+        <!-- 영수증 등록 화면 -->
+        <activity
+            android:name=".ui.receipt.ReceiptActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- 지출 추가·수정 화면 -->
         <activity
             android:name=".ui.record.ExpenseEditActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- HOME-02 통계 화면 -->
+        <!-- 통계 화면 -->
         <activity
             android:name=".ui.statistics.StatisticsActivity"
             android:exported="false" />
