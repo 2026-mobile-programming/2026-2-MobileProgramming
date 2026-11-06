@@ -96,8 +96,8 @@ class ExpenseDbHelper(context: Context) :
         return writableDatabase.update(
             TABLE_EXPENSES,
             values,
-            "$COL_ID = ?",
-            arrayOf(expense.id.toString())
+            "$COL_ID = ? AND $COL_UID = ?",
+            arrayOf(expense.id.toString(), currentUid)
         )
     }
 
@@ -105,8 +105,8 @@ class ExpenseDbHelper(context: Context) :
     fun deleteExpense(id: Long): Int {
         return writableDatabase.delete(
             TABLE_EXPENSES,
-            "$COL_ID = ?",
-            arrayOf(id.toString())
+            "$COL_ID = ? AND $COL_UID = ?",
+            arrayOf(id.toString(), currentUid)
         )
     }
 
@@ -131,12 +131,16 @@ class ExpenseDbHelper(context: Context) :
         ).firstOrNull()
     }
 
-    // 데이터베이스에서 지출 목록 읽기
+    // 데이터베이스에서 지출 목록 읽기 (현재 계정 조건을 항상 붙임)
     private fun readExpenses(
         selection: String?,
         selectionArgs: Array<String>?
     ): List<Expense> {
         val result = mutableListOf<Expense>()
+
+        val uidSelection =
+            if (selection == null) "$COL_UID = ?" else "$COL_UID = ? AND ($selection)"
+        val uidArgs = arrayOf(currentUid) + selectionArgs.orEmpty()
 
         readableDatabase.query(
             TABLE_EXPENSES,
@@ -149,8 +153,8 @@ class ExpenseDbHelper(context: Context) :
                 COL_DATE,
                 COL_TIME
             ),
-            selection,
-            selectionArgs,
+            uidSelection,
+            uidArgs,
             null,
             null,
             "$COL_DATE DESC, $COL_TIME DESC"
