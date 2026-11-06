@@ -9,10 +9,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.app.jjanchall.R
 import com.app.jjanchall.data.auth.AuthRepository
+import com.app.jjanchall.data.local.BudgetPreferences
 import com.app.jjanchall.data.local.SettingPreferences
 import com.app.jjanchall.databinding.FragmentSettingBinding
 import com.app.jjanchall.ui.login.LoginActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.text.NumberFormat
+import java.util.Locale
 
 /** SETTING-01 설정 탭 */
 class SettingFragment : Fragment() {
@@ -41,14 +44,33 @@ class SettingFragment : Fragment() {
         bindProfile()
         bindSwitches()
 
+        binding.rowMonthlyBudget.setOnClickListener {
+            startActivity(BudgetActivity.newIntent(requireContext()))
+        }
+
         // 선택 기능: 담당이 정해지면 화면 연결
-        listOf(binding.rowMonthlyBudget, binding.rowAiReport, binding.rowCategory).forEach { row ->
+        listOf(binding.rowAiReport, binding.rowCategory).forEach { row ->
             row.setOnClickListener {
                 Toast.makeText(requireContext(), R.string.setting_coming_soon, Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.btnLogout.setOnClickListener { showLogoutDialog() }
+    }
+
+    // 예산 화면에서 돌아오면 저장된 예산 다시 표시
+    override fun onResume() {
+        super.onResume()
+        showBudget()
+    }
+
+    private fun showBudget() {
+        val budget = BudgetPreferences(requireContext()).monthlyBudget
+        binding.tvBudgetValue.text = if (budget > 0) {
+            NumberFormat.getNumberInstance(Locale.KOREA).format(budget) + getString(R.string.expense_amount_unit)
+        } else {
+            getString(R.string.setting_budget_unset)
+        }
     }
 
     private fun bindProfile() {

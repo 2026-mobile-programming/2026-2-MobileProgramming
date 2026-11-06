@@ -206,6 +206,16 @@
         <item name="android:textAppearance">@style/TextAppearance.JjanChall.Body</item>
     </style>
 
+    <!-- 라디오 버튼 한 줄 -->
+    <style name="Widget.JjanChall.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/size_touch_min</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Body</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="buttonTint">@color/bg_brand</item>
+    </style>
+
     <!-- ===== Dialog ===== -->
     <style name="ThemeOverlay.JjanChall.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.JjanChall.Dialog</item>

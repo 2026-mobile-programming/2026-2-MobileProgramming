@@ -74,6 +74,23 @@
     <string name="setting_logout_title">로그아웃할까요?</string>
     <string name="setting_logout_message">다음에 다시 로그인해야 해요.</string>
     <string name="setting_coming_soon">준비 중인 기능이에요</string>
+    <string name="setting_budget_unset">미설정</string>
+
+    <!-- 월 예산 설정 (SETTING-02) -->
+    <string name="budget_title">월 예산 설정</string>
+    <string name="budget_amount">한 달 예산</string>
+    <string name="budget_used_label">이번 달 사용</string>
+    <string name="budget_used_format">%1$s원 / %2$s원</string>
+    <string name="budget_status_empty">예산을 입력하면 이번 달 사용 현황이 보여요</string>
+    <string name="budget_status_left">예산까지 %1$s원 남았어요</string>
+    <string name="budget_status_warning">예산의 %1$d%%를 썼어요</string>
+    <string name="budget_status_over">예산을 %1$s원 넘었어요</string>
+    <string name="budget_alert_label">알림 받을 시점</string>
+    <string name="budget_alert_80" formatted="false">예산의 80%를 쓰면</string>
+    <string name="budget_alert_over">예산을 넘으면</string>
+    <string name="budget_alert_none">알림 받지 않기</string>
+    <string name="budget_error_amount">예산을 입력해 주세요</string>
+    <string name="budget_saved">예산을 저장했어요</string>
 
     <!-- 로그인 (LOGIN-01) -->
     <string name="login_tagline">영수증 한 장으로 끝나는 자취생 가계부</string>
