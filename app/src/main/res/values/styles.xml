@@ -182,6 +182,30 @@
         <item name="android:background">@color/bg_muted</item>
     </style>
 
+    <!-- ===== FAB (피그마 FAB) ===== -->
+    <style name="Widget.JjanChall.Fab" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/bg_brand</item>
+        <item name="tint">@color/text_on_brand</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.JjanChall.Circle</item>
+    </style>
+
+    <style name="ShapeAppearance.JjanChall.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- 입력칸 모양 박스 (날짜 선택처럼 누르면 열리는 칸) -->
+    <style name="Widget.JjanChall.FieldBox" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/size_button</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/spacing_lg</item>
+        <item name="android:paddingEnd">@dimen/spacing_lg</item>
+        <item name="android:background">@drawable/bg_input_box</item>
+        <item name="android:textAppearance">@style/TextAppearance.JjanChall.Body</item>
+    </style>
+
     <!-- ===== Dialog ===== -->
     <style name="ThemeOverlay.JjanChall.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.JjanChall.Dialog</item>

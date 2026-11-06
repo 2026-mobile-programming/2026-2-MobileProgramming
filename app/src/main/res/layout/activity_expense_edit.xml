@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RECORD-02 지출 추가 · 수정 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_default"
+    android:orientation="vertical"
+    tools:context=".ui.record.ExpenseEditActivity">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/view_app_bar" />
+
+    <View style="@style/Widget.JjanChall.Divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/screen_padding">
+
+            <!-- 영수증으로 자동 채우기 (#7 영수증 화면과 연결 예정) -->
+            <LinearLayout
+                android:id="@+id/btn_receipt_autofill"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_receipt_autofill"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/size_icon"
+                    android:layout_height="@dimen/size_icon"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_camera" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:text="@string/expense_receipt_autofill"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                    android:textColor="@color/text_brand" />
+            </LinearLayout>
+
+            <!-- 금액 -->
+            <TextView
+                style="@style/Widget.JjanChall.InputLabel"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:labelFor="@id/et_amount"
+                android:text="@string/expense_amount" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_amount_underline"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/spacing_sm">
+
+                <EditText
+                    android:id="@+id/et_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="0"
+                    android:importantForAutofill="no"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="11"
+                    android:minHeight="@dimen/size_touch_min"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Display"
+                    android:textColorHint="@color/text_disabled" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/expense_amount_unit"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Display" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_amount_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/expense_error_amount"
+                android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                android:textColor="@color/text_danger"
+                android:visibility="gone" />
+
+            <!-- 날짜 · 카테고리 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_md"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Widget.JjanChall.InputLabel"
+                        android:labelFor="@id/tv_date"
+                        android:text="@string/expense_date" />
+
+                    <TextView
+                        android:id="@+id/tv_date"
+                        style="@style/Widget.JjanChall.FieldBox"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        tools:text="2026.10.20" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Widget.JjanChall.InputLabel"
+                        android:labelFor="@id/sp_category"
+                        android:text="@string/expense_category" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_input_box">
+
+                        <Spinner
+                            android:id="@+id/sp_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/size_button"
+                            android:background="@null"
+                            android:paddingEnd="@dimen/spacing_2xl"
+                            android:spinnerMode="dropdown" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_chevron_down" />
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 가게 이름 -->
+            <TextView
+                style="@style/Widget.JjanChall.InputLabel"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:labelFor="@id/et_store"
+                android:text="@string/expense_store" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_store"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_store"
+                    style="@style/Widget.JjanChall.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/expense_store_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:maxLength="30" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 메모 -->
+            <TextView
+                style="@style/Widget.JjanChall.InputLabel"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:labelFor="@id/et_memo"
+                android:text="@string/expense_memo" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_memo"
+                    style="@style/Widget.JjanChall.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/expense_memo_hint"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:maxLength="50" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/screen_padding"
+        android:text="@string/expense_save" />
+
+</LinearLayout>

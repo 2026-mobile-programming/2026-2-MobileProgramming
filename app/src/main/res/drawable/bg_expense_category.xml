@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RECORD-01 지출 목록 카테고리 전용 배경 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- 연한 민트색: 팀 디자인 시스템 색상 -->
+    <solid android:color="@color/bg_brand_subtle" />
+
+    <!-- 모서리 둥글기 -->
+    <corners android:radius="@dimen/radius_sm" />
+
+</shape>
