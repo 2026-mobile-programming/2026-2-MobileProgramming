@@ -4,13 +4,19 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.google.firebase.auth.FirebaseAuth
 
+// 지출은 지금 로그인한 계정(uid) 것만 저장·조회·수정·삭제
 class ExpenseDbHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
+    private val currentUid: String
+        get() = FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
+
     companion object {
         private const val DATABASE_NAME = "jjanchall.db"
-        private const val DATABASE_VERSION = 1
+        // 2: uid 컬럼 추가
+        private const val DATABASE_VERSION = 2
 
         private const val TABLE_EXPENSES = "expenses"
         private const val COL_ID = "_id"
@@ -20,6 +26,7 @@ class ExpenseDbHelper(context: Context) :
         private const val COL_AMOUNT = "amount"
         private const val COL_DATE = "date"
         private const val COL_TIME = "time"
+        private const val COL_UID = "uid"
     }
 
     // 데이터베이스와 지출 테이블 생성
@@ -33,7 +40,8 @@ class ExpenseDbHelper(context: Context) :
                 $COL_MEMO TEXT NOT NULL,
                 $COL_AMOUNT INTEGER NOT NULL,
                 $COL_DATE TEXT NOT NULL,
-                $COL_TIME TEXT NOT NULL DEFAULT '00:00'
+                $COL_TIME TEXT NOT NULL DEFAULT '00:00',
+                $COL_UID TEXT NOT NULL DEFAULT ''
             )
             """.trimIndent()
         )
@@ -45,7 +53,14 @@ class ExpenseDbHelper(context: Context) :
         oldVersion: Int,
         newVersion: Int
     ) {
-        // 현재 데이터베이스 버전은 1
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE $TABLE_EXPENSES ADD COLUMN $COL_UID TEXT NOT NULL DEFAULT ''")
+            // 기존 지출은 업데이트할 때 로그인한 계정 것으로
+            db.execSQL(
+                "UPDATE $TABLE_EXPENSES SET $COL_UID = ? WHERE $COL_UID = ''",
+                arrayOf(currentUid)
+            )
+        }
     }
 
     // 지출 추가
@@ -57,6 +72,7 @@ class ExpenseDbHelper(context: Context) :
             put(COL_AMOUNT, expense.amount)
             put(COL_DATE, expense.date)
             put(COL_TIME, expense.time)
+            put(COL_UID, currentUid)
         }
 
         return writableDatabase.insert(
