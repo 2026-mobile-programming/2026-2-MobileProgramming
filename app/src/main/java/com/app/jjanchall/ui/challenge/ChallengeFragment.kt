@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.jjanchall.R
 import com.app.jjanchall.databinding.FragmentChallengeBinding
+import android.content.Intent
 
 /** CHALLENGE-01 무지출 챌린지 탭 */
 class ChallengeFragment : Fragment() {
@@ -60,6 +61,16 @@ class ChallengeFragment : Fragment() {
         // 챌린지 데이터를 Adapter에 전달
         binding.rvOngoingChallenges.adapter =
             ChallengeAdapter(previewChallenges)
+
+        // 챌린지 만들기 화면으로 이동
+        binding.btnCreateChallenge.setOnClickListener {
+            val intent = Intent(
+                requireContext(),
+                CreateChallengeActivity::class.java
+            )
+            startActivity(intent)
+        }
+
     }
 
     override fun onDestroyView() {
