@@ -106,7 +106,18 @@
     <string name="challenge_target_invalid">목표 일수를 확인해 주세요</string>
     <string name="challenge_validation_success">입력 확인 완료! 챌린지 저장 기능은 추후 연결됩니다</string>
 
-
+    <!-- CHALLENGE-03 초대 코드 입력 다이얼로그 -->
+    <string name="challenge_join_dialog_title">초대 코드로 참여</string>
+    <string name="challenge_join_dialog_description">친구에게 받은 6자리 코드를 입력하세요.</string>
+    <string name="challenge_join_dialog_hint">6자리 초대코드</string>
+    <string name="challenge_join_found_label">찾은 챌린지</string>
+    <string name="challenge_join_found_preview">10월 무지출 10일 도전 · 참여 2명</string>
+    <string name="challenge_join_preview_notice">실제 챌린지 참여는 서버 연동 후 가능해요</string>
+    <string name="challenge_join_cancel">취소</string>
+    <string name="challenge_join_confirm">참여하기</string>
+    <string name="challenge_join_code_required">초대 코드를 입력하세요</string>
+    <string name="challenge_join_code_invalid">영문과 숫자로 이루어진 6자리 코드를 입력하세요</string>
+    <string name="challenge_join_code_not_found">존재하지 않는 초대 코드예요</string>
 
 
     <!-- 설정 (SETTING-01) -->
