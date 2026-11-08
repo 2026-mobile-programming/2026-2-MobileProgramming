@@ -85,7 +85,10 @@
     <string name="challenge_date_separator">~</string>
     <string name="challenge_start_date_label">시작일</string>
     <string name="challenge_end_date_label">종료일</string>
+    <string name="challenge_date_order_error">종료일은 시작일보다 빠를 수 없어요</string>
+    <string name="challenge_date_reset">시작일이 변경되어 종료일을 다시 선택해 주세요</string>
     <string name="challenge_target_days">목표 무지출 일수</string>
+    <string name="challenge_target_days_format">%1$d일</string>
     <string name="challenge_target_preview">10일</string>
     <string name="challenge_minus">−</string>
     <string name="challenge_plus">+</string>
