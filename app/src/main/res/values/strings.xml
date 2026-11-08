@@ -58,6 +58,20 @@
 
     <!-- 챌린지 (CHALLENGE-01) -->
     <string name="challenge_title">무지출 챌린지</string>
+    <string name="challenge_create">챌린지 만들기</string>
+    <string name="challenge_join_code">초대 코드로 참여</string>
+    <string name="challenge_ongoing">진행 중</string>
+    <string name="challenge_completed">끝난 챌린지</string>
+    <string name="challenge_empty_ongoing">진행 중인 챌린지가 없어요</string>
+    <string name="challenge_empty_completed">끝난 챌린지가 없어요</string>
+
+
+    <!-- 챌린지 카드 임시 데이터 (Firestore 연동 전) -->
+    <string name="challenge_preview_title">10월 무지출 10일 도전</string>
+    <string name="challenge_preview_dday">D-23</string>
+    <string name="challenge_preview_progress">나 4 / 10일</string>
+    <string name="challenge_preview_participants">참여 3명 · 1등</string>
+
 
     <!-- 설정 (SETTING-01) -->
     <string name="setting_title">설정</string>
