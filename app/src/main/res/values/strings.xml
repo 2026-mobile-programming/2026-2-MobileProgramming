@@ -93,11 +93,19 @@
     <string name="challenge_minus">−</string>
     <string name="challenge_plus">+</string>
     <string name="challenge_target_helper">그날 지출 기록이 0원이면 무지출로 자동 체크돼요</string>
+    <string name="challenge_target_limit_error">목표 일수는 챌린지 기간을 초과할 수 없어요</string>
     <string name="challenge_invite_code">친구 초대 코드</string>
     <string name="challenge_code_placeholder">생성 후 표시</string>
     <string name="challenge_share">공유하기</string>
     <string name="challenge_code_helper">친구에게 카카오톡 등으로 보내는 일시적 초대 코드</string>
     <string name="challenge_start">챌린지 시작하기</string>
+    <!-- 챌린지 생성 입력값 검증 -->
+    <string name="challenge_name_required">챌린지 이름을 입력해 주세요</string>
+    <string name="challenge_start_date_required">시작일을 선택해 주세요</string>
+    <string name="challenge_end_date_required">종료일을 선택해 주세요</string>
+    <string name="challenge_target_invalid">목표 일수를 확인해 주세요</string>
+    <string name="challenge_validation_success">입력 확인 완료! 챌린지 저장 기능은 추후 연결됩니다</string>
+
 
 
 
