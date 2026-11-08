@@ -107,15 +107,46 @@
                 android:layout_marginTop="@dimen/spacing_md"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tv_empty_completed"
+
+
+
+                <!-- 끝난 챌린지 카드 -->
+                <LinearLayout
+                    android:id="@+id/card_completed_challenge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/spacing_lg"
-                    android:paddingBottom="@dimen/spacing_lg"
-                    android:text="@string/challenge_empty_completed"
-                    android:textAppearance="@style/TextAppearance.JjanChall.Body2"
-                    android:textColor="@color/text_secondary" />
+                    android:background="@drawable/bg_challenge_card"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <!-- 챌린지 이름 -->
+                    <TextView
+                        android:id="@+id/tv_completed_challenge_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/challenge_preview_finished_title"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Body"
+                        android:textColor="@color/text_secondary" />
+
+                    <!-- 성공 배지 -->
+                    <TextView
+                        android:id="@+id/tv_challenge_success"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:background="@drawable/bg_chip_muted"
+                        android:padding="@dimen/spacing_sm"
+                        android:gravity="center"
+                        android:text="@string/challenge_success"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        android:textColor="@color/text_brand" />
+
+                </LinearLayout>
+
+
+
 
             </LinearLayout>
 
