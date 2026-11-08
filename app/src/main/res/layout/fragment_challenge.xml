@@ -1,26 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!-- CHALLENGE-01 무지출 챌린지 (한지수) -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_default"
     android:orientation="vertical"
     tools:context=".ui.challenge.ChallengeFragment">
 
+    <!-- 공통 상단 헤더 -->
     <include
         android:id="@+id/header"
         layout="@layout/view_tab_header" />
 
-    <!-- TODO: 화면 내용 채우기 -->
-    <!-- 챌린지 목록 스크롤 영역 -->
+    <!-- 스크롤 영역 -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true">
 
+        <!-- ScrollView의 유일한 직접 자식 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,7 +31,7 @@
             android:paddingEnd="@dimen/screen_padding"
             android:paddingTop="@dimen/spacing_md">
 
-            <!-- 챌린지 만들기 / 초대 코드로 참여 -->
+            <!-- 챌린지 만들기 / 초대 코드 참여 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,15 +50,16 @@
                     style="@style/Widget.JjanChall.Button.Secondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_sm"
                     android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_sm"
                     android:text="@string/challenge_join_code"
                     android:textColor="@color/text_primary"
                     app:backgroundTint="@color/bg_default"
                     app:strokeColor="@color/border_strong"
-                    app:strokeWidth="1dp"/>
+                    app:strokeWidth="1dp" />
+
             </LinearLayout>
-            
+
             <!-- 진행 중인 챌린지 -->
             <TextView
                 android:id="@+id/tv_ongoing_title"
@@ -68,7 +71,7 @@
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
 
-            <!-- 다음 단게에서 챌린지 카드 추가 -->
+            <!-- 진행 중인 챌린지 목록 -->
             <LinearLayout
                 android:id="@+id/layout_ongoing_challenges"
                 android:layout_width="match_parent"
@@ -76,85 +79,12 @@
                 android:layout_marginTop="@dimen/spacing_md"
                 android:orientation="vertical">
 
-
-                <!-- 진행 중인 챌린지 카드 -->
-                <LinearLayout
-                    android:id="@+id/card_challenge"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_ongoing_challenges"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_challenge_card"
-                    android:orientation="vertical"
-                    android:padding="@dimen/spacing_md">
-
-                    <!-- 챌린지 제목 + D-day -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:id="@+id/tv_challenge_name"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/challenge_preview_title"
-                            android:textAppearance="@style/TextAppearance.JjanChall.Body2"
-                            android:textColor="@color/text_primary"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_challenge_dday"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/spacing_sm"
-                            android:text="@string/challenge_preview_dday"
-                            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
-                            android:textColor="@color/text_secondary" />
-
-                    </LinearLayout>
-
-                    <!-- 챌린지 달성률 -->
-                    <ProgressBar
-                        android:id="@+id/pb_challenge_progress"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/spacing_sm"
-                        android:layout_marginTop="@dimen/spacing_md"
-                        android:max="10"
-                        android:progress="4"
-                        android:progressTint="@color/bg_brand"
-                        android:progressBackgroundTint="@color/bg_muted" />
-
-                    <!-- 달성 일수 + 참여자 정보 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_sm"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:id="@+id/tv_challenge_progress"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/challenge_preview_progress"
-                            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
-                            android:textColor="@color/text_secondary" />
-
-                        <TextView
-                            android:id="@+id/tv_challenge_participants"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/spacing_sm"
-                            android:text="@string/challenge_preview_participants"
-                            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
-                            android:textColor="@color/text_secondary" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_challenge" />
 
             </LinearLayout>
 
@@ -169,6 +99,7 @@
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
 
+            <!-- 끝난 챌린지 목록 -->
             <LinearLayout
                 android:id="@+id/layout_completed_challenges"
                 android:layout_width="match_parent"
