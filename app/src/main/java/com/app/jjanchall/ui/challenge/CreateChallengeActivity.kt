@@ -382,13 +382,15 @@ class CreateChallengeActivity : AppCompatActivity() {
             // 챌린지 저장
             transaction.set(challengeRef, challengeData)
 
-            // 초대 코드와 챌린지 ID 연결
+            // 초대 코드와 챌린지 정보 연결
             transaction.set(
                 codeRef,
                 mapOf(
-                    "challengeId" to challengeRef.id
+                    "challengeId" to challengeRef.id,
+                    "title" to title
                 )
             )
+
 
             // 생성자를 첫 참여자로 저장
             transaction.set(

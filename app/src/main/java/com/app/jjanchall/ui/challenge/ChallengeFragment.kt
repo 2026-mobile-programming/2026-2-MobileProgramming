@@ -43,7 +43,8 @@ class ChallengeFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentChallengeBinding.inflate(
-            inflater, container, false)
+            inflater, container, false
+        )
         return binding.root
     }
 
@@ -246,7 +247,8 @@ class ChallengeFragment : Fragment() {
                 }.addOnFailureListener { exception ->
 
                     if (_binding == null ||
-                        currentVersion != challengeQueryVersion) {
+                        currentVersion != challengeQueryVersion
+                    ) {
                         return@addOnFailureListener
                     }
 
@@ -357,14 +359,16 @@ class ChallengeFragment : Fragment() {
                 return@doAfterTextChanged
             }
 
-            // 초대 코드 조회
+
+            // 초대 코드로 챌린지 정보 조회
             db.collection("inviteCodes")
                 .document(enteredCode)
                 .get()
                 .addOnSuccessListener codeResult@{ codeDocument ->
 
                     if (!dialog.isShowing ||
-                        currentVersion != requestVersion) {
+                        currentVersion != requestVersion
+                    ) {
                         return@codeResult
                     }
 
@@ -372,173 +376,193 @@ class ChallengeFragment : Fragment() {
                         codeDocument.getString("challengeId")
                             ?: return@codeResult
 
-                    // 해당 챌린지의 실제 정보 조회
-                    db.collection("challenges")
-                        .document(challengeId)
-                        .get()
-                        .addOnSuccessListener challengeResult@{ challengeDocument ->
+                    val title = codeDocument.getString("title")
 
-                            if (!dialog.isShowing ||
-                                currentVersion != requestVersion) {
-                                return@challengeResult
+                    if (title != null) {
+                        // 새로 생성한 챌린지: 초대 코드 문서에서 이름 조회
+                        foundChallengeId = challengeId
+                        foundInviteCode = enteredCode
+
+                        dialogBinding.tvFoundChallenge.text = title
+                        dialogBinding.layoutFoundChallenge.visibility =
+                            View.VISIBLE
+
+                    } else {
+                        // 기존 챌린지: title 필드가 없으므로 이전 방식으로 조회
+                        db.collection("challenges")
+                            .document(challengeId)
+                            .get()
+                            .addOnSuccessListener oldChallenge@{ document ->
+
+                                if (!dialog.isShowing ||
+                                    currentVersion != requestVersion
+                                ) {
+                                    return@oldChallenge
+                                }
+
+                                if (!document.exists() ||
+                                    document.getString("inviteCode") != enteredCode
+                                ) {
+                                    return@oldChallenge
+                                }
+
+                                val oldTitle = document.getString("title")
+                                    ?: return@oldChallenge
+
+                                foundChallengeId = challengeId
+                                foundInviteCode = enteredCode
+
+                                dialogBinding.tvFoundChallenge.text = oldTitle
+                                dialogBinding.layoutFoundChallenge.visibility =
+                                    View.VISIBLE
                             }
-
-                            if (!challengeDocument.exists() ||
-                                challengeDocument.getString("inviteCode") != enteredCode) {
-                                return@challengeResult
+                            .addOnFailureListener {
+                                if (dialog.isShowing &&
+                                    currentVersion == requestVersion
+                                ) {
+                                    dialogBinding.tilInviteCode.error =
+                                        getString(R.string.challenge_join_lookup_failed)
+                                }
                             }
-
-                            val title =
-                                challengeDocument.getString("title")
-                                    ?: return@challengeResult
-
-                            foundChallengeId = challengeId
-                            foundInviteCode = enteredCode
-
-                            // 찾은 챌린지 표시
-                            dialogBinding.tvFoundChallenge.text = title
-                            dialogBinding.layoutFoundChallenge.visibility =
-                                View.VISIBLE
-                        }
-                        .addOnFailureListener {
-                            if (dialog.isShowing &&
-                                currentVersion == requestVersion) {
-                                dialogBinding.tilInviteCode.error =
-                                    getString(R.string.challenge_join_lookup_failed)
-                            }
-                        }
+                    }
                 }
                 .addOnFailureListener {
                     if (dialog.isShowing &&
-                        currentVersion == requestVersion) {
+                        currentVersion == requestVersion
+                    ) {
                         dialogBinding.tilInviteCode.error =
                             getString(R.string.challenge_join_lookup_failed)
                     }
                 }
+
         }
+            // 취소 버튼
+            dialogBinding.btnCancelJoin.setOnClickListener {
+                dialog.dismiss()
+            }
 
-        // 취소 버튼
-        dialogBinding.btnCancelJoin.setOnClickListener {
-            dialog.dismiss()
-        }
+            // 실제 챌린지 참여하기
+            dialogBinding.btnConfirmJoin.setOnClickListener {
 
-        // 실제 챌린지 참여하기
-        dialogBinding.btnConfirmJoin.setOnClickListener {
+                val enteredCode = dialogBinding.etInviteCode.text
+                    ?.toString()
+                    ?.trim()
+                    ?.uppercase()
+                    .orEmpty()
 
-            val enteredCode = dialogBinding.etInviteCode.text
-                ?.toString()
-                ?.trim()
-                ?.uppercase()
-                .orEmpty()
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                val challengeId = foundChallengeId
 
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            val challengeId = foundChallengeId
+                dialogBinding.tilInviteCode.error = null
 
-            dialogBinding.tilInviteCode.error = null
+                when {
+                    enteredCode.isBlank() -> {
+                        dialogBinding.tilInviteCode.error =
+                            getString(R.string.challenge_join_code_required)
+                    }
 
-            when {
-                enteredCode.isBlank() -> {
-                    dialogBinding.tilInviteCode.error =
-                        getString(R.string.challenge_join_code_required)
-                }
+                    !enteredCode.matches(Regex("[A-Z0-9]{6}")) -> {
+                        dialogBinding.tilInviteCode.error =
+                            getString(R.string.challenge_join_code_invalid)
+                    }
 
-                !enteredCode.matches(Regex("[A-Z0-9]{6}")) -> {
-                    dialogBinding.tilInviteCode.error =
-                        getString(R.string.challenge_join_code_invalid)
-                }
-
-                uid == null -> {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.challenge_join_login_required,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                challengeId == null ||
-                        foundInviteCode != enteredCode -> {
-
-                    dialogBinding.tilInviteCode.error =
-                        getString(R.string.challenge_join_code_not_found)
-                }
-
-                else -> {
-
-                    val challengeRef = db.collection("challenges")
-                        .document(challengeId)
-
-                    val memberRef = challengeRef
-                        .collection("members")
-                        .document(uid)
-
-                    // 중복 클릭 방지
-                    dialogBinding.btnConfirmJoin.isEnabled = false
-
-                    db.runTransaction { transaction ->
-
-                        // 챌린지가 실제로 존재하고 코드도 맞는지 재확인
-                        val challengeDocument =
-                            transaction.get(challengeRef)
-
-                        if (!challengeDocument.exists() ||
-                            challengeDocument.getString("inviteCode") != enteredCode) {
-                            throw IllegalStateException("Invalid invite code")
-                        }
-
-                        // 이미 참여했는지 확인
-                        val existingMember =
-                            transaction.get(memberRef)
-
-                        if (existingMember.exists()) {
-                            false
-                        } else {
-
-                            transaction.set(
-                                memberRef,
-                                mapOf(
-                                    "uid" to uid,
-                                    "completedDays" to 0,
-                                    "joinedAt" to FieldValue.serverTimestamp()
-                                )
-                            )
-
-                            true
-                        }
-
-                    }.addOnSuccessListener { joined ->
-
-                        if (!dialog.isShowing) {
-                            return@addOnSuccessListener
-                        }
-
+                    uid == null -> {
                         Toast.makeText(
                             requireContext(),
-                            if (joined) {
-                                R.string.challenge_join_success
-                            } else {
-                                R.string.challenge_join_already_member
-                            },
+                            R.string.challenge_join_login_required,
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
 
-                        dialog.dismiss()
+                    challengeId == null ||
+                            foundInviteCode != enteredCode -> {
 
-                    }.addOnFailureListener {
+                        dialogBinding.tilInviteCode.error =
+                            getString(R.string.challenge_join_code_not_found)
+                    }
 
-                        if (dialog.isShowing) {
-                            dialogBinding.btnConfirmJoin.isEnabled = true
+                    else -> {
+
+                        val challengeRef = db.collection("challenges")
+                            .document(challengeId)
+
+                        val memberRef = challengeRef
+                            .collection("members")
+                            .document(uid)
+
+                        // 중복 클릭 방지
+                        dialogBinding.btnConfirmJoin.isEnabled = false
+
+                        db.runTransaction { transaction ->
+
+
+                            val codeRef = db.collection("inviteCodes")
+                                .document(enteredCode)
+
+                            // 초대 코드가 실제 챌린지와 연결되는지 재확인
+                            val codeDocument = transaction.get(codeRef)
+
+                            if (!codeDocument.exists() ||
+                                codeDocument.getString("challengeId") != challengeId) {
+                                throw IllegalStateException("Invalid invite code")
+                            }
+
+
+                            // 이미 참여했는지 확인
+                            val existingMember =
+                                transaction.get(memberRef)
+
+                            if (existingMember.exists()) {
+                                false
+                            } else {
+                                transaction.set(
+                                    memberRef,
+                                    mapOf(
+                                        "uid" to uid,
+                                        "completedDays" to 0,
+                                        "joinedAt" to FieldValue.serverTimestamp(),
+                                        "joinCode" to enteredCode
+                                    )
+                                )
+
+
+                                true
+                            }
+
+                        }.addOnSuccessListener { joined ->
+
+                            if (!dialog.isShowing) {
+                                return@addOnSuccessListener
+                            }
 
                             Toast.makeText(
                                 requireContext(),
-                                R.string.challenge_join_failed,
+                                if (joined) {
+                                    R.string.challenge_join_success
+                                } else {
+                                    R.string.challenge_join_already_member
+                                },
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            dialog.dismiss()
+
+                        }.addOnFailureListener {
+
+                            if (dialog.isShowing) {
+                                dialogBinding.btnConfirmJoin.isEnabled = true
+
+                                Toast.makeText(
+                                    requireContext(),
+                                    R.string.challenge_join_failed,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
                 }
             }
+            dialog.show()
         }
-        dialog.show()
-    }
 
-}
+    }
