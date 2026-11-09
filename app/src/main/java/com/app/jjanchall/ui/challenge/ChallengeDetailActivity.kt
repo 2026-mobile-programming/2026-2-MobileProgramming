@@ -11,6 +11,13 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import java.util.Calendar
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.util.Log
+import android.widget.Toast
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.app.jjanchall.data.local.ExpenseDbHelper
 
 class ChallengeDetailActivity : AppCompatActivity() {
 
@@ -35,48 +42,58 @@ class ChallengeDetailActivity : AppCompatActivity() {
         binding.appBar.btnBack.setOnClickListener {
             finish()
         }
-        // 임시 데이터로 2026년 10월 달력 표시
-        setupCalendar(2026, 10)
+        // 선택한 챌린지의 실제 데이터 불러오기
+        loadChallengeDetail()
 
-// 임시 참여자 순위 데이터
-        val previewRanking = listOf(
-            ChallengeRankingUiModel(
-                rank = 1,
-                name = "짠돌이",
-                days = 5,
-                isMe = false
-            ),
-            ChallengeRankingUiModel(
-                rank = 2,
-                name = "나",
-                days = 4,
-                isMe = true
-            ),
-            ChallengeRankingUiModel(
-                rank = 3,
-                name = "알뜰살뜰",
-                days = 2,
-                isMe = false
-            )
-        )
+        //
 
-// RecyclerView에 순위 데이터 연결
-        binding.rvChallengeRanking.layoutManager =
+            // 참여자 순위 RecyclerView 설정
+            binding.rvChallengeRanking.layoutManager =
             LinearLayoutManager(this)
-
-        binding.rvChallengeRanking.adapter =
-            ChallengeRankingAdapter(previewRanking)
 
     }
 
-    private fun setupCalendar(year: Int, month: Int) {
-
+    private fun setupCalendar(
+        year: Int,
+        month: Int,
+        startDate: String,
+        endDate: String
+    ) {
         val grid = binding.gridNoSpendCalendar
         grid.removeAllViews()
 
-        // 임시 데이터: Firestore 연동 후 실제 기록으로 교체
-        val noSpendDays = setOf(2, 4, 5, 6)
-        val spentDays = setOf(1, 3, 7)
+        // 현재 달의 실제 지출 내역 조회
+        val yearMonth = String.format(
+            Locale.US,
+            "%04d-%02d",
+            year,
+            month
+        )
+
+        val spentDays = ExpenseDbHelper(this).use { db ->
+            db.getExpensesForMonth(yearMonth)
+                .filter { it.amount > 0 }
+                .mapNotNull { expense ->
+                    expense.date
+                        .takeIf {
+                            it.matches(Regex("""\d{4}-\d{2}-\d{2}"""))
+                        }
+                        ?.substring(8)
+                        ?.toIntOrNull()
+                }
+                .toSet()
+        }
+
+        val today = Calendar.getInstance()
+
+        val todayDay = if (
+            year == today.get(Calendar.YEAR) &&
+            month == today.get(Calendar.MONTH) + 1
+        ) {
+            today.get(Calendar.DAY_OF_MONTH)
+        } else {
+            null
+        }
 
         val calendar = Calendar.getInstance().apply {
             set(year, month - 1, 1)
@@ -84,6 +101,35 @@ class ChallengeDetailActivity : AppCompatActivity() {
 
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
         val lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+
+        val todayDate = String.format(
+            Locale.US,
+            "%04d-%02d-%02d",
+            today.get(Calendar.YEAR),
+            today.get(Calendar.MONTH) + 1,
+            today.get(Calendar.DAY_OF_MONTH)
+        )
+
+        // 지출이 없고 챌린지 기간에 포함된 날짜만 무지출 성공
+        val noSpendDays = (1..lastDay)
+            .filter { day ->
+
+                val date = String.format(
+                    Locale.US,
+                    "%04d-%02d-%02d",
+                    year,
+                    month,
+                    day
+                )
+
+                date >= startDate &&
+                        date <= endDate &&
+                        date <= todayDate &&
+                        day !in spentDays
+            }
+            .toSet()
+
 
         val weekdays = listOf("일", "월", "화", "수", "목", "금", "토")
 
@@ -115,17 +161,10 @@ class ChallengeDetailActivity : AppCompatActivity() {
                     val backgroundShape = GradientDrawable().apply {
                         cornerRadius = dp(8).toFloat()
 
-                        when (day) {
-                            in noSpendDays -> {
-                                setColor(
-                                    ContextCompat.getColor(
-                                        this@ChallengeDetailActivity,
-                                        R.color.bg_brand
-                                    )
-                                )
-                            }
 
-                            in spentDays -> {
+                        when {
+                            // 지출이 있는 날: 회색 배경
+                            day in spentDays -> {
                                 setColor(
                                     ContextCompat.getColor(
                                         this@ChallengeDetailActivity,
@@ -134,22 +173,17 @@ class ChallengeDetailActivity : AppCompatActivity() {
                                 )
                             }
 
-                            8 -> {
+                            // 무지출 성공한 날: 초록색 배경
+                            day in noSpendDays -> {
                                 setColor(
                                     ContextCompat.getColor(
                                         this@ChallengeDetailActivity,
-                                        R.color.bg_default
-                                    )
-                                )
-                                setStroke(
-                                    dp(2),
-                                    ContextCompat.getColor(
-                                        this@ChallengeDetailActivity,
-                                        R.color.border_brand
+                                        R.color.bg_brand
                                     )
                                 )
                             }
 
+                            // 그 외 날짜: 흰색 배경
                             else -> {
                                 setColor(
                                     ContextCompat.getColor(
@@ -157,6 +191,7 @@ class ChallengeDetailActivity : AppCompatActivity() {
                                         R.color.bg_default
                                     )
                                 )
+
                                 setStroke(
                                     dp(1),
                                     ContextCompat.getColor(
@@ -168,6 +203,18 @@ class ChallengeDetailActivity : AppCompatActivity() {
                                 )
                             }
                         }
+
+                        // 오늘 날짜라면 배경색과 무관하게 초록색 테두리
+                        if (day == todayDay) {
+                            setStroke(
+                                dp(2),
+                                ContextCompat.getColor(
+                                    this@ChallengeDetailActivity,
+                                    R.color.border_brand
+                                )
+                            )
+                        }
+
                     }
 
                     background = backgroundShape
@@ -208,6 +255,314 @@ class ChallengeDetailActivity : AppCompatActivity() {
         for (day in 1..lastDay) {
             addCell(day.toString(), day)
         }
+    }
+
+    private fun loadChallengeDetail() {
+
+        // 이전 화면에서 전달받은 챌린지 ID
+        val challengeId = intent.getStringExtra("challenge_id")
+
+        if (challengeId.isNullOrBlank()) {
+            Toast.makeText(
+                this,
+                "챌린지 정보를 찾을 수 없어요",
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
+            return
+        }
+
+        // Firestore에서 해당 챌린지 조회
+        FirebaseFirestore.getInstance()
+            .collection("challenges")
+            .document(challengeId)
+            .get()
+            .addOnSuccessListener { document ->
+
+                if (!document.exists()) {
+                    Toast.makeText(
+                        this,
+                        "존재하지 않는 챌린지예요",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                    return@addOnSuccessListener
+                }
+                // 선택한 챌린지의 실제 참여자 순위 조회
+                loadChallengeRanking(challengeId)
+
+                // 실제 데이터 가져오기
+                val title = document.getString("title").orEmpty()
+                val startDate = document.getString("startDate").orEmpty()
+                val endDate = document.getString("endDate").orEmpty()
+                val inviteCode = document.getString("inviteCode").orEmpty()
+                val targetDays = document.getLong("targetDays")
+                    ?.toInt() ?: 0
+
+                // 상단 챌린지 제목
+                binding.appBar.tvAppBarTitle.text = title
+
+                // 초대 코드
+                binding.tvDetailInviteCode.text = getString(
+                    R.string.challenge_detail_invite_format,
+                    inviteCode
+                )
+
+                // 무지출 목표 표시
+                // 실제 무지출 기록은 아직 연결 전이므로 0일
+                binding.tvCalendarProgress.text = getString(
+                    R.string.challenge_calendar_progress_format,
+                    0,
+                    targetDays
+                )
+
+                // 기간과 달력 월 설정
+                if (startDate.length == 10 && endDate.length == 10) {
+
+                    val startText = startDate.replace('-', '.')
+                    val endText = endDate.substring(5).replace('-', '.')
+
+                    binding.tvDetailPeriod.text = getString(
+                        R.string.challenge_detail_period_format,
+                        startText,
+                        endText,
+                        calculateDetailDday(endDate)
+                    )
+
+                    // 챌린지 시작일의 연도와 월로 달력 생성
+                    val parts = startDate.split("-")
+                    val year = parts[0].toIntOrNull()
+                    val month = parts[1].toIntOrNull()
+
+                    if (year != null && month != null &&
+                        month in 1..12) {
+                        setupCalendar(year, month, startDate, endDate)
+
+                        syncMyCompletedDays(
+                            challengeId,
+                            startDate,
+                            endDate,
+                            targetDays
+                        )
+
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+
+                Log.e(
+                    "ChallengeDetail",
+                    "챌린지 상세 조회 실패",
+                    exception
+                )
+
+                Toast.makeText(
+                    this,
+                    "챌린지 정보를 불러오지 못했어요",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+    private fun calculateDetailDday(endDate: String): String {
+
+        return try {
+            val format = SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.KOREA
+            ).apply {
+                isLenient = false
+            }
+
+            val end = format.parse(endDate) ?: return ""
+
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val days = (
+                    (end.time - today.timeInMillis) / 86_400_000L
+                    ).toInt()
+
+            when {
+                days > 0 -> "D-$days"
+                days == 0 -> "D-Day"
+                else -> "D+${-days}"
+            }
+
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    private fun loadChallengeRanking(challengeId: String) {
+
+        val currentUid =
+            FirebaseAuth.getInstance().currentUser?.uid
+
+        FirebaseFirestore.getInstance()
+            .collection("challenges")
+            .document(challengeId)
+            .collection("members")
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                if (isFinishing || isDestroyed) {
+                    return@addOnSuccessListener
+                }
+
+                // 무지출 성공 일수 내림차순 정렬
+                val sortedMembers = snapshot.documents
+                    .sortedByDescending { document ->
+                        document.getLong("completedDays") ?: 0L
+                    }
+
+                // Firestore 문서를 순위 UI 데이터로 변환
+                val ranking = sortedMembers.mapIndexed {
+                        index, member ->
+
+                    val isMe = member.id == currentUid
+
+                    ChallengeRankingUiModel(
+                        rank = index + 1,
+                        name = if (isMe) {
+                            getString(R.string.challenge_ranking_me)
+                        } else {
+                            getString(
+                                R.string.challenge_ranking_member_format,
+                                index + 1
+                            )
+                        },
+                        days = (
+                                member.getLong("completedDays") ?: 0L
+                                ).toInt().coerceAtLeast(0),
+                        isMe = isMe
+                    )
+                }
+
+                // 실제 참여자 순위 표시
+                binding.rvChallengeRanking.adapter =
+                    ChallengeRankingAdapter(ranking)
+            }
+            .addOnFailureListener { exception ->
+
+                Log.e(
+                    "ChallengeDetail",
+                    "참여자 순위 조회 실패",
+                    exception
+                )
+
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this,
+                        R.string.challenge_ranking_load_error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
+
+    private fun calculateCompletedDays(
+        startDate: String,
+        endDate: String
+    ): Int {
+        val dateFormat = SimpleDateFormat(
+            "yyyy-MM-dd",
+            Locale.US
+        ).apply {
+            isLenient = false
+        }
+
+        val start = runCatching {
+            dateFormat.parse(startDate)
+        }.getOrNull() ?: return 0
+
+        val end = runCatching {
+            dateFormat.parse(endDate)
+        }.getOrNull() ?: return 0
+
+        // 오늘 날짜의 자정
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        // 챌린지 종료일과 오늘 중 더 이른 날짜
+        val lastDate = if (end.before(today)) end else today
+
+        if (start.after(lastDate)) return 0
+
+        // 실제 지출이 발생한 날짜 목록
+        val spentDates = ExpenseDbHelper(this).use { db ->
+            db.getAllExpenses()
+                .filter { it.amount > 0 }
+                .map { it.date }
+                .toSet()
+        }
+
+        // 챌린지 기간 내 성공한 날짜 계산
+        val calendar = Calendar.getInstance().apply {
+            time = start
+        }
+
+        var completedDays = 0
+
+        while (!calendar.time.after(lastDate)) {
+            val date = dateFormat.format(calendar.time)
+
+            if (date !in spentDates) {
+                completedDays++
+            }
+
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        return completedDays
+    }
+
+    private fun syncMyCompletedDays(
+        challengeId: String,
+        startDate: String,
+        endDate: String,
+        targetDays: Int
+    ) {
+        val uid = FirebaseAuth.getInstance()
+            .currentUser?.uid ?: return
+
+        // SQLite 지출 기록을 바탕으로 성공 일수 계산
+        val completedDays = calculateCompletedDays(
+            startDate,
+            endDate
+        )
+
+        // Firestore의 내 참여자 정보 업데이트
+        FirebaseFirestore.getInstance()
+            .collection("challenges")
+            .document(challengeId)
+            .collection("members")
+            .document(uid)
+            .update("completedDays", completedDays)
+            .addOnSuccessListener {
+
+                // 화면의 실제 진행률 표시
+                binding.tvCalendarProgress.text =
+                    "$completedDays / ${targetDays}일"
+
+                // 최신 데이터로 참여자 순위 다시 조회
+                loadChallengeRanking(challengeId)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(
+                    "ChallengeDetailActivity",
+                    "무지출 성공 일수 동기화 실패",
+                    exception
+                )
+            }
     }
 
 }

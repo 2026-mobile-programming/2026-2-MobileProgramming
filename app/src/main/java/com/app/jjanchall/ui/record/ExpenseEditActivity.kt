@@ -21,6 +21,8 @@ import com.app.jjanchall.util.applySystemBarsPadding
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import com.app.jjanchall.ui.challenge.ChallengeProgressSync
+
 
 /**
  * RECORD-02 지출 추가 · 수정
@@ -165,11 +167,21 @@ class ExpenseEditActivity : AppCompatActivity() {
 
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
+
                 if (success) {
-                    Toast.makeText(this, R.string.expense_saved, Toast.LENGTH_SHORT).show()
+                    // 지출 저장 성공 시 챌린지 진행률 동기화
+                    ChallengeProgressSync.sync(applicationContext)
+
+                    Toast.makeText(
+                        this,
+                        R.string.expense_saved,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     setResult(RESULT_OK)
                     finish()
-                } else {
+                }
+                else {
                     binding.btnSave.isEnabled = true
                     Toast.makeText(this, R.string.expense_save_failed, Toast.LENGTH_SHORT).show()
                 }

@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.jjanchall.R
 import com.app.jjanchall.data.local.ExpenseDbHelper
 import com.app.jjanchall.databinding.FragmentRecordBinding
+import com.app.jjanchall.ui.challenge.ChallengeProgressSync
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.NumberFormat
 import java.time.YearMonth
 import java.util.Locale
+
 
 /** RECORD-01 지출 기록 탭 */
 class RecordFragment : Fragment() {
@@ -253,6 +255,11 @@ class RecordFragment : Fragment() {
             val success = runCatching {
                 ExpenseDbHelper(appContext).use { it.deleteExpense(expense.id) > 0 }
             }.getOrDefault(false)
+
+            // SQLite 삭제 성공 시 챌린지 진행률 다시 계산
+            if (success) {
+                ChallengeProgressSync.sync(appContext)
+            }
 
             activity?.runOnUiThread {
                 if (_binding == null) return@runOnUiThread
