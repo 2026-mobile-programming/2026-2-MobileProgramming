@@ -12,6 +12,12 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
+import java.security.SecureRandom
+
 /** CHALLENGE-02 챌린지 만들기 화면 */
 class CreateChallengeActivity : AppCompatActivity() {
 
@@ -81,7 +87,7 @@ class CreateChallengeActivity : AppCompatActivity() {
         }
 
 
-// 챌린지 시작하기 버튼
+        // 챌린지 시작하기 버튼
         binding.btnStartChallenge.setOnClickListener {
 
             // 입력한 챌린지 이름 가져오기
@@ -143,14 +149,16 @@ class CreateChallengeActivity : AppCompatActivity() {
                     ).show()
                 }
 
-                // 6. 모든 입력값이 올바른 경우
+                // 6. 모든 입력값이 올바르면 Firestore에 저장
                 else -> {
-                    Toast.makeText(
-                        this,
-                        R.string.challenge_validation_success,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    saveChallenge(
+                        title = challengeName,
+                        startDate = startDate,
+                        endDate = endDate,
+                        targetDays = targetDays
+                    )
                 }
+
             }
         }
 
@@ -304,5 +312,126 @@ class CreateChallengeActivity : AppCompatActivity() {
 
         updateTargetDays()
     }
+
+    // 6자리 초대 코드 생성
+    private fun generateInviteCode(): String {
+        val characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        val random = SecureRandom()
+
+        return (1..6)
+            .map { characters[random.nextInt(characters.length)] }
+            .joinToString("")
+    }
+
+    // 챌린지 Firestore 저장
+    private fun saveChallenge(
+        title: String,
+        startDate: String,
+        endDate: String,
+        targetDays: Int
+    ) {
+        // 로그인 여부 확인
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (uid == null) {
+            Toast.makeText(
+                this,
+                "로그인 후 챌린지를 생성할 수 있어요",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val db = FirebaseFirestore.getInstance()
+
+        // 새로운 챌린지 문서 ID
+        val challengeRef = db.collection("challenges").document()
+
+        // 6자리 초대 코드
+        val inviteCode = generateInviteCode()
+        val codeRef = db.collection("inviteCodes").document(inviteCode)
+
+        // 생성자를 첫 참여자로 등록
+        val memberRef = challengeRef
+            .collection("members")
+            .document(uid)
+
+        // Firestore에 저장할 챌린지 데이터
+        val challengeData = hashMapOf<String, Any>(
+            "title" to title,
+            "startDate" to startDate.replace('.', '-'),
+            "endDate" to endDate.replace('.', '-'),
+            "targetDays" to targetDays,
+            "inviteCode" to inviteCode,
+            "createdBy" to uid,
+            "createdAt" to FieldValue.serverTimestamp()
+        )
+
+        // 중복 클릭 방지
+        binding.btnStartChallenge.isEnabled = false
+
+        db.runTransaction { transaction ->
+
+            // 초대 코드 중복 확인
+            if (transaction.get(codeRef).exists()) {
+                throw IllegalStateException(
+                    "초대 코드가 중복됐어요. 다시 시도해 주세요."
+                )
+            }
+
+            // 챌린지 저장
+            transaction.set(challengeRef, challengeData)
+
+            // 초대 코드와 챌린지 ID 연결
+            transaction.set(
+                codeRef,
+                mapOf(
+                    "challengeId" to challengeRef.id
+                )
+            )
+
+            // 생성자를 첫 참여자로 저장
+            transaction.set(
+                memberRef,
+                mapOf(
+                    "uid" to uid,
+                    "completedDays" to 0,
+                    "joinedAt" to FieldValue.serverTimestamp()
+                )
+            )
+
+            inviteCode
+
+        }.addOnSuccessListener { code ->
+
+            // 저장 성공 후 초대 코드 표시
+            binding.tvInviteCode.text = code
+
+            Toast.makeText(
+                this,
+                "챌린지 생성 완료!",
+                Toast.LENGTH_LONG
+            ).show()
+
+            // 중복 생성 방지: 성공 후 버튼 비활성화 유지
+
+        }.addOnFailureListener { exception ->
+
+            binding.btnStartChallenge.isEnabled = true
+
+            Log.e(
+                "ChallengeCreate",
+                "Firestore 저장 실패",
+                exception
+            )
+
+            Toast.makeText(
+                this,
+                "저장에 실패했어요. 다시 시도해 주세요.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
 
 }

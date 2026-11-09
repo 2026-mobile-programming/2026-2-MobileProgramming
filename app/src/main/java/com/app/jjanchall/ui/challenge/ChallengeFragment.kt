@@ -13,12 +13,22 @@ import com.app.jjanchall.databinding.DialogJoinChallengeBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.core.widget.doAfterTextChanged
 import android.widget.Toast
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
 
 /** CHALLENGE-01 무지출 챌린지 탭 */
 class ChallengeFragment : Fragment() {
 
     // Fragment는 화면(View)이 먼저 사라질 수 있어서 binding을 onDestroyView에서 비워요
     private var _binding: FragmentChallengeBinding? = null
+
+    private var challengesListener: ListenerRegistration? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -38,46 +48,12 @@ class ChallengeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.header.tvHeaderTitle.setText(R.string.challenge_title)
 
-        // Firestore 연동 전 화면 테스트용 데이터
-        val previewChallenges = listOf(
-            ChallengeCardUiModel(
-                title = "10월 무지출 10일 도전",
-                dDay = "D-23",
-                completedDays = 4,
-                targetDays = 10,
-                progressText = "나 4 / 10일",
-                participantsText = "참여 3명 · 1등"
-            ),
-            ChallengeCardUiModel(
-                title = "배달 없는 주말",
-                dDay = "D-3",
-                completedDays = 2,
-                targetDays = 4,
-                progressText = "나 2 / 4일",
-                participantsText = "참여 2명"
-            )
-        )
-
         // RecyclerView 설정
         binding.rvOngoingChallenges.layoutManager =
             LinearLayoutManager(requireContext())
 
-        // 챌린지 데이터를 Adapter에 전달
-        binding.rvOngoingChallenges.adapter =
-            ChallengeAdapter(previewChallenges) { challenge ->
-
-                // 선택한 챌린지의 상세 화면으로 이동
-                val intent = Intent(
-                    requireContext(),
-                    ChallengeDetailActivity::class.java
-                )
-
-                // 클릭한 챌린지 이름 전달
-                intent.putExtra("challenge_title", challenge.title)
-
-                startActivity(intent)
-            }
-
+        // Firestore에서 내 챌린지 목록 불러오기
+        observeMyChallenges()
 
         // 챌린지 만들기 화면으로 이동
         binding.btnCreateChallenge.setOnClickListener {
@@ -95,7 +71,125 @@ class ChallengeFragment : Fragment() {
 
     }
 
+    private fun observeMyChallenges() {
+
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (uid == null) {
+            Toast.makeText(
+                requireContext(),
+                "로그인이 필요해요",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val db = FirebaseFirestore.getInstance()
+
+        challengesListener?.remove()
+
+        challengesListener = db.collection("challenges")
+            .whereEqualTo("createdBy", uid)
+            .addSnapshotListener { snapshot, error ->
+
+                // 화면이 사라졌다면 처리하지 않음
+                val viewBinding = _binding
+                    ?: return@addSnapshotListener
+
+                if (error != null) {
+                    Log.e("ChallengeFragment", "챌린지 조회 실패", error)
+
+                    Toast.makeText(
+                        requireContext(),
+                        "챌린지 목록을 불러오지 못했어요",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@addSnapshotListener
+                }
+
+                // Firestore 문서를 카드 데이터로 변환
+                val challenges = snapshot?.documents.orEmpty()
+                    .mapNotNull { document ->
+
+                        val title = document.getString("title")
+                            ?: return@mapNotNull null
+
+                        val targetDays = (
+                                document.getLong("targetDays") ?: 1L
+                                ).toInt().coerceAtLeast(1)
+
+                        val endDate = document.getString("endDate")
+
+                        ChallengeCardUiModel(
+                            title = title,
+                            dDay = getChallengeDday(endDate),
+                            completedDays = 0,
+                            targetDays = targetDays,
+                            progressText = "나 0 / ${targetDays}일",
+                            participantsText = "참여 1명"
+                        )
+                    }
+
+                // RecyclerView 갱신
+                viewBinding.rvOngoingChallenges.adapter =
+                    ChallengeAdapter(challenges) { challenge ->
+
+                        val intent = Intent(
+                            requireContext(),
+                            ChallengeDetailActivity::class.java
+                        )
+
+                        intent.putExtra(
+                            "challenge_title",
+                            challenge.title
+                        )
+
+                        startActivity(intent)
+                    }
+            }
+    }
+
+    private fun getChallengeDday(endDate: String?): String {
+
+        if (endDate == null) return ""
+
+        return try {
+            val format = SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.KOREA
+            ).apply {
+                isLenient = false
+            }
+
+            val end = format.parse(endDate) ?: return ""
+
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val days = (
+                    (end.time - today.timeInMillis) / 86_400_000L
+                    ).toInt()
+
+            when {
+                days > 0 -> "D-$days"
+                days == 0 -> "D-Day"
+                else -> "D+${-days}"
+            }
+
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
     override fun onDestroyView() {
+        challengesListener?.remove()
+        challengesListener = null
+
         super.onDestroyView()
         binding.rvOngoingChallenges.adapter = null
         _binding = null
