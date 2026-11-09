@@ -1,0 +1,271 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_default"
+    tools:context=".ui.challenge.CreateChallengeActivity">
+
+    <!-- 공통 상단 바 -->
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/view_app_bar" />
+
+    <!-- 헤더 하단 구분선 -->
+    <View
+        style="@style/Widget.JjanChall.Divider" />
+
+    <!-- 화면 내용 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/screen_padding"
+            android:paddingEnd="@dimen/screen_padding"
+            android:paddingTop="@dimen/spacing_lg"
+            android:paddingBottom="@dimen/spacing_2xl">
+
+            <!-- 챌린지 이름 -->
+            <TextView
+                style="@style/Widget.JjanChall.InputLabel"
+                android:text="@string/challenge_name_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_challenge_name"
+                style="@style/Widget.JjanChall.TextInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_challenge_name"
+                    style="@style/Widget.JjanChall.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/size_button"
+                    android:hint="@string/challenge_name_hint"
+                    android:inputType="textCapSentences"
+                    tools:text="10월 무지출 10일 도전" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- 시작일 / 종료일 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:orientation="horizontal">
+
+                <!-- 시작일 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/spacing_sm"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Widget.JjanChall.InputLabel"
+                        android:text="@string/challenge_start_date_label" />
+
+                    <TextView
+                        android:id="@+id/tv_start_date"
+                        style="@style/Widget.JjanChall.FieldBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/size_button"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:text="@string/challenge_start_date"
+                        tools:text="2026.10.08" />
+
+                </LinearLayout>
+
+                <!-- 종료일 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Widget.JjanChall.InputLabel"
+                        android:text="@string/challenge_end_date_label" />
+
+                    <TextView
+                        android:id="@+id/tv_end_date"
+                        style="@style/Widget.JjanChall.FieldBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/size_button"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:text="@string/challenge_end_date"
+                        tools:text="2026.10.31" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- 목표 무지출 일수 -->
+            <TextView
+                style="@style/Widget.JjanChall.InputLabel"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:text="@string/challenge_target_days" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+
+                <TextView
+                    android:id="@+id/btn_target_minus"
+                    android:layout_width="@dimen/size_button"
+                    android:layout_height="@dimen/size_button"
+                    android:background="@drawable/bg_input_box"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/challenge_minus"
+                    android:textSize="24sp"
+                    android:textColor="@color/text_primary"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+
+                <TextView
+                    android:id="@+id/tv_target_days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/size_button"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:layout_marginEnd="@dimen/spacing_sm"
+                    android:minWidth="100dp"
+                    android:gravity="center"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:background="@drawable/bg_input_box"
+                    android:text="@string/challenge_target_preview"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:lineHeight="28sp" />
+
+
+                <TextView
+                    android:id="@+id/btn_target_plus"
+                    android:layout_width="@dimen/size_button"
+                    android:layout_height="@dimen/size_button"
+                    android:background="@drawable/bg_input_box"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/challenge_plus"
+                    android:textSize="24sp"
+                    android:textColor="@color/text_primary"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/challenge_target_helper"
+                android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                android:textColor="@color/text_secondary" />
+
+            <!-- 친구 초대 코드 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:background="@drawable/bg_challenge_invite_box"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/spacing_lg"
+                android:paddingBottom="@dimen/spacing_lg"
+                android:paddingStart="@dimen/spacing_xl"
+                android:paddingEnd="@dimen/spacing_xl">
+
+                <!-- 친구 초대 코드 라벨 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/challenge_invite_code"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                    android:textColor="@color/text_secondary" />
+
+                <!-- 초대 코드 + 공유 버튼 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- 초대 코드 -->
+                    <TextView
+                        android:id="@+id/tv_invite_code"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/challenge_code_placeholder"
+                        android:textSize="28sp"
+                        android:lineHeight="36sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.18"
+                        android:textColor="@color/text_primary"
+                        tools:text="K7Q2MX" />
+
+                    <!-- 공유하기 -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_share_code"
+                        style="@style/Widget.JjanChall.Button.Secondary"
+                        android:layout_width="104dp"
+                        android:layout_height="44dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="@string/challenge_share"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:textAllCaps="false"
+                        app:backgroundTint="@color/bg_default"
+                        app:cornerRadius="@dimen/radius_md"
+                        app:strokeColor="@color/border_strong"
+                        app:strokeWidth="1dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- 하단 고정 버튼 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_start_challenge"
+        style="@style/Widget.JjanChall.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/screen_padding"
+        android:layout_marginEnd="@dimen/screen_padding"
+        android:layout_marginBottom="@dimen/spacing_lg"
+        android:text="@string/challenge_start" />
+
+</LinearLayout>
