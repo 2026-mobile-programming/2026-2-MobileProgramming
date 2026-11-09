@@ -337,6 +337,14 @@ class ChallengeDetailActivity : AppCompatActivity() {
                     if (year != null && month != null &&
                         month in 1..12) {
                         setupCalendar(year, month, startDate, endDate)
+
+                        syncMyCompletedDays(
+                            challengeId,
+                            startDate,
+                            endDate,
+                            targetDays
+                        )
+
                     }
                 }
             }
@@ -454,6 +462,106 @@ class ChallengeDetailActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+            }
+    }
+
+    private fun calculateCompletedDays(
+        startDate: String,
+        endDate: String
+    ): Int {
+        val dateFormat = SimpleDateFormat(
+            "yyyy-MM-dd",
+            Locale.US
+        ).apply {
+            isLenient = false
+        }
+
+        val start = runCatching {
+            dateFormat.parse(startDate)
+        }.getOrNull() ?: return 0
+
+        val end = runCatching {
+            dateFormat.parse(endDate)
+        }.getOrNull() ?: return 0
+
+        // 오늘 날짜의 자정
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        // 챌린지 종료일과 오늘 중 더 이른 날짜
+        val lastDate = if (end.before(today)) end else today
+
+        if (start.after(lastDate)) return 0
+
+        // 실제 지출이 발생한 날짜 목록
+        val spentDates = ExpenseDbHelper(this).use { db ->
+            db.getAllExpenses()
+                .filter { it.amount > 0 }
+                .map { it.date }
+                .toSet()
+        }
+
+        // 챌린지 기간 내 성공한 날짜 계산
+        val calendar = Calendar.getInstance().apply {
+            time = start
+        }
+
+        var completedDays = 0
+
+        while (!calendar.time.after(lastDate)) {
+            val date = dateFormat.format(calendar.time)
+
+            if (date !in spentDates) {
+                completedDays++
+            }
+
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        return completedDays
+    }
+
+    private fun syncMyCompletedDays(
+        challengeId: String,
+        startDate: String,
+        endDate: String,
+        targetDays: Int
+    ) {
+        val uid = FirebaseAuth.getInstance()
+            .currentUser?.uid ?: return
+
+        // SQLite 지출 기록을 바탕으로 성공 일수 계산
+        val completedDays = calculateCompletedDays(
+            startDate,
+            endDate
+        )
+
+        // Firestore의 내 참여자 정보 업데이트
+        FirebaseFirestore.getInstance()
+            .collection("challenges")
+            .document(challengeId)
+            .collection("members")
+            .document(uid)
+            .update("completedDays", completedDays)
+            .addOnSuccessListener {
+
+                // 화면의 실제 진행률 표시
+                binding.tvCalendarProgress.text =
+                    "$completedDays / ${targetDays}일"
+
+                // 최신 데이터로 참여자 순위 다시 조회
+                loadChallengeRanking(challengeId)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(
+                    "ChallengeDetailActivity",
+                    "무지출 성공 일수 동기화 실패",
+                    exception
+                )
             }
     }
 
