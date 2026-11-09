@@ -20,6 +20,11 @@ import com.google.firebase.firestore.ListenerRegistration
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.google.firebase.firestore.FieldValue
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.AggregateSource
+
 
 /** CHALLENGE-01 무지출 챌린지 탭 */
 class ChallengeFragment : Fragment() {
@@ -28,6 +33,8 @@ class ChallengeFragment : Fragment() {
     private var _binding: FragmentChallengeBinding? = null
 
     private var challengesListener: ListenerRegistration? = null
+
+    private var challengeQueryVersion = 0
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -69,9 +76,11 @@ class ChallengeFragment : Fragment() {
         }
     }
 
+
     private fun observeMyChallenges() {
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        val uid = FirebaseAuth.getInstance()
+            .currentUser?.uid
 
         if (uid == null) {
             Toast.makeText(
@@ -86,19 +95,23 @@ class ChallengeFragment : Fragment() {
 
         challengesListener?.remove()
 
-        challengesListener = db.collection("challenges")
-            .whereEqualTo("createdBy", uid)
+        // 내가 참여자로 등록된 모든 챌린지 검색
+        challengesListener = db.collectionGroup("members")
+            .whereEqualTo("uid", uid)
             .addSnapshotListener { snapshot, error ->
 
-                // 화면이 사라졌다면 처리하지 않음
                 val viewBinding = _binding
                     ?: return@addSnapshotListener
 
                 if (error != null) {
-                    Log.e("ChallengeFragment", "챌린지 조회 실패", error)
+                    Log.e(
+                        "ChallengeFragment",
+                        "참여 챌린지 조회 실패",
+                        error
+                    )
 
                     Toast.makeText(
-                        requireContext(),
+                        viewBinding.root.context,
                         "챌린지 목록을 불러오지 못했어요",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -106,9 +119,45 @@ class ChallengeFragment : Fragment() {
                     return@addSnapshotListener
                 }
 
-                // Firestore 문서를 카드 데이터로 변환
-                val challenges = snapshot?.documents.orEmpty()
-                    .mapNotNull { document ->
+                val currentVersion = ++challengeQueryVersion
+
+                val memberDocuments =
+                    snapshot?.documents.orEmpty()
+
+                // 참여 중인 챌린지가 없는 경우
+                if (memberDocuments.isEmpty()) {
+                    viewBinding.rvOngoingChallenges.adapter =
+                        ChallengeAdapter(emptyList()) { }
+
+                    return@addSnapshotListener
+                }
+
+                // 참여자 문서에서 상위 챌린지 문서를 찾기
+                val memberMap = memberDocuments.associateBy {
+                    it.reference.parent.parent?.id
+                }
+
+                val challengeTasks = memberDocuments.mapNotNull {
+                    it.reference.parent.parent?.get()
+                }
+
+                // 챌린지 상세 정보 조회
+                Tasks.whenAllSuccess<DocumentSnapshot>(
+                    challengeTasks
+                ).addOnSuccessListener { documents ->
+
+                    val currentBinding = _binding
+                        ?: return@addOnSuccessListener
+
+                    if (currentVersion != challengeQueryVersion) {
+                        return@addOnSuccessListener
+                    }
+
+                    val challenges = documents.mapNotNull { document ->
+
+                        if (!document.exists()) {
+                            return@mapNotNull null
+                        }
 
                         val title = document.getString("title")
                             ?: return@mapNotNull null
@@ -117,33 +166,38 @@ class ChallengeFragment : Fragment() {
                                 document.getLong("targetDays") ?: 1L
                                 ).toInt().coerceAtLeast(1)
 
+                        val completedDays = (
+                                memberMap[document.id]
+                                    ?.getLong("completedDays") ?: 0L
+                                ).toInt().coerceAtLeast(0)
+
                         val endDate = document.getString("endDate")
 
                         ChallengeCardUiModel(
                             id = document.id,
                             title = title,
                             dDay = getChallengeDday(endDate),
-                            completedDays = 0,
+                            completedDays = completedDays,
                             targetDays = targetDays,
-                            progressText = "나 0 / ${targetDays}일",
-                            participantsText = "참여 1명"
+                            progressText =
+                                "나 $completedDays / ${targetDays}일",
+                            participantsText = "참여 중"
                         )
                     }
 
-                // RecyclerView 갱신
-                viewBinding.rvOngoingChallenges.adapter =
-                    ChallengeAdapter(challenges) { challenge ->
+
+// RecyclerView에 실제 챌린지 표시
+                    val adapter = ChallengeAdapter(challenges) { challenge ->
 
                         val intent = Intent(
                             requireContext(),
                             ChallengeDetailActivity::class.java
                         )
 
-                        // Firestore 챌린지 문서 ID 전달
-                        intent.putExtra("challenge_id", challenge.id)
-
-                        // 기존 제목 전달도 유지
-                        intent.putExtra("challenge_title", challenge.title)
+                        intent.putExtra(
+                            "challenge_id",
+                            challenge.id
+                        )
 
                         intent.putExtra(
                             "challenge_title",
@@ -152,6 +206,62 @@ class ChallengeFragment : Fragment() {
 
                         startActivity(intent)
                     }
+
+                    currentBinding.rvOngoingChallenges.adapter = adapter
+
+                    // 각 챌린지의 실제 참여 인원수 조회
+                    challenges.forEach { challenge ->
+
+                        db.collection("challenges")
+                            .document(challenge.id)
+                            .collection("members")
+                            .count()
+                            .get(AggregateSource.SERVER)
+                            .addOnSuccessListener { snapshot ->
+
+                                // 이전 화면이나 오래된 조회 결과라면 무시
+                                if (
+                                    _binding?.rvOngoingChallenges?.adapter !== adapter ||
+                                    currentVersion != challengeQueryVersion
+                                ) {
+                                    return@addOnSuccessListener
+                                }
+
+                                // 실제 참여 인원수 반영
+                                adapter.updateParticipantCount(
+                                    challenge.id,
+                                    snapshot.count
+                                )
+                            }
+                            .addOnFailureListener { exception ->
+
+                                Log.e(
+                                    "ChallengeFragment",
+                                    "참여 인원수 조회 실패",
+                                    exception
+                                )
+                            }
+                    }
+
+                }.addOnFailureListener { exception ->
+
+                    if (_binding == null ||
+                        currentVersion != challengeQueryVersion) {
+                        return@addOnFailureListener
+                    }
+
+                    Log.e(
+                        "ChallengeFragment",
+                        "챌린지 정보 조회 실패",
+                        exception
+                    )
+
+                    Toast.makeText(
+                        requireContext(),
+                        "챌린지 정보를 불러오지 못했어요",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
     }
 
@@ -193,6 +303,7 @@ class ChallengeFragment : Fragment() {
 
     override fun onDestroyView() {
         challengesListener?.remove()
+        challengeQueryVersion++
         challengesListener = null
 
         super.onDestroyView()
@@ -200,9 +311,9 @@ class ChallengeFragment : Fragment() {
         _binding = null
     }
 
+
     private fun showJoinChallengeDialog() {
 
-        // 다이얼로그 XML 연결
         val dialogBinding = DialogJoinChallengeBinding.inflate(
             layoutInflater
         )
@@ -211,16 +322,20 @@ class ChallengeFragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
-        // 임시 테스트용 초대 코드
-        // 실제 유효성 검사는 Firestore 연동 시 구현
-        val previewInviteCode = "K7Q2MX"
+        val db = FirebaseFirestore.getInstance()
 
-        // 처음에는 찾은 챌린지를 숨김
+        // 현재 입력값으로 찾은 챌린지 ID
+        var foundChallengeId: String? = null
+        var foundInviteCode: String? = null
+
+        // 이전 조회 결과가 뒤늦게 도착하는 문제 방지
+        var requestVersion = 0
+
+        // 처음에는 찾은 챌린지 숨기기
         dialogBinding.layoutFoundChallenge.visibility = View.GONE
 
-        // 초대 코드가 입력될 때마다 검사
+        // 입력한 코드로 실제 Firestore 조회
         dialogBinding.etInviteCode.doAfterTextChanged { editable ->
-            dialogBinding.tilInviteCode.error = null
 
             val enteredCode = editable
                 ?.toString()
@@ -228,16 +343,77 @@ class ChallengeFragment : Fragment() {
                 ?.uppercase()
                 .orEmpty()
 
-            // 테스트용 코드와 일치하는지 확인
-            val isValidPreviewCode =
-                enteredCode == previewInviteCode
+            dialogBinding.tilInviteCode.error = null
 
-            // 일치하면 표시, 아니면 숨김
-            dialogBinding.layoutFoundChallenge.visibility =
-                if (isValidPreviewCode) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
+            foundChallengeId = null
+            foundInviteCode = null
+            dialogBinding.layoutFoundChallenge.visibility = View.GONE
+
+            requestVersion++
+            val currentVersion = requestVersion
+
+            // 영문·숫자 6자리가 아니면 조회하지 않음
+            if (!enteredCode.matches(Regex("[A-Z0-9]{6}"))) {
+                return@doAfterTextChanged
+            }
+
+            // 초대 코드 조회
+            db.collection("inviteCodes")
+                .document(enteredCode)
+                .get()
+                .addOnSuccessListener codeResult@{ codeDocument ->
+
+                    if (!dialog.isShowing ||
+                        currentVersion != requestVersion) {
+                        return@codeResult
+                    }
+
+                    val challengeId =
+                        codeDocument.getString("challengeId")
+                            ?: return@codeResult
+
+                    // 해당 챌린지의 실제 정보 조회
+                    db.collection("challenges")
+                        .document(challengeId)
+                        .get()
+                        .addOnSuccessListener challengeResult@{ challengeDocument ->
+
+                            if (!dialog.isShowing ||
+                                currentVersion != requestVersion) {
+                                return@challengeResult
+                            }
+
+                            if (!challengeDocument.exists() ||
+                                challengeDocument.getString("inviteCode") != enteredCode) {
+                                return@challengeResult
+                            }
+
+                            val title =
+                                challengeDocument.getString("title")
+                                    ?: return@challengeResult
+
+                            foundChallengeId = challengeId
+                            foundInviteCode = enteredCode
+
+                            // 찾은 챌린지 표시
+                            dialogBinding.tvFoundChallenge.text = title
+                            dialogBinding.layoutFoundChallenge.visibility =
+                                View.VISIBLE
+                        }
+                        .addOnFailureListener {
+                            if (dialog.isShowing &&
+                                currentVersion == requestVersion) {
+                                dialogBinding.tilInviteCode.error =
+                                    getString(R.string.challenge_join_lookup_failed)
+                            }
+                        }
+                }
+                .addOnFailureListener {
+                    if (dialog.isShowing &&
+                        currentVersion == requestVersion) {
+                        dialogBinding.tilInviteCode.error =
+                            getString(R.string.challenge_join_lookup_failed)
+                    }
                 }
         }
 
@@ -246,48 +422,122 @@ class ChallengeFragment : Fragment() {
             dialog.dismiss()
         }
 
+        // 실제 챌린지 참여하기
         dialogBinding.btnConfirmJoin.setOnClickListener {
 
-            // 사용자가 입력한 초대 코드 가져오기
             val enteredCode = dialogBinding.etInviteCode.text
                 ?.toString()
                 ?.trim()
                 ?.uppercase()
                 .orEmpty()
 
-            // 이전 오류 메시지 초기화
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            val challengeId = foundChallengeId
+
             dialogBinding.tilInviteCode.error = null
 
             when {
-                // 1. 아무것도 입력하지 않은 경우
                 enteredCode.isBlank() -> {
                     dialogBinding.tilInviteCode.error =
                         getString(R.string.challenge_join_code_required)
                 }
 
-                // 2. 영문/숫자 6자리 형식이 아닌 경우
                 !enteredCode.matches(Regex("[A-Z0-9]{6}")) -> {
                     dialogBinding.tilInviteCode.error =
                         getString(R.string.challenge_join_code_invalid)
                 }
 
-                // 3. 임시 테스트 코드와 일치하지 않는 경우
-                enteredCode != previewInviteCode -> {
+                uid == null -> {
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.challenge_join_login_required,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                challengeId == null ||
+                        foundInviteCode != enteredCode -> {
+
                     dialogBinding.tilInviteCode.error =
                         getString(R.string.challenge_join_code_not_found)
                 }
 
-                // 4. 유효한 테스트 코드인 경우
                 else -> {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.challenge_join_preview_notice,
-                        Toast.LENGTH_SHORT
-                    ).show()
+
+                    val challengeRef = db.collection("challenges")
+                        .document(challengeId)
+
+                    val memberRef = challengeRef
+                        .collection("members")
+                        .document(uid)
+
+                    // 중복 클릭 방지
+                    dialogBinding.btnConfirmJoin.isEnabled = false
+
+                    db.runTransaction { transaction ->
+
+                        // 챌린지가 실제로 존재하고 코드도 맞는지 재확인
+                        val challengeDocument =
+                            transaction.get(challengeRef)
+
+                        if (!challengeDocument.exists() ||
+                            challengeDocument.getString("inviteCode") != enteredCode) {
+                            throw IllegalStateException("Invalid invite code")
+                        }
+
+                        // 이미 참여했는지 확인
+                        val existingMember =
+                            transaction.get(memberRef)
+
+                        if (existingMember.exists()) {
+                            false
+                        } else {
+
+                            transaction.set(
+                                memberRef,
+                                mapOf(
+                                    "uid" to uid,
+                                    "completedDays" to 0,
+                                    "joinedAt" to FieldValue.serverTimestamp()
+                                )
+                            )
+
+                            true
+                        }
+
+                    }.addOnSuccessListener { joined ->
+
+                        if (!dialog.isShowing) {
+                            return@addOnSuccessListener
+                        }
+
+                        Toast.makeText(
+                            requireContext(),
+                            if (joined) {
+                                R.string.challenge_join_success
+                            } else {
+                                R.string.challenge_join_already_member
+                            },
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        dialog.dismiss()
+
+                    }.addOnFailureListener {
+
+                        if (dialog.isShowing) {
+                            dialogBinding.btnConfirmJoin.isEnabled = true
+
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.challenge_join_failed,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             }
         }
-
         dialog.show()
     }
 

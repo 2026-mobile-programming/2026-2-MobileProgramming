@@ -133,8 +133,14 @@
     <string name="challenge_detail_period_format">%1$s ~ %2$s · %3$s</string>
     <string name="challenge_detail_invite_format">초대 코드 %1$s</string>
     <string name="challenge_calendar_progress_format">%1$d / %2$d일</string>
-
-
+    <string name="challenge_ranking_me">나</string>
+    <string name="challenge_ranking_member_format">참여자 %1$d</string>
+    <string name="challenge_ranking_load_error">참여자 순위를 불러오지 못했어요</string>
+    <string name="challenge_join_success">챌린지에 참여했어요!</string>
+    <string name="challenge_join_already_member">이미 참여 중인 챌린지예요</string>
+    <string name="challenge_join_login_required">로그인 후 참여할 수 있어요</string>
+    <string name="challenge_join_failed">참여 처리에 실패했어요. 다시 시도해 주세요</string>
+    <string name="challenge_join_lookup_failed">초대 코드를 조회하지 못했어요</string>
 
     <!-- 설정 (SETTING-01) -->
     <string name="setting_title">설정</string>

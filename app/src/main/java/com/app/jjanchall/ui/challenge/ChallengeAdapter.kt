@@ -18,9 +18,12 @@ data class ChallengeCardUiModel(
 
 // 챌린지 목록 Adapter
 class ChallengeAdapter(
-    private val items: List<ChallengeCardUiModel>,
+    items: List<ChallengeCardUiModel>,
     private val onChallengeClick: (ChallengeCardUiModel) -> Unit
 ) : RecyclerView.Adapter<ChallengeAdapter.ChallengeViewHolder>() {
+
+    private val items = items.toMutableList()
+
 
     // 카드 하나의 View를 관리
     class ChallengeViewHolder(
@@ -73,4 +76,23 @@ class ChallengeAdapter(
 
     // 전체 챌린지 카드 개수
     override fun getItemCount(): Int = items.size
+
+    // Firestore에서 조회한 참여 인원수 반영
+    fun updateParticipantCount(
+        challengeId: String,
+        count: Long
+    ) {
+        val index = items.indexOfFirst {
+            it.id == challengeId
+        }
+
+        if (index == -1) return
+
+        items[index] = items[index].copy(
+            participantsText = "참여 ${count}명"
+        )
+
+        notifyItemChanged(index)
+    }
+
 }

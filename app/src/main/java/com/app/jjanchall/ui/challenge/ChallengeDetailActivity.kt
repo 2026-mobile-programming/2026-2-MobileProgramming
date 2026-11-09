@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
 
 class ChallengeDetailActivity : AppCompatActivity() {
 
@@ -43,34 +44,11 @@ class ChallengeDetailActivity : AppCompatActivity() {
         // 선택한 챌린지의 실제 데이터 불러오기
         loadChallengeDetail()
 
-// 임시 참여자 순위 데이터
-        val previewRanking = listOf(
-            ChallengeRankingUiModel(
-                rank = 1,
-                name = "짠돌이",
-                days = 5,
-                isMe = false
-            ),
-            ChallengeRankingUiModel(
-                rank = 2,
-                name = "나",
-                days = 4,
-                isMe = true
-            ),
-            ChallengeRankingUiModel(
-                rank = 3,
-                name = "알뜰살뜰",
-                days = 2,
-                isMe = false
-            )
-        )
+        //
 
-// RecyclerView에 순위 데이터 연결
-        binding.rvChallengeRanking.layoutManager =
+            // 참여자 순위 RecyclerView 설정
+            binding.rvChallengeRanking.layoutManager =
             LinearLayoutManager(this)
-
-        binding.rvChallengeRanking.adapter =
-            ChallengeRankingAdapter(previewRanking)
 
     }
 
@@ -246,6 +224,8 @@ class ChallengeDetailActivity : AppCompatActivity() {
                     finish()
                     return@addOnSuccessListener
                 }
+                // 선택한 챌린지의 실제 참여자 순위 조회
+                loadChallengeRanking(challengeId)
 
                 // 실제 데이터 가져오기
                 val title = document.getString("title").orEmpty()
@@ -344,6 +324,73 @@ class ChallengeDetailActivity : AppCompatActivity() {
         } catch (e: Exception) {
             ""
         }
+    }
+
+    private fun loadChallengeRanking(challengeId: String) {
+
+        val currentUid =
+            FirebaseAuth.getInstance().currentUser?.uid
+
+        FirebaseFirestore.getInstance()
+            .collection("challenges")
+            .document(challengeId)
+            .collection("members")
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                if (isFinishing || isDestroyed) {
+                    return@addOnSuccessListener
+                }
+
+                // 무지출 성공 일수 내림차순 정렬
+                val sortedMembers = snapshot.documents
+                    .sortedByDescending { document ->
+                        document.getLong("completedDays") ?: 0L
+                    }
+
+                // Firestore 문서를 순위 UI 데이터로 변환
+                val ranking = sortedMembers.mapIndexed {
+                        index, member ->
+
+                    val isMe = member.id == currentUid
+
+                    ChallengeRankingUiModel(
+                        rank = index + 1,
+                        name = if (isMe) {
+                            getString(R.string.challenge_ranking_me)
+                        } else {
+                            getString(
+                                R.string.challenge_ranking_member_format,
+                                index + 1
+                            )
+                        },
+                        days = (
+                                member.getLong("completedDays") ?: 0L
+                                ).toInt().coerceAtLeast(0),
+                        isMe = isMe
+                    )
+                }
+
+                // 실제 참여자 순위 표시
+                binding.rvChallengeRanking.adapter =
+                    ChallengeRankingAdapter(ranking)
+            }
+            .addOnFailureListener { exception ->
+
+                Log.e(
+                    "ChallengeDetail",
+                    "참여자 순위 조회 실패",
+                    exception
+                )
+
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this,
+                        R.string.challenge_ranking_load_error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
     }
 
 }
