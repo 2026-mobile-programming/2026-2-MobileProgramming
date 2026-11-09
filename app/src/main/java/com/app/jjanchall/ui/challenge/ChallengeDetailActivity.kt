@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
+import com.app.jjanchall.data.local.ExpenseDbHelper
 
 class ChallengeDetailActivity : AppCompatActivity() {
 
@@ -52,14 +53,47 @@ class ChallengeDetailActivity : AppCompatActivity() {
 
     }
 
-    private fun setupCalendar(year: Int, month: Int) {
-
+    private fun setupCalendar(
+        year: Int,
+        month: Int,
+        startDate: String,
+        endDate: String
+    ) {
         val grid = binding.gridNoSpendCalendar
         grid.removeAllViews()
 
-        // 임시 데이터: Firestore 연동 후 실제 기록으로 교체
-        val noSpendDays = setOf(2, 4, 5, 6)
-        val spentDays = setOf(1, 3, 7)
+        // 현재 달의 실제 지출 내역 조회
+        val yearMonth = String.format(
+            Locale.US,
+            "%04d-%02d",
+            year,
+            month
+        )
+
+        val spentDays = ExpenseDbHelper(this).use { db ->
+            db.getExpensesForMonth(yearMonth)
+                .filter { it.amount > 0 }
+                .mapNotNull { expense ->
+                    expense.date
+                        .takeIf {
+                            it.matches(Regex("""\d{4}-\d{2}-\d{2}"""))
+                        }
+                        ?.substring(8)
+                        ?.toIntOrNull()
+                }
+                .toSet()
+        }
+
+        val today = Calendar.getInstance()
+
+        val todayDay = if (
+            year == today.get(Calendar.YEAR) &&
+            month == today.get(Calendar.MONTH) + 1
+        ) {
+            today.get(Calendar.DAY_OF_MONTH)
+        } else {
+            null
+        }
 
         val calendar = Calendar.getInstance().apply {
             set(year, month - 1, 1)
@@ -67,6 +101,35 @@ class ChallengeDetailActivity : AppCompatActivity() {
 
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
         val lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+
+        val todayDate = String.format(
+            Locale.US,
+            "%04d-%02d-%02d",
+            today.get(Calendar.YEAR),
+            today.get(Calendar.MONTH) + 1,
+            today.get(Calendar.DAY_OF_MONTH)
+        )
+
+        // 지출이 없고 챌린지 기간에 포함된 날짜만 무지출 성공
+        val noSpendDays = (1..lastDay)
+            .filter { day ->
+
+                val date = String.format(
+                    Locale.US,
+                    "%04d-%02d-%02d",
+                    year,
+                    month,
+                    day
+                )
+
+                date >= startDate &&
+                        date <= endDate &&
+                        date <= todayDate &&
+                        day !in spentDays
+            }
+            .toSet()
+
 
         val weekdays = listOf("일", "월", "화", "수", "목", "금", "토")
 
@@ -98,17 +161,10 @@ class ChallengeDetailActivity : AppCompatActivity() {
                     val backgroundShape = GradientDrawable().apply {
                         cornerRadius = dp(8).toFloat()
 
-                        when (day) {
-                            in noSpendDays -> {
-                                setColor(
-                                    ContextCompat.getColor(
-                                        this@ChallengeDetailActivity,
-                                        R.color.bg_brand
-                                    )
-                                )
-                            }
 
-                            in spentDays -> {
+                        when {
+                            // 지출이 있는 날: 회색 배경
+                            day in spentDays -> {
                                 setColor(
                                     ContextCompat.getColor(
                                         this@ChallengeDetailActivity,
@@ -117,22 +173,17 @@ class ChallengeDetailActivity : AppCompatActivity() {
                                 )
                             }
 
-                            8 -> {
+                            // 무지출 성공한 날: 초록색 배경
+                            day in noSpendDays -> {
                                 setColor(
                                     ContextCompat.getColor(
                                         this@ChallengeDetailActivity,
-                                        R.color.bg_default
-                                    )
-                                )
-                                setStroke(
-                                    dp(2),
-                                    ContextCompat.getColor(
-                                        this@ChallengeDetailActivity,
-                                        R.color.border_brand
+                                        R.color.bg_brand
                                     )
                                 )
                             }
 
+                            // 그 외 날짜: 흰색 배경
                             else -> {
                                 setColor(
                                     ContextCompat.getColor(
@@ -140,6 +191,7 @@ class ChallengeDetailActivity : AppCompatActivity() {
                                         R.color.bg_default
                                     )
                                 )
+
                                 setStroke(
                                     dp(1),
                                     ContextCompat.getColor(
@@ -151,6 +203,18 @@ class ChallengeDetailActivity : AppCompatActivity() {
                                 )
                             }
                         }
+
+                        // 오늘 날짜라면 배경색과 무관하게 초록색 테두리
+                        if (day == todayDay) {
+                            setStroke(
+                                dp(2),
+                                ContextCompat.getColor(
+                                    this@ChallengeDetailActivity,
+                                    R.color.border_brand
+                                )
+                            )
+                        }
+
                     }
 
                     background = backgroundShape
@@ -272,7 +336,7 @@ class ChallengeDetailActivity : AppCompatActivity() {
 
                     if (year != null && month != null &&
                         month in 1..12) {
-                        setupCalendar(year, month)
+                        setupCalendar(year, month, startDate, endDate)
                     }
                 }
             }
