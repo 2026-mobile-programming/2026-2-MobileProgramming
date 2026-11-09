@@ -49,11 +49,15 @@
             android:name=".ui.statistics.StatisticsActivity"
             android:exported="false" />
 
-        <!-- CHALLENGE-02 챌린지 만들기 화면 -->
+        <!-- 챌린지 만들기 화면 -->
         <activity
             android:name=".ui.challenge.CreateChallengeActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.challenge.ChallengeDetailActivity"
+            android:exported="false" />
 
     </application>
 

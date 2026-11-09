@@ -17,7 +17,8 @@ data class ChallengeCardUiModel(
 
 // 챌린지 목록 Adapter
 class ChallengeAdapter(
-    private val items: List<ChallengeCardUiModel>
+    private val items: List<ChallengeCardUiModel>,
+    private val onChallengeClick: (ChallengeCardUiModel) -> Unit
 ) : RecyclerView.Adapter<ChallengeAdapter.ChallengeViewHolder>() {
 
     // 카드 하나의 View를 관리
@@ -62,6 +63,11 @@ class ChallengeAdapter(
 
         binding.tvChallengeProgress.text = item.progressText
         binding.tvChallengeParticipants.text = item.participantsText
+
+        // 챌린지 카드 클릭 이벤트
+        binding.root.setOnClickListener {
+            onChallengeClick(item)
+        }
     }
 
     // 전체 챌린지 카드 개수

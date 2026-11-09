@@ -119,6 +119,17 @@
     <string name="challenge_join_code_invalid">영문과 숫자로 이루어진 6자리 코드를 입력하세요</string>
     <string name="challenge_join_code_not_found">존재하지 않는 초대 코드예요</string>
 
+    <string name="challenge_detail_title">챌린지 참여 현황</string>
+    <!-- CHALLENGE-04 임시 미리보기 데이터 -->
+    <string name="challenge_detail_period_preview">2026.10.01 ~ 10.31 · D-23</string>
+    <string name="challenge_detail_code_preview">초대 코드 K7Q2MX</string>
+    <string name="challenge_calendar_title">나의 무지출 달력</string>
+    <string name="challenge_calendar_progress_preview">4 / 10일</string>
+    <string name="challenge_calendar_no_spend">무지출</string>
+    <string name="challenge_calendar_spent">지출 있음</string>
+    <string name="challenge_ranking_title">참여자 순위</string>
+    <string name="challenge_ranking_days_format">%1$d일</string>
+
 
     <!-- 설정 (SETTING-01) -->
     <string name="setting_title">설정</string>

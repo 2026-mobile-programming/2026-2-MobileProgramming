@@ -64,7 +64,20 @@ class ChallengeFragment : Fragment() {
 
         // 챌린지 데이터를 Adapter에 전달
         binding.rvOngoingChallenges.adapter =
-            ChallengeAdapter(previewChallenges)
+            ChallengeAdapter(previewChallenges) { challenge ->
+
+                // 선택한 챌린지의 상세 화면으로 이동
+                val intent = Intent(
+                    requireContext(),
+                    ChallengeDetailActivity::class.java
+                )
+
+                // 클릭한 챌린지 이름 전달
+                intent.putExtra("challenge_title", challenge.title)
+
+                startActivity(intent)
+            }
+
 
         // 챌린지 만들기 화면으로 이동
         binding.btnCreateChallenge.setOnClickListener {
