@@ -7,6 +7,7 @@ import com.app.jjanchall.databinding.ItemChallengeBinding
 
 // 화면에 표시할 챌린지 카드 데이터
 data class ChallengeCardUiModel(
+    val id: String,
     val title: String,
     val dDay: String,
     val completedDays: Int,

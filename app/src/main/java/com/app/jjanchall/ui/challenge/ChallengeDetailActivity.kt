@@ -11,6 +11,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import java.util.Calendar
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.util.Log
+import android.widget.Toast
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ChallengeDetailActivity : AppCompatActivity() {
 
@@ -35,8 +40,8 @@ class ChallengeDetailActivity : AppCompatActivity() {
         binding.appBar.btnBack.setOnClickListener {
             finish()
         }
-        // 임시 데이터로 2026년 10월 달력 표시
-        setupCalendar(2026, 10)
+        // 선택한 챌린지의 실제 데이터 불러오기
+        loadChallengeDetail()
 
 // 임시 참여자 순위 데이터
         val previewRanking = listOf(
@@ -207,6 +212,137 @@ class ChallengeDetailActivity : AppCompatActivity() {
         // 3. 실제 날짜 표시
         for (day in 1..lastDay) {
             addCell(day.toString(), day)
+        }
+    }
+
+    private fun loadChallengeDetail() {
+
+        // 이전 화면에서 전달받은 챌린지 ID
+        val challengeId = intent.getStringExtra("challenge_id")
+
+        if (challengeId.isNullOrBlank()) {
+            Toast.makeText(
+                this,
+                "챌린지 정보를 찾을 수 없어요",
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
+            return
+        }
+
+        // Firestore에서 해당 챌린지 조회
+        FirebaseFirestore.getInstance()
+            .collection("challenges")
+            .document(challengeId)
+            .get()
+            .addOnSuccessListener { document ->
+
+                if (!document.exists()) {
+                    Toast.makeText(
+                        this,
+                        "존재하지 않는 챌린지예요",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                    return@addOnSuccessListener
+                }
+
+                // 실제 데이터 가져오기
+                val title = document.getString("title").orEmpty()
+                val startDate = document.getString("startDate").orEmpty()
+                val endDate = document.getString("endDate").orEmpty()
+                val inviteCode = document.getString("inviteCode").orEmpty()
+                val targetDays = document.getLong("targetDays")
+                    ?.toInt() ?: 0
+
+                // 상단 챌린지 제목
+                binding.appBar.tvAppBarTitle.text = title
+
+                // 초대 코드
+                binding.tvDetailInviteCode.text = getString(
+                    R.string.challenge_detail_invite_format,
+                    inviteCode
+                )
+
+                // 무지출 목표 표시
+                // 실제 무지출 기록은 아직 연결 전이므로 0일
+                binding.tvCalendarProgress.text = getString(
+                    R.string.challenge_calendar_progress_format,
+                    0,
+                    targetDays
+                )
+
+                // 기간과 달력 월 설정
+                if (startDate.length == 10 && endDate.length == 10) {
+
+                    val startText = startDate.replace('-', '.')
+                    val endText = endDate.substring(5).replace('-', '.')
+
+                    binding.tvDetailPeriod.text = getString(
+                        R.string.challenge_detail_period_format,
+                        startText,
+                        endText,
+                        calculateDetailDday(endDate)
+                    )
+
+                    // 챌린지 시작일의 연도와 월로 달력 생성
+                    val parts = startDate.split("-")
+                    val year = parts[0].toIntOrNull()
+                    val month = parts[1].toIntOrNull()
+
+                    if (year != null && month != null &&
+                        month in 1..12) {
+                        setupCalendar(year, month)
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+
+                Log.e(
+                    "ChallengeDetail",
+                    "챌린지 상세 조회 실패",
+                    exception
+                )
+
+                Toast.makeText(
+                    this,
+                    "챌린지 정보를 불러오지 못했어요",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+    private fun calculateDetailDday(endDate: String): String {
+
+        return try {
+            val format = SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.KOREA
+            ).apply {
+                isLenient = false
+            }
+
+            val end = format.parse(endDate) ?: return ""
+
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val days = (
+                    (end.time - today.timeInMillis) / 86_400_000L
+                    ).toInt()
+
+            when {
+                days > 0 -> "D-$days"
+                days == 0 -> "D-Day"
+                else -> "D+${-days}"
+            }
+
+        } catch (e: Exception) {
+            ""
         }
     }
 

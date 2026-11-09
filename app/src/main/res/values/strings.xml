@@ -129,6 +129,11 @@
     <string name="challenge_calendar_spent">지출 있음</string>
     <string name="challenge_ranking_title">참여자 순위</string>
     <string name="challenge_ranking_days_format">%1$d일</string>
+    <!-- 챌린지 상세 정보 표시 -->
+    <string name="challenge_detail_period_format">%1$s ~ %2$s · %3$s</string>
+    <string name="challenge_detail_invite_format">초대 코드 %1$s</string>
+    <string name="challenge_calendar_progress_format">%1$d / %2$d일</string>
+
 
 
     <!-- 설정 (SETTING-01) -->

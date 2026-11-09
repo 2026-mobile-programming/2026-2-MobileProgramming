@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 /** CHALLENGE-01 무지출 챌린지 탭 */
 class ChallengeFragment : Fragment() {
 
@@ -68,7 +67,6 @@ class ChallengeFragment : Fragment() {
         binding.btnJoinChallenge.setOnClickListener {
             showJoinChallengeDialog()
         }
-
     }
 
     private fun observeMyChallenges() {
@@ -122,6 +120,7 @@ class ChallengeFragment : Fragment() {
                         val endDate = document.getString("endDate")
 
                         ChallengeCardUiModel(
+                            id = document.id,
                             title = title,
                             dDay = getChallengeDday(endDate),
                             completedDays = 0,
@@ -139,6 +138,12 @@ class ChallengeFragment : Fragment() {
                             requireContext(),
                             ChallengeDetailActivity::class.java
                         )
+
+                        // Firestore 챌린지 문서 ID 전달
+                        intent.putExtra("challenge_id", challenge.id)
+
+                        // 기존 제목 전달도 유지
+                        intent.putExtra("challenge_title", challenge.title)
 
                         intent.putExtra(
                             "challenge_title",
@@ -195,8 +200,6 @@ class ChallengeFragment : Fragment() {
         _binding = null
     }
 
-
-
     private fun showJoinChallengeDialog() {
 
         // 다이얼로그 XML 연결
@@ -243,7 +246,6 @@ class ChallengeFragment : Fragment() {
             dialog.dismiss()
         }
 
-
         dialogBinding.btnConfirmJoin.setOnClickListener {
 
             // 사용자가 입력한 초대 코드 가져오기
@@ -286,9 +288,7 @@ class ChallengeFragment : Fragment() {
             }
         }
 
-
         dialog.show()
     }
-
 
 }
