@@ -15,11 +15,14 @@ import com.google.mlkit.vision.text.Text
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.core.content.FileProvider
+import java.io.File
 
 class ReceiptActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityReceiptBinding
     private val ocrHelper = ReceiptOcrHelper()
+    private var cameraImageUri: Uri? = null
 
     companion object {
         // 기존 지출 추가 화면으로 전달할 데이터 이름
@@ -39,28 +42,23 @@ class ReceiptActivity : AppCompatActivity() {
 
     // 카메라로 사진 촬영
     private val cameraLauncher = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        if (bitmap != null) {
-            showMessage("영수증 분석 중...")
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        val uri = cameraImageUri
+        cameraImageUri = null
 
-            ocrHelper.recognizeFromBitmap(
-                bitmap = bitmap,
-                onSuccess = { result ->
-                    applyOcrResult(result)
-                },
-                onFailure = { exception ->
-                    showMessage(
-                        "영수증 인식 실패: ${exception.message}",
-                        Toast.LENGTH_LONG
-                    )
-                }
-            )
+        if (success && uri != null) {
+            onReceiptSelected(uri)
+        } else if (success) {
+            showMessage("사진을 불러오지 못했어요. 다시 촬영해 주세요.")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cameraImageUri = savedInstanceState
+            ?.getString("camera_image_uri")
+            ?.let { Uri.parse(it) }
 
         enableEdgeToEdge()
 
@@ -101,12 +99,39 @@ class ReceiptActivity : AppCompatActivity() {
             .setTitle("영수증 가져오기")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> cameraLauncher.launch(null)
+                    0 -> launchCamera()
                     1 -> galleryLauncher.launch("image/*")
                 }
             }
             .setNegativeButton("취소", null)
             .show()
+    }
+
+    // 원본 사진을 저장할 파일을 만들고 카메라 실행
+    private fun launchCamera() {
+        try {
+            val imageDir = File(cacheDir, "receipt_images").apply {
+                mkdirs()
+            }
+
+            val imageFile = File.createTempFile(
+                "receipt_",
+                ".jpg",
+                imageDir
+            )
+
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${packageName}.fileprovider",
+                imageFile
+            )
+
+            cameraImageUri = uri
+            cameraLauncher.launch(uri)
+        } catch (e: Exception) {
+            cameraImageUri = null
+            showMessage("카메라를 실행하지 못했어요.", Toast.LENGTH_LONG)
+        }
     }
 
     // 갤러리에서 선택한 영수증 인식
@@ -267,6 +292,11 @@ class ReceiptActivity : AppCompatActivity() {
             message,
             duration
         ).show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("camera_image_uri", cameraImageUri?.toString())
+        super.onSaveInstanceState(outState)
     }
 
     // OCR 리소스 정리

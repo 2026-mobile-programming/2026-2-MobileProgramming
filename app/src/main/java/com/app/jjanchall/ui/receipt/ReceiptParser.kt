@@ -132,7 +132,7 @@ object ReceiptParser {
     // 예: 3,000 / 12,700 / 47.000I / 16000
     // 카드번호처럼 하이픈으로 이어진 숫자는 제외
     private val moneyRegex = Regex(
-        """(?<![\d,./*%-])(\d{1,3}(?:[,\.]\d{3})+|\d{3,8})(원|[Il|])?(?![\d,./*%-])"""
+        """(?<![\d,./*%-])(\d{1,3}(?:[,\.]\s*\d{3})+|\d{3,8})(원|[Il|])?(?![\d,./*%-])"""
     )
 
     // OCR 분석 시작
@@ -232,6 +232,7 @@ object ReceiptParser {
                 val amount = numberText
                     .replace(",", "")
                     .replace(".", "")
+                    .replace(Regex("""\s+"""), "")
                     .toLongOrNull()
                     ?: continue
 
@@ -487,6 +488,16 @@ object ReceiptParser {
         val topCandidates = lines
             .sortedBy { it.box.top }
             .take(10)
+
+        // 상단에서 지점명처럼 '점'으로 끝나는 이름을 먼저 찾기
+        val branchName = topCandidates.firstOrNull { candidate ->
+            isValidStore(candidate.text) &&
+                    candidate.text.trim().matches(Regex(""".*[가-힣0-9]점$"""))
+        }
+
+        if (branchName != null) {
+            return branchName.text.trim()
+        }
 
         for (candidate in topCandidates) {
 
