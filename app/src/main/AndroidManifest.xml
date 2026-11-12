@@ -43,6 +43,10 @@
 
         <!-- 지출 추가·수정 화면 -->
         <activity
+            android:name=".ui.setting.BudgetActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.record.ExpenseEditActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
@@ -50,6 +54,16 @@
         <!-- 통계 화면 -->
         <activity
             android:name=".ui.statistics.StatisticsActivity"
+            android:exported="false" />
+
+        <!-- 챌린지 만들기 화면 -->
+        <activity
+            android:name=".ui.challenge.CreateChallengeActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.challenge.ChallengeDetailActivity"
             android:exported="false" />
 
     </application>

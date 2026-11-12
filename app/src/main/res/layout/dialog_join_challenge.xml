@@ -1,0 +1,156 @@
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_2xl"
+    android:background="@color/bg_default">
+
+    <!-- 다이얼로그 제목 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/challenge_join_dialog_title"
+        android:textAppearance="@style/TextAppearance.JjanChall.Title"
+        android:textColor="@color/text_primary" />
+
+    <!-- 안내 문구 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:text="@string/challenge_join_dialog_description"
+        android:textAppearance="@style/TextAppearance.JjanChall.Body"
+        android:textColor="@color/text_secondary" />
+
+    <!-- 초대 코드 라벨 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:text="@string/challenge_invite_code"
+        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+        android:textColor="@color/text_primary" />
+
+    <!-- 초대 코드 입력창 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_invite_code"
+        style="@style/Widget.JjanChall.TextInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        app:hintEnabled="false"
+        app:boxStrokeWidthFocused="2dp">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_invite_code"
+            style="@style/Widget.JjanChall.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_button"
+            android:hint="@string/challenge_join_dialog_hint"
+            android:inputType="textCapCharacters"
+            android:maxLength="6"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
+            android:gravity="center_vertical|start"
+            android:textSize="16sp"
+            android:lineHeight="24sp"
+            android:textStyle="normal"
+            android:letterSpacing="0"
+            android:textColor="@color/text_primary"
+            tools:text="K7Q2MX" />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 찾은 챌린지: 유효한 코드일 때만 표시 -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/layout_found_challenge"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/bg_brand_subtle"
+        app:cardCornerRadius="@dimen/radius_md"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <!-- 찾은 챌린지 라벨 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_join_found_label"
+                android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                android:textColor="@color/text_secondary" />
+
+            <!-- 찾은 챌린지 정보 -->
+            <TextView
+                android:id="@+id/tv_found_challenge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/challenge_join_found_preview"
+                android:textAppearance="@style/TextAppearance.JjanChall.Body"
+                android:textColor="@color/text_primary"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 하단 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:orientation="horizontal">
+
+        <!-- 취소 버튼 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel_join"
+            style="@style/Widget.JjanChall.Button.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/size_button"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/challenge_join_cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/text_primary"
+            app:backgroundTint="@color/bg_default"
+            app:strokeColor="@color/border_strong"
+            app:strokeWidth="1dp"
+            app:cornerRadius="@dimen/radius_md" />
+
+        <!-- 참여하기 버튼 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_confirm_join"
+            style="@style/Widget.JjanChall.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/size_button"
+            android:layout_weight="1"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/challenge_join_confirm"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+</LinearLayout>
