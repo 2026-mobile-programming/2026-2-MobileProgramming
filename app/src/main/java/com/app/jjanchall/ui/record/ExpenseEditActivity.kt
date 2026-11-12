@@ -21,6 +21,8 @@ import com.app.jjanchall.util.applySystemBarsPadding
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
+import com.app.jjanchall.ui.receipt.ReceiptActivity
 
 /**
  * RECORD-02 지출 추가 · 수정
@@ -63,7 +65,8 @@ class ExpenseEditActivity : AppCompatActivity() {
         binding.tvDate.setOnClickListener { showDatePicker() }
         binding.etStore.doAfterTextChanged { binding.tilStore.error = null }
         binding.btnReceiptAutofill.setOnClickListener {
-            Toast.makeText(this, R.string.setting_coming_soon, Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, ReceiptActivity::class.java)
+            startActivity(intent)
         }
         binding.btnSave.setOnClickListener { save() }
 
