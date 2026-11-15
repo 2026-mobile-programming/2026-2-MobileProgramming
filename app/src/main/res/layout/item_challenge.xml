@@ -1,0 +1,79 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_md"
+    android:background="@drawable/bg_challenge_card"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_md">
+
+    <!-- 챌린지 이름과 D-day -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_challenge_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            tools:text="10월 무지출 10일 도전" />
+
+        <TextView
+            android:id="@+id/tv_challenge_dday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+            android:textColor="@color/text_secondary"
+            tools:text="D-23" />
+
+    </LinearLayout>
+
+    <!-- 달성률 막대 -->
+    <ProgressBar
+        android:id="@+id/pb_challenge_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/spacing_sm"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:max="10"
+        android:progressTint="@color/bg_brand"
+        android:progressBackgroundTint="@color/bg_muted"
+        tools:progress="4" />
+
+    <!-- 달성 일수와 참여자 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_challenge_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+            android:textColor="@color/text_secondary"
+            tools:text="나 4 / 10일" />
+
+        <TextView
+            android:id="@+id/tv_challenge_participants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+            android:textColor="@color/text_secondary"
+            tools:text="참여 3명 · 1등" />
+
+    </LinearLayout>
+
+</LinearLayout>

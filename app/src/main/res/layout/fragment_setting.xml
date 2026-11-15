@@ -89,6 +89,16 @@
                     android:layout_height="0dp"
                     android:layout_weight="1" />
 
+                <!-- 저장된 예산 (예: 300,000원) -->
+                <TextView
+                    android:id="@+id/tv_budget_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_xs"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                    android:textColor="@color/text_secondary"
+                    tools:text="300,000원" />
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

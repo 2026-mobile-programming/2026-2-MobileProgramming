@@ -58,6 +58,78 @@
 
     <!-- 챌린지 (CHALLENGE-01) -->
     <string name="challenge_title">무지출 챌린지</string>
+    <string name="challenge_create">챌린지 만들기</string>
+    <string name="challenge_join_code">초대 코드로 참여</string>
+    <string name="challenge_ongoing">진행 중</string>
+    <string name="challenge_completed">끝난 챌린지</string>
+    <string name="challenge_empty_ongoing">진행 중인 챌린지가 없어요</string>
+    <string name="challenge_empty_completed">끝난 챌린지가 없어요</string>
+
+    <string name="challenge_preview_finished_title">9월 무지출 8일 도전</string>
+    <string name="challenge_success">성공</string>
+
+    <!-- 챌린지 카드 임시 데이터 (Firestore 연동 전) -->
+    <string name="challenge_preview_title">10월 무지출 10일 도전</string>
+    <string name="challenge_preview_dday">D-23</string>
+    <string name="challenge_preview_progress">나 4 / 10일</string>
+    <string name="challenge_preview_participants">참여 3명 · 1등</string>
+
+
+    <!-- 챌린지 만들기 (CHALLENGE-02) -->
+    <string name="challenge_create_title">챌린지 만들기</string>
+    <string name="challenge_name_label">챌린지 이름</string>
+    <string name="challenge_name_hint">예: 10월 무지출 10일 도전</string>
+    <string name="challenge_period">기간</string>
+    <string name="challenge_start_date">시작일 선택</string>
+    <string name="challenge_end_date">종료일 선택</string>
+    <string name="challenge_date_separator">~</string>
+    <string name="challenge_start_date_label">시작일</string>
+    <string name="challenge_end_date_label">종료일</string>
+    <string name="challenge_date_order_error">종료일은 시작일보다 빠를 수 없어요</string>
+    <string name="challenge_date_reset">시작일이 변경되어 종료일을 다시 선택해 주세요</string>
+    <string name="challenge_target_days">목표 무지출 일수</string>
+    <string name="challenge_target_days_format">%1$d일</string>
+    <string name="challenge_target_preview">10일</string>
+    <string name="challenge_minus">−</string>
+    <string name="challenge_plus">+</string>
+    <string name="challenge_target_helper">그날 지출 기록이 0원이면 무지출로 자동 체크돼요</string>
+    <string name="challenge_target_limit_error">목표 일수는 챌린지 기간을 초과할 수 없어요</string>
+    <string name="challenge_invite_code">친구 초대 코드</string>
+    <string name="challenge_code_placeholder">생성 후 표시</string>
+    <string name="challenge_share">공유하기</string>
+    <string name="challenge_code_helper">친구에게 카카오톡 등으로 보내는 일시적 초대 코드</string>
+    <string name="challenge_start">챌린지 시작하기</string>
+    <!-- 챌린지 생성 입력값 검증 -->
+    <string name="challenge_name_required">챌린지 이름을 입력해 주세요</string>
+    <string name="challenge_start_date_required">시작일을 선택해 주세요</string>
+    <string name="challenge_end_date_required">종료일을 선택해 주세요</string>
+    <string name="challenge_target_invalid">목표 일수를 확인해 주세요</string>
+    <string name="challenge_validation_success">입력 확인 완료! 챌린지 저장 기능은 추후 연결됩니다</string>
+
+    <!-- CHALLENGE-03 초대 코드 입력 다이얼로그 -->
+    <string name="challenge_join_dialog_title">초대 코드로 참여</string>
+    <string name="challenge_join_dialog_description">친구에게 받은 6자리 코드를 입력하세요.</string>
+    <string name="challenge_join_dialog_hint">6자리 초대코드</string>
+    <string name="challenge_join_found_label">찾은 챌린지</string>
+    <string name="challenge_join_found_preview">10월 무지출 10일 도전 · 참여 2명</string>
+    <string name="challenge_join_preview_notice">실제 챌린지 참여는 서버 연동 후 가능해요</string>
+    <string name="challenge_join_cancel">취소</string>
+    <string name="challenge_join_confirm">참여하기</string>
+    <string name="challenge_join_code_required">초대 코드를 입력하세요</string>
+    <string name="challenge_join_code_invalid">영문과 숫자로 이루어진 6자리 코드를 입력하세요</string>
+    <string name="challenge_join_code_not_found">존재하지 않는 초대 코드예요</string>
+
+    <string name="challenge_detail_title">챌린지 참여 현황</string>
+    <!-- CHALLENGE-04 임시 미리보기 데이터 -->
+    <string name="challenge_detail_period_preview">2026.10.01 ~ 10.31 · D-23</string>
+    <string name="challenge_detail_code_preview">초대 코드 K7Q2MX</string>
+    <string name="challenge_calendar_title">나의 무지출 달력</string>
+    <string name="challenge_calendar_progress_preview">4 / 10일</string>
+    <string name="challenge_calendar_no_spend">무지출</string>
+    <string name="challenge_calendar_spent">지출 있음</string>
+    <string name="challenge_ranking_title">참여자 순위</string>
+    <string name="challenge_ranking_days_format">%1$d일</string>
+
 
     <!-- 설정 (SETTING-01) -->
     <string name="setting_title">설정</string>
@@ -74,6 +146,23 @@
     <string name="setting_logout_title">로그아웃할까요?</string>
     <string name="setting_logout_message">다음에 다시 로그인해야 해요.</string>
     <string name="setting_coming_soon">준비 중인 기능이에요</string>
+    <string name="setting_budget_unset">미설정</string>
+
+    <!-- 월 예산 설정 (SETTING-02) -->
+    <string name="budget_title">월 예산 설정</string>
+    <string name="budget_amount">한 달 예산</string>
+    <string name="budget_used_label">이번 달 사용</string>
+    <string name="budget_used_format">%1$s원 / %2$s원</string>
+    <string name="budget_status_empty">예산을 입력하면 이번 달 사용 현황이 보여요</string>
+    <string name="budget_status_left">예산까지 %1$s원 남았어요</string>
+    <string name="budget_status_warning">예산의 %1$d%%를 썼어요</string>
+    <string name="budget_status_over">예산을 %1$s원 넘었어요</string>
+    <string name="budget_alert_label">알림 받을 시점</string>
+    <string name="budget_alert_80" formatted="false">예산의 80%를 쓰면</string>
+    <string name="budget_alert_over">예산을 넘으면</string>
+    <string name="budget_alert_none">알림 받지 않기</string>
+    <string name="budget_error_amount">예산을 입력해 주세요</string>
+    <string name="budget_saved">예산을 저장했어요</string>
 
     <!-- 로그인 (LOGIN-01) -->
     <string name="login_tagline">영수증 한 장으로 끝나는 자취생 가계부</string>

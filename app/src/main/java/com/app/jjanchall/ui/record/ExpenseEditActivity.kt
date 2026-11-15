@@ -4,8 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -19,12 +17,12 @@ import com.app.jjanchall.data.local.ExpenseCategory
 import com.app.jjanchall.data.local.ExpenseDbHelper
 import com.app.jjanchall.databinding.ActivityExpenseEditBinding
 import com.app.jjanchall.ui.receipt.ReceiptActivity
+import com.app.jjanchall.util.addAmountFormat
+import com.app.jjanchall.util.amountValue
 import com.app.jjanchall.util.applySystemBarsPadding
-import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 /**
  * RECORD-02 지출 추가 · 수정
@@ -41,9 +39,6 @@ class ExpenseEditActivity : AppCompatActivity() {
     // 수정할 때는 원래 시간 유지
     private var originalTime: String? = null
     private var expenseLoaded = false
-
-    private val numberFormat =
-        NumberFormat.getNumberInstance(Locale.KOREA)
 
     private val dateFormatter by lazy {
         DateTimeFormatter.ofPattern(
@@ -215,59 +210,7 @@ class ExpenseEditActivity : AppCompatActivity() {
     // 금액에 자동으로 쉼표 추가
     // 예: 4800 -> 4,800
     private fun setupAmountFormat() {
-
-        binding.etAmount.addTextChangedListener(
-            object : TextWatcher {
-
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) = Unit
-
-                override fun onTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int
-                ) = Unit
-
-                override fun afterTextChanged(s: Editable?) {
-
-                    binding.tvAmountError.isVisible = false
-
-                    val digits = s
-                        ?.filter { it.isDigit() }
-                        ?.toString()
-                        .orEmpty()
-                        .take(MAX_AMOUNT_DIGITS)
-
-                    val formatted = if (digits.isEmpty()) {
-                        ""
-                    } else {
-                        numberFormat.format(digits.toLong())
-                    }
-
-                    if (formatted != s.toString()) {
-
-                        binding.etAmount.removeTextChangedListener(
-                            this
-                        )
-
-                        binding.etAmount.setText(formatted)
-
-                        binding.etAmount.setSelection(
-                            formatted.length
-                        )
-
-                        binding.etAmount.addTextChangedListener(
-                            this
-                        )
-                    }
-                }
-            }
-        )
+        binding.etAmount.addAmountFormat { binding.tvAmountError.isVisible = false }
     }
 
     // 선택된 날짜 표시
@@ -362,17 +305,8 @@ class ExpenseEditActivity : AppCompatActivity() {
 
     // 지출 저장
     private fun save() {
-
-        val amount = binding.etAmount.text
-            ?.filter { it.isDigit() }
-            ?.toString()
-            ?.toIntOrNull()
-            ?: 0
-
-        val store = binding.etStore.text
-            ?.toString()
-            .orEmpty()
-            .trim()
+        val amount = binding.etAmount.amountValue()
+        val store = binding.etStore.text?.toString().orEmpty().trim()
 
         var valid = true
 
@@ -471,7 +405,6 @@ class ExpenseEditActivity : AppCompatActivity() {
 
         private const val EXTRA_EXPENSE_ID = "expense_id"
         private const val NEW_EXPENSE = -1L
-        private const val MAX_AMOUNT_DIGITS = 9
 
         private val TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH:mm")

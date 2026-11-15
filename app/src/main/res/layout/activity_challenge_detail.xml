@@ -1,0 +1,214 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_default"
+    tools:context=".ui.challenge.ChallengeDetailActivity">
+
+    <!-- 공통 상단 바 -->
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/view_app_bar" />
+
+    <!-- 헤더 하단 구분선 -->
+    <View
+        style="@style/Widget.JjanChall.Divider" />
+
+    <!-- 챌린지 상세 내용 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layout_detail_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/screen_padding">
+
+            <!-- 챌린지 기간 및 초대 코드 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- 챌린지 기간: 왼쪽 -->
+                <TextView
+                    android:id="@+id/tv_detail_period"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/challenge_detail_period_preview"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Body"
+                    android:textSize="14sp"
+                    android:lineHeight="20sp"
+                    android:textStyle="normal"
+                    android:letterSpacing="0"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/text_secondary"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <!-- 초대 코드: 오른쪽 -->
+                <TextView
+                    android:id="@+id/tv_detail_invite_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:gravity="end|center_vertical"
+                    android:text="@string/challenge_detail_code_preview"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Body"
+                    android:textSize="14sp"
+                    android:lineHeight="20sp"
+                    android:textStyle="normal"
+                    android:letterSpacing="0"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/text_secondary"
+                    android:maxLines="1" />
+
+            </LinearLayout>
+
+            <!-- 나의 무지출 달력 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                app:cardBackgroundColor="@color/bg_default"
+                app:cardCornerRadius="@dimen/radius_lg"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_input"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <!-- 달력 제목과 진행률 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/challenge_calendar_title"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Body"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary" />
+
+                        <TextView
+                            android:id="@+id/tv_calendar_progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/challenge_calendar_progress_preview"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Body"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_brand" />
+
+                    </LinearLayout>
+
+                    <!-- 날짜들이 표시될 7열 달력 -->
+                    <GridLayout
+                        android:id="@+id/grid_no_spend_calendar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:columnCount="7"
+                        android:orientation="horizontal" />
+
+
+                    <!-- 달력 범례 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <!-- 무지출 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            app:cardBackgroundColor="@color/bg_brand"
+                            app:cardCornerRadius="2dp"
+                            app:cardElevation="0dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_xs"
+                            android:text="@string/challenge_calendar_no_spend"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                            android:textColor="@color/text_secondary" />
+
+                        <!-- 지출 있음 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_marginStart="@dimen/spacing_md"
+                            app:cardBackgroundColor="@color/border_default"
+                            app:cardCornerRadius="2dp"
+                            app:cardElevation="0dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_xs"
+                            android:text="@string/challenge_calendar_spent"
+                            android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                            android:textColor="@color/text_secondary" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- 참여자 순위 영역 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:orientation="vertical">
+
+                <!-- 참여자 순위 제목 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/challenge_ranking_title"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Body"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+
+                <!-- 참여자 순위 목록 -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_challenge_ranking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

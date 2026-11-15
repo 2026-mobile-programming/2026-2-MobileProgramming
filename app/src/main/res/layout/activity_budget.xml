@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SETTING-02 월 예산 설정 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_default"
+    android:orientation="vertical"
+    tools:context=".ui.setting.BudgetActivity">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/view_app_bar" />
+
+    <View style="@style/Widget.JjanChall.Divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/screen_padding">
+
+            <!-- 한 달 예산 -->
+            <TextView
+                style="@style/Widget.JjanChall.InputLabel"
+                android:labelFor="@id/et_budget"
+                android:text="@string/budget_amount" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_amount_underline"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/spacing_sm">
+
+                <EditText
+                    android:id="@+id/et_budget"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="0"
+                    android:importantForAutofill="no"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:maxLength="11"
+                    android:minHeight="@dimen/size_touch_min"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Display"
+                    android:textColorHint="@color/text_disabled" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/expense_amount_unit"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Display" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_budget_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/budget_error_amount"
+                android:textAppearance="@style/TextAppearance.JjanChall.Caption"
+                android:textColor="@color/text_danger"
+                android:visibility="gone" />
+
+            <!-- 이번 달 사용 현황 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:background="@drawable/bg_card_outline"
+                android:orientation="vertical"
+                android:padding="@dimen/screen_padding">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/budget_used_label"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                        android:textColor="@color/text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tv_budget_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+                        tools:text="312,400원 / 300,000원" />
+                </LinearLayout>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress_budget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:max="100"
+                    app:indicatorColor="@color/bg_brand"
+                    app:trackColor="@color/bg_muted"
+                    app:trackCornerRadius="@dimen/radius_full"
+                    app:trackThickness="10dp"
+                    tools:progress="60" />
+
+                <TextView
+                    android:id="@+id/tv_budget_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:textAppearance="@style/TextAppearance.JjanChall.Body2"
+                    android:textColor="@color/text_secondary"
+                    tools:text="예산까지 120,000원 남았어요" />
+            </LinearLayout>
+
+            <!-- 알림 받을 시점 -->
+            <TextView
+                style="@style/Widget.JjanChall.InputLabel"
+                android:layout_marginTop="@dimen/spacing_2xl"
+                android:text="@string/budget_alert_label" />
+
+            <RadioGroup
+                android:id="@+id/rg_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rb_alert_80"
+                    style="@style/Widget.JjanChall.RadioButton"
+                    android:text="@string/budget_alert_80" />
+
+                <RadioButton
+                    android:id="@+id/rb_alert_over"
+                    style="@style/Widget.JjanChall.RadioButton"
+                    android:text="@string/budget_alert_over" />
+
+                <RadioButton
+                    android:id="@+id/rb_alert_none"
+                    style="@style/Widget.JjanChall.RadioButton"
+                    android:text="@string/budget_alert_none" />
+            </RadioGroup>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/screen_padding"
+        android:text="@string/expense_save" />
+
+</LinearLayout>
