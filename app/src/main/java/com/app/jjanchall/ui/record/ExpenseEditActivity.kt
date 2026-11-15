@@ -40,6 +40,7 @@ class ExpenseEditActivity : AppCompatActivity() {
 
     // 수정할 때는 원래 시간 유지
     private var originalTime: String? = null
+    private var expenseLoaded = false
 
     private val numberFormat =
         NumberFormat.getNumberInstance(Locale.KOREA)
@@ -131,6 +132,13 @@ class ExpenseEditActivity : AppCompatActivity() {
             NEW_EXPENSE
         )
 
+        // OCR 화면을 연 동안 재생성되어도 선택 날짜와 기존 지출 시각 유지
+        selectedDate = savedInstanceState?.getString(STATE_SELECTED_DATE)?.let {
+            runCatching { LocalDate.parse(it) }.getOrNull()
+        } ?: LocalDate.now()
+        originalTime = savedInstanceState?.getString(STATE_ORIGINAL_TIME)
+        expenseLoaded = savedInstanceState?.getBoolean(STATE_EXPENSE_LOADED) ?: false
+
         binding.appBar.tvAppBarTitle.setText(
             if (isEditMode()) {
                 R.string.expense_edit_title
@@ -180,7 +188,7 @@ class ExpenseEditActivity : AppCompatActivity() {
         }
 
         // 기존 지출 수정 모드
-        if (isEditMode()) {
+        if (isEditMode() && !expenseLoaded) {
             loadExpense()
         }
     }
@@ -347,6 +355,7 @@ class ExpenseEditActivity : AppCompatActivity() {
         }.getOrDefault(LocalDate.now())
 
         originalTime = expense.time
+        expenseLoaded = true
 
         showDate()
     }
@@ -447,7 +456,18 @@ class ExpenseEditActivity : AppCompatActivity() {
         }.start()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(STATE_SELECTED_DATE, selectedDate.toString())
+        outState.putString(STATE_ORIGINAL_TIME, originalTime)
+        outState.putBoolean(STATE_EXPENSE_LOADED, expenseLoaded)
+        super.onSaveInstanceState(outState)
+    }
+
     companion object {
+
+        private const val STATE_SELECTED_DATE = "selected_date"
+        private const val STATE_ORIGINAL_TIME = "original_time"
+        private const val STATE_EXPENSE_LOADED = "expense_loaded"
 
         private const val EXTRA_EXPENSE_ID = "expense_id"
         private const val NEW_EXPENSE = -1L

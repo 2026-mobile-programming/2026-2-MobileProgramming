@@ -1,4 +1,3 @@
-
 package com.app.jjanchall.ui.receipt
 
 import android.graphics.Rect
@@ -8,7 +7,6 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.max
 
-// 영수증에서 추출한 정보
 data class ReceiptInfo(
     val amount: String?,
     val date: String?,
@@ -42,7 +40,6 @@ object ReceiptParser {
         "거래금액",
         "거래액",
         "승인금액",
-        "받은금액",
         "총액"
     )
 
@@ -61,6 +58,8 @@ object ReceiptParser {
         "할인금액",
         "거스름돈",
         "잔돈",
+        "받은금액",
+        "받은돈",
         "CATID",
         "TID",
         "TEL",
@@ -132,7 +131,7 @@ object ReceiptParser {
     // 예: 3,000 / 12,700 / 47.000I / 16000
     // 카드번호처럼 하이픈으로 이어진 숫자는 제외
     private val moneyRegex = Regex(
-        """(?<![\d,./*%-])(\d{1,3}(?:[,\.]\s*\d{3})+|\d{3,8})(원|[Il|])?(?![\d,./*%-])"""
+        """(?<![\d,./*%-])(\d{1,3}(?:[,\.]\s*\d{3})+|\d{1,9})(?:\s*(원|[Il|]))?(?![\d,./*%-])"""
     )
 
     // OCR 분석 시작
@@ -174,7 +173,7 @@ object ReceiptParser {
     private fun extractDate(text: String): String? {
 
         val regex = Regex(
-            """(?<!\d)(20\d{2})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?!\d)"""
+            """(?<!\d)(20\d{2})\s*[./-]\s*(\d{1,2})\s*[./-]\s*(\d{1,2})(?!\d)"""
         )
 
         for (match in regex.findAll(text)) {
@@ -220,7 +219,7 @@ object ReceiptParser {
         // 모든 OCR 줄에서 금액 후보 찾기
         for (line in lines) {
 
-            if (isExcludedAmountLine(line.text)) {
+            if (isExcludedAmountLine(line.text) || hasExcludedLabel(line, lines)) {
                 continue
             }
 
@@ -237,7 +236,7 @@ object ReceiptParser {
                     ?: continue
 
                 // 지나치게 작거나 큰 숫자는 제외
-                if (amount !in 100L..100_000_000L) {
+                if (amount !in 1L..999_999_999L) {
                     continue
                 }
 
@@ -273,14 +272,14 @@ object ReceiptParser {
 
             var score = 0
 
-            // 3,000처럼 천 단위 구분 기호가 있으면 우선
+            // 표기 형식은 보조 근거로만 사용하고 결제/합계 항목을 우선
             if (candidate.hasGrouping) {
-                score += 150
+                score += 20
             }
 
             // '원' 단위가 있으면 우선
             if (candidate.hasWon) {
-                score += 50
+                score += 10
             }
 
             // 합계 등의 위치와 관련이 있으면 우선
@@ -290,7 +289,7 @@ object ReceiptParser {
             score += minOf(
                 (frequency[candidate.amount] ?: 1) - 1,
                 3
-            ) * 20
+            ) * 5
 
             Triple(candidate, score, labelScore)
         }
@@ -320,14 +319,13 @@ object ReceiptParser {
 
         val best = ranked.first()
 
-        // 근거가 약한 금액 후보가 여러 개이고
-        // 점수까지 비슷하면 임의로 선택하지 않음
+        // 동점이거나, 항목 근거가 없는 후보들의 점수가 비슷하면 수동 입력
         if (ranked.size > 1) {
             val second = ranked[1]
 
             if (
-                best.third == 0 &&
-                best.second - second.second < 20
+                best.second == second.second ||
+                (best.third == 0 && best.second - second.second < 20)
             ) {
                 return null
             }
@@ -347,6 +345,19 @@ object ReceiptParser {
                 ignoreCase = true
             )
         }
+    }
+
+    // '부가세' / '받은금액'과 숫자가 서로 다른 OCR 영역이어도 제외
+    private fun hasExcludedLabel(target: OcrLine, lines: List<OcrLine>): Boolean {
+        val nearestLabel = lines.filter { line ->
+            line !== target &&
+                    line.box.right <= target.box.left + 10 &&
+                    isSameRow(line.box, target.box) &&
+                    line.text.any { it.isLetter() } &&
+                    !moneyRegex.containsMatchIn(line.text)
+        }.minByOrNull { target.box.left - it.box.right }
+
+        return nearestLabel != null && isExcludedAmountLine(nearestLabel.text)
     }
 
     // '합계', '결제금액' 등과의 위치 관계 분석
@@ -379,25 +390,25 @@ object ReceiptParser {
             }
 
             val keywordWeight = when {
-                isSplitTotal -> 5
+                isSplitTotal -> 100
 
                 keyword == "실결제금액" ||
-                        keyword == "결제금액" -> 60
+                        keyword == "결제금액" -> 600
 
                 keyword == "합계금액" ||
-                        keyword == "합계" -> 55
+                        keyword == "합계" -> 500
 
                 keyword == "총매출액" ||
-                        keyword == "총구매액" -> 45
+                        keyword == "총구매액" -> 400
 
-                else -> 25
+                else -> 300
             }
 
             // 금액 키워드와 숫자가 같은 OCR 줄에 있는 경우
             if (label === target) {
                 bestScore = maxOf(
                     bestScore,
-                    130 + keywordWeight
+                    10 + keywordWeight
                 )
                 continue
             }
@@ -409,7 +420,7 @@ object ReceiptParser {
             ) {
                 bestScore = maxOf(
                     bestScore,
-                    100 + keywordWeight
+                    5 + keywordWeight
                 )
             }
         }
@@ -513,6 +524,12 @@ object ReceiptParser {
     private fun isValidStore(value: String): Boolean {
 
         val name = value.trim()
+
+        // 이름을 못 읽었을 때 '매장명', '상호명' 자체를 가게명으로 쓰지 않음
+        val labelOnly = compact(name).trim(':', '：', '-', '[', ']')
+        if (storeKeywords.any { labelOnly == it }) {
+            return false
+        }
 
         if (name.length !in 2..35) {
             return false
