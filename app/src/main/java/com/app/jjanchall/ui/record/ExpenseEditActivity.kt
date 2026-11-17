@@ -30,6 +30,7 @@ import java.util.Locale
  * RECORD-02 지출 추가 · 수정
  * - EXTRA_EXPENSE_ID 없이 열면 추가
  * - EXTRA_EXPENSE_ID가 있으면 기존 지출 수정
+ * - EXTRA_START_WITH_RECEIPT가 있으면 영수증 화면부터 실행 (홈 "영수증 찍기")
  */
 class ExpenseEditActivity : AppCompatActivity() {
 
@@ -42,6 +43,9 @@ class ExpenseEditActivity : AppCompatActivity() {
     private var originalTime: String? = null
     private var expenseLoaded = false
 
+    // 홈 "영수증 찍기"로 들어온 경우
+    private var startedWithReceipt = false
+
     private val dateFormatter by lazy {
         DateTimeFormatter.ofPattern(
             getString(R.string.expense_date_format)
@@ -52,6 +56,12 @@ class ExpenseEditActivity : AppCompatActivity() {
     private val receiptLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
+
+        // 홈에서 바로 영수증으로 들어왔다가 취소하면 빈 추가 화면을 남기지 않고 닫기
+        if (result.resultCode != RESULT_OK && startedWithReceipt) {
+            finish()
+            return@registerForActivityResult
+        }
 
         if (result.resultCode == RESULT_OK) {
 
@@ -128,6 +138,7 @@ class ExpenseEditActivity : AppCompatActivity() {
             EXTRA_EXPENSE_ID,
             NEW_EXPENSE
         )
+        startedWithReceipt = intent.getBooleanExtra(EXTRA_START_WITH_RECEIPT, false)
 
         // OCR 화면을 연 동안 재생성되어도 선택 날짜와 기존 지출 시각 유지
         selectedDate = savedInstanceState?.getString(STATE_SELECTED_DATE)?.let {
@@ -171,12 +182,7 @@ class ExpenseEditActivity : AppCompatActivity() {
 
         // 영수증으로 자동 채우기
         binding.btnReceiptAutofill.setOnClickListener {
-            val receiptIntent = Intent(
-                this,
-                ReceiptActivity::class.java
-            )
-
-            receiptLauncher.launch(receiptIntent)
+            openReceipt()
         }
 
         // 지출 저장
@@ -188,6 +194,17 @@ class ExpenseEditActivity : AppCompatActivity() {
         if (isEditMode() && !expenseLoaded) {
             loadExpense()
         }
+
+        // 처음 열릴 때만 영수증 화면 실행 (화면 회전 등으로 다시 만들어질 때는 X)
+        if (startedWithReceipt && savedInstanceState == null) {
+            openReceipt()
+        }
+    }
+
+    private fun openReceipt() {
+        receiptLauncher.launch(
+            Intent(this, ReceiptActivity::class.java)
+        )
     }
 
     private fun isEditMode(): Boolean {
@@ -408,6 +425,7 @@ class ExpenseEditActivity : AppCompatActivity() {
         private const val STATE_EXPENSE_LOADED = "expense_loaded"
 
         private const val EXTRA_EXPENSE_ID = "expense_id"
+        private const val EXTRA_START_WITH_RECEIPT = "start_with_receipt"
         private const val NEW_EXPENSE = -1L
 
         private val TIME_FORMATTER =
@@ -416,6 +434,10 @@ class ExpenseEditActivity : AppCompatActivity() {
         // 지출 추가 화면
         fun newIntent(context: Context) =
             Intent(context, ExpenseEditActivity::class.java)
+
+        // 영수증 찍기로 시작하는 지출 추가 화면
+        fun receiptIntent(context: Context) =
+            newIntent(context).putExtra(EXTRA_START_WITH_RECEIPT, true)
 
         // 지출 수정 화면
         fun editIntent(
