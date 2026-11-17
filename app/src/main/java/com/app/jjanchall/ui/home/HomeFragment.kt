@@ -53,13 +53,9 @@ class HomeFragment : Fragment() {
             startActivity(ExpenseEditActivity.newIntent(requireContext()))
         }
 
-        // 영수증 화면(#7) 머지 후 연결
+        // 영수증 찍기 → 영수증 인식 후 지출 추가 화면에 자동 입력
         binding.btnReceipt.setOnClickListener {
-            Toast.makeText(
-                requireContext(),
-                R.string.setting_coming_soon,
-                Toast.LENGTH_SHORT
-            ).show()
+            startActivity(ExpenseEditActivity.receiptIntent(requireContext()))
         }
 
         // 통계 보기 → 통계 화면 이동
