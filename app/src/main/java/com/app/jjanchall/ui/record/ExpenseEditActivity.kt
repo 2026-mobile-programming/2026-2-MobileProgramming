@@ -23,6 +23,8 @@ import com.app.jjanchall.util.applySystemBarsPadding
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import com.app.jjanchall.ui.challenge.ChallengeProgressSync
+import java.util.Locale
 
 /**
  * RECORD-02 지출 추가 · 수정
@@ -365,6 +367,8 @@ class ExpenseEditActivity : AppCompatActivity() {
                 }
 
                 if (success) {
+                    // 지출 저장 성공 시 챌린지 진행률 동기화
+                    ChallengeProgressSync.sync(applicationContext)
 
                     Toast.makeText(
                         this,
