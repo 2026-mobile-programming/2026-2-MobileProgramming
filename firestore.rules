@@ -1,0 +1,155 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // 현재 사용자가 챌린지에 참여 중인지 확인
+    function isMember(challengeId) {
+      return signedIn()
+        && exists(
+          /databases/$(database)/documents/challenges/$(challengeId)/members/$(request.auth.uid)
+        );
+    }
+
+    // 챌린지 정보
+    match /challenges/{challengeId} {
+
+      // 참여자만 챌린지 상세 정보 조회
+      allow get: if isMember(challengeId);
+      allow list: if false;
+
+      // 본인이 생성한 챌린지만 등록
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'title', 'startDate', 'endDate',
+          'targetDays', 'inviteCode',
+          'createdBy', 'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'title', 'startDate', 'endDate',
+          'targetDays', 'inviteCode',
+          'createdBy', 'createdAt'
+        ])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.startDate is string
+        && request.resource.data.endDate is string
+        && request.resource.data.startDate <= request.resource.data.endDate
+        && request.resource.data.targetDays is int
+        && request.resource.data.targetDays >= 1
+        && request.resource.data.inviteCode is string
+        && request.resource.data.inviteCode.matches('^[A-Z0-9]{6}$')
+        && request.resource.data.createdAt == request.time
+        && getAfter(
+          /databases/$(database)/documents/inviteCodes/$(request.resource.data.inviteCode)
+        ).data.challengeId == challengeId
+        && getAfter(
+          /databases/$(database)/documents/inviteCodes/$(request.resource.data.inviteCode)
+        ).data.title == request.resource.data.title;
+
+      allow update, delete: if false;
+
+      // 챌린지 참여자
+      match /members/{memberId} {
+
+        // 본인 또는 같은 챌린지 참여자만 조회
+        allow get: if signedIn()
+          && (
+            request.auth.uid == memberId
+            || isMember(challengeId)
+          );
+
+        // 참여자 순위 목록
+        allow list: if isMember(challengeId);
+
+        // 참여자 등록
+        allow create: if signedIn()
+          && request.auth.uid == memberId
+          && request.resource.data.keys().hasAll([
+            'uid', 'completedDays', 'joinedAt'
+          ])
+          && request.resource.data.keys().hasOnly([
+            'uid', 'completedDays', 'joinedAt', 'joinCode'
+          ])
+          && request.resource.data.uid == memberId
+          && request.resource.data.completedDays == 0
+          && request.resource.data.joinedAt == request.time
+          && (
+            // 챌린지 생성자의 최초 참여
+            (
+              !('joinCode' in request.resource.data)
+              && getAfter(
+                /databases/$(database)/documents/challenges/$(challengeId)
+              ).data.createdBy == memberId
+            )
+            ||
+            // 초대 코드를 통한 참여
+            (
+              'joinCode' in request.resource.data
+              && request.resource.data.joinCode is string
+              && request.resource.data.joinCode ==
+                get(
+                  /databases/$(database)/documents/challenges/$(challengeId)
+                ).data.inviteCode
+              && get(
+                /databases/$(database)/documents/inviteCodes/$(request.resource.data.joinCode)
+              ).data.challengeId == challengeId
+            )
+          );
+
+        // 본인의 성공 일수만 수정 가능
+        allow update: if signedIn()
+          && request.auth.uid == memberId
+          && resource.data.uid == memberId
+          && request.resource.data.completedDays is int
+          && request.resource.data.completedDays >= 0
+          && request.resource.data.diff(resource.data)
+            .affectedKeys().hasOnly(['completedDays']);
+
+        allow delete: if false;
+      }
+    }
+
+    // 초대 코드
+    match /inviteCodes/{code} {
+
+      // 초대 코드를 알고 있는 로그인 사용자의 개별 조회
+      allow get: if signedIn();
+      allow list: if false;
+
+      // 챌린지 생성자만 초대 코드 등록
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'challengeId', 'title'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'challengeId', 'title'
+        ])
+        && request.resource.data.challengeId is string
+        && request.resource.data.title is string
+        && getAfter(
+          /databases/$(database)/documents/challenges/$(request.resource.data.challengeId)
+        ).data.inviteCode == code
+        && getAfter(
+          /databases/$(database)/documents/challenges/$(request.resource.data.challengeId)
+        ).data.title == request.resource.data.title
+        && getAfter(
+          /databases/$(database)/documents/challenges/$(request.resource.data.challengeId)
+        ).data.createdBy == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+
+    // 본인이 참여한 챌린지 전체 조회
+    match /{path=**}/members/{memberId} {
+      allow list: if signedIn()
+        && resource.data.uid == request.auth.uid;
+    }
+  }
+}
