@@ -41,8 +41,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/spacing_sm"
                     android:layout_weight="1"
+                    android:minHeight="48dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:textAppearance="@style/TextAppearance.JjanChall.Heading"
-                    tools:text="2026년 10월 리포트" />
+                    tools:text="2026년 10월 리포트 ▾" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRegenerate"
