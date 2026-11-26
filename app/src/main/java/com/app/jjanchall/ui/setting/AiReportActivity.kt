@@ -41,6 +41,9 @@ class AiReportActivity : AppCompatActivity() {
     private var reportJob: Job? = null
     private var monthPickerDialog: AlertDialog? = null
     private var requestVersion = 0L
+    private val reportCache by lazy {
+        getSharedPreferences("ai_report_cache", MODE_PRIVATE)
+    }
 
     private val model by lazy {
         Firebase.ai(app = getReportFirebaseApp(applicationContext)).generativeModel(
@@ -70,7 +73,7 @@ class AiReportActivity : AppCompatActivity() {
         }?.takeIf { it.year >= 1 && !it.isAfter(currentMonth) } ?: currentMonth
         updateMonthLabel()
         binding.tvReportMonth.setOnClickListener { showMonthPicker() }
-        binding.btnRegenerate.setOnClickListener { regenerate() }
+        binding.btnRegenerate.setOnClickListener { regenerate(force = true) }
 
         val previous = savedInstanceState?.takeIf {
             uid != null && it.getString("owner") == uid &&
@@ -84,9 +87,9 @@ class AiReportActivity : AppCompatActivity() {
                 previous.getString("summary").orEmpty(),
                 previous.getStringArrayList("tips").orEmpty()
             )
-        } else {
-            regenerate()
         }
+
+        regenerate()
     }
 
     private fun updateMonthLabel() {
@@ -180,6 +183,51 @@ class AiReportActivity : AppCompatActivity() {
         }
     }
 
+    private fun readCachedReport(
+        owner: String,
+        month: YearMonth,
+        dataKey: String
+    ): Pair<String, List<String>>? {
+        return runCatching {
+            val saved = reportCache.getString(
+                "report_v1_${owner}_$month", null
+            ) ?: return@runCatching null
+
+            val data = JSONObject(saved)
+
+            if (data.getString("dataKey") != dataKey) {
+                return@runCatching null
+            }
+
+            val summary = data.getString("summary").trim()
+            val tipsArray = data.getJSONArray("tips")
+            require(tipsArray.length() == 3)
+
+            val tips = (0 until tipsArray.length()).map {
+                tipsArray.getString(it).trim()
+            }
+            require(summary.isNotEmpty() && tips.all { it.isNotEmpty() })
+
+            summary to tips
+        }.getOrNull()
+    }
+
+    private fun saveCachedReport(
+        owner: String,
+        month: YearMonth,
+        dataKey: String,
+        summary: String,
+        tips: List<String>
+    ) {
+        val data = JSONObject()
+            .put("dataKey", dataKey)
+            .put("summary", summary)
+            .put("tips", JSONArray(tips))
+
+        reportCache.edit()
+            .putString("report_v1_${owner}_$month", data.toString())
+            .apply()
+    }
     private fun isCurrentRequest(version: Long, month: YearMonth): Boolean =
         version == requestVersion && month == selectedMonth
 
@@ -190,7 +238,7 @@ class AiReportActivity : AppCompatActivity() {
         )
     }
 
-    private fun regenerate() {
+    private fun regenerate(force: Boolean = false) {
         val version = ++requestVersion
         reportJob?.cancel()
         reportJob = null
@@ -205,8 +253,8 @@ class AiReportActivity : AppCompatActivity() {
             return
         }
 
-        val hasPreviousReport = reportOwner == owner && reportMonth == month &&
-            binding.tipsCard.isVisible
+        var hasPreviousReport = reportOwner == owner && reportMonth == month &&
+                binding.tipsCard.isVisible
         if (!hasPreviousReport) {
             reportOwner = null
             reportMonth = null
@@ -228,6 +276,34 @@ class AiReportActivity : AppCompatActivity() {
                     reportOwner = owner
                     reportMonth = month
                     showReport(getString(R.string.ai_report_empty), emptyList())
+                    return@launch
+                }
+
+                val dataKey = JSONArray().apply {
+                    for ((category, amount) in totals.toSortedMap()) {
+                        put(JSONArray().put(category).put(amount))
+                    }
+                }.toString()
+
+                val cached = withContext(Dispatchers.IO) {
+                    readCachedReport(owner, month, dataKey)
+                }
+
+                if (!isCurrentRequest(version, month) || uid != owner) {
+                    return@launch
+                }
+
+                if (cached == null && hasPreviousReport) {
+                    hasPreviousReport = false
+                    reportOwner = null
+                    reportMonth = null
+                    showReport(getString(R.string.ai_report_loading), emptyList())
+                }
+
+                if (!force && cached != null) {
+                    reportOwner = owner
+                    reportMonth = month
+                    showReport(cached.first, cached.second)
                     return@launch
                 }
 
@@ -256,6 +332,10 @@ class AiReportActivity : AppCompatActivity() {
                 require(summary.isNotEmpty() && tips.all { it.isNotEmpty() })
 
                 if (isCurrentRequest(version, month) && uid == owner) {
+                    runCatching {
+                        saveCachedReport(owner, month, dataKey, summary, tips)
+                    }
+
                     reportOwner = owner
                     reportMonth = month
                     showReport(summary, tips)
