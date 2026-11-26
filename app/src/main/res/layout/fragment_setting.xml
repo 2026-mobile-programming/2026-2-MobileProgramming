@@ -67,7 +67,7 @@
 
             <View style="@style/Widget.JjanChall.SectionGap" />
 
-            <!-- 가계부 (선택 기능은 담당이 정해지면 연결) -->
+            <!-- 가계부 -->
             <TextView
                 style="@style/Widget.JjanChall.SectionLabel"
                 android:text="@string/setting_section_budget" />
@@ -79,10 +79,6 @@
                 <TextView
                     style="@style/Widget.JjanChall.ListRowTitle"
                     android:text="@string/setting_monthly_budget" />
-
-                <TextView
-                    style="@style/Widget.JjanChall.Tag"
-                    android:text="@string/setting_optional_tag" />
 
                 <Space
                     android:layout_width="0dp"
@@ -118,10 +114,6 @@
                 <TextView
                     style="@style/Widget.JjanChall.ListRowTitle"
                     android:text="@string/setting_ai_report" />
-
-                <TextView
-                    style="@style/Widget.JjanChall.Tag"
-                    android:text="@string/setting_optional_tag" />
 
                 <Space
                     android:layout_width="0dp"

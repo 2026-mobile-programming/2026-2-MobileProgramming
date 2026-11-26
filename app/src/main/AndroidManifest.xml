@@ -77,6 +77,10 @@
             android:name=".ui.challenge.ChallengeDetailActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.setting.AiReportActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
