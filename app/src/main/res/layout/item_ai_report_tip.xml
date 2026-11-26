@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="top"
+    android:orientation="horizontal">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tipNumber"
+        android:layout_width="@dimen/size_icon"
+        android:layout_height="@dimen/size_icon"
+        android:background="@drawable/bg_avatar"
+        android:backgroundTint="@color/bg_brand"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textAppearance="@style/TextAppearance.JjanChall.Label"
+        android:textColor="@color/text_on_brand"
+        tools:text="1" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tipText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_md"
+        android:layout_weight="1"
+        android:minHeight="@dimen/size_icon"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:textAppearance="@style/TextAppearance.JjanChall.Body2" />
+</LinearLayout>

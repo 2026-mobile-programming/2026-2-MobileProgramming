@@ -48,11 +48,12 @@ class SettingFragment : Fragment() {
             startActivity(BudgetActivity.newIntent(requireContext()))
         }
 
-        // 선택 기능: 담당이 정해지면 화면 연결
-        listOf(binding.rowAiReport, binding.rowCategory).forEach { row ->
-            row.setOnClickListener {
-                Toast.makeText(requireContext(), R.string.setting_coming_soon, Toast.LENGTH_SHORT).show()
-            }
+        binding.rowAiReport.setOnClickListener {
+            startActivity(Intent(requireContext(), AiReportActivity::class.java))
+        }
+
+        binding.rowCategory.setOnClickListener {
+            Toast.makeText(requireContext(), R.string.setting_coming_soon, Toast.LENGTH_SHORT).show()
         }
 
         binding.btnLogout.setOnClickListener { showLogoutDialog() }
